@@ -114,14 +114,14 @@ foreach($mainQueryResult as $row){
 						"</div>";
 	}
 	$coverdate = new DateTime("{$row['cover_date']}");
-	$coverdate = ($coverdate->format('m') === '01' ? $coverdate->format('M Y') : $coverdate->format('M j, Y'));
+	$coverdate = ($coverdate->format('Y-m-d 00:00:00'));
 	$datatablerows[] = array(
 		$image_div,
 		($row['collection_name'] ? $row['collection_name'] : ''), 
 		($row['title'] ? $row['title'] : ''), 
 		$row['volume'], 
 		($row['issue'] ? ($row['issue'] === '88888' ? '<i class="fa fa-infinity"></i>' : $row['issue']) : ''), 
-		$coverdate, 
+		$coverdate, //format using javascript
 		($row['grade'] ? $row['grade'] : ''), 
 		($row['comic_id'] ? $row['comic_id'] : ''), 
 		($row['collection_id'] ? $row['collection_id'] : ''), 

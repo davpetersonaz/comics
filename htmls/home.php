@@ -69,15 +69,19 @@ $(document).ready(function(){
 					var dateString = row[5];
 					var returnDate = '&lt;unknown&gt;';
 					if(dateString && dateString != 0){
-						var date = new Date(dateString+' 00:00:00');
-//						console.warn('date', date);
+						console.warn('dateString', dateString);
+						var date = new Date(dateString);
+						date.setHours(0);
+						date.setMinutes(0);
+						date.setSeconds(0);
+						console.warn('date', date);
 //						console.warn('date.getDate()', date.getDate());
 //						console.warn('date.getMonth()', date.getMonth());
 //						console.warn('months[date.getMonth()]', months[date.getMonth()]);
-						if(date.getDate() == 1){
-							returnDate = months[date.getMonth()]+' '+date.getFullYear();
-						}else{
+						if(date.getDate() > 1){
 							returnDate = months[date.getMonth()]+' '+date.getDate()+', '+date.getFullYear();
+						}else{
+							returnDate = months[date.getMonth()]+' '+date.getFullYear();
 						}
 					}
 					return returnDate;
