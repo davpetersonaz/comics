@@ -27,23 +27,9 @@ $collection_options = '';
 foreach($collections as $collection){
 	$collection_options .= "<option value='{$collection['collection_id']}'>{$collection['collection_name']}</option>";
 }
-
-$inputFieldCells =
-	"<td>".
-		"<select name='collection' placeholder='Collection'>".
-			"<option value=''></option>{$collection_options}".
-		"</select>".
-	"</td>".
-	"<td>".
-		"<input type='text' name='series' placeholder='Series Name'/>".
-	"</td>".
-	"<td>".
-		"<input type='text' name='volume' placeholder='Volume'/>".
-	"</td>";
 ?>
 
 <h2>Add Series</h2>
-
 <form id='addSeriesForm' method='POST' action=''>
 	<table id='addSeriesTable'>
 		<thead>
@@ -53,7 +39,17 @@ $inputFieldCells =
 		</thead>
 		<tbody>
 			<tr>
-				<?=$inputFieldCells?>
+				<td>
+					<select name='collection' placeholder='Collection'>
+						<option value=''></option><?=$collection_options?>
+					</select>
+				</td>
+				<td>
+					<input type='text' name='series' placeholder='Series Name'/>
+				</td>
+				<td>
+					<input type='text' name='volume' placeholder='Volume'/>
+				</td>
 			</tr>
 		</tbody>
 	</table>
@@ -83,7 +79,7 @@ $(document).ready(function(){
 		document.body.appendChild(form);
 		console.warn('form', form);
 		alert('submitting form');
-		form.submit();//selectseries
+		form.submit();//to addSeriesSelect
 	});
 });
 </script>

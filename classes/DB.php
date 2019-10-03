@@ -7,9 +7,8 @@ class DB extends DBcore{
 		return $lastInsertId;
 	}
 
-	//unsure what to default the grade-position to, just using "no grade" for now	
-	public function addIssue($series_id, $collection_id, $issue, $chrono='', $coverdate='0000-00-00', $grade=8){
-		$values = array('series_id'=>$series_id, 'collection_id'=>$collection_id, 'issue'=>$issue, 'chrono_index'=>$chrono, 'cover_date'=>$coverdate, 'grade'=>$grade);
+	public function addIssue($series_id, $collection_id, $issue, $chrono='', $grade=8){
+		$values = array('series_id'=>$series_id, 'collection_id'=>$collection_id, 'issue'=>$issue, 'chrono_index'=>$chrono, 'grade'=>$grade);
 		$lastInsertId = $this->insert('comics', $values);
 		return $lastInsertId;
 	}

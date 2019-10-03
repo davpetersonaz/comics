@@ -104,14 +104,16 @@ $(document).ready(function(){
 		var collectionid = '<?=$_POST['collectionid']?>';
 		var seriesname = '<?=$_POST['series']?>';
 		var volume = '<?=$_POST['volume']?>';
-		alert('posting to lookup');
+		var user_volume = prompt("what is the volume number?", volume);
+		if(user_volume !== null){ volume = user_volume; }
+//		alert('posting to lookup');
 		$.ajax({
 			method: 'POST',
 			url: '/ajax/lookup.php',
 			data: { comicvine: currentRowData, collectionid: collectionid, volume: volume, seriesname: seriesname } 
 		}).done(function(data){
 			console.warn('response (series_id)', data);//series_id
-			alert('addSelectSeries: redirecting to addSeries');
+//			alert('addSelectSeries: redirecting to addSeries');
 			location.href = '/addSeries';
 		});
 	});

@@ -10,13 +10,12 @@ if(isset($_POST['submit'])){
 	$series = $_POST['series'];
 	$issues = $_POST['issue'];
 	$chrono = $_POST['chrono'];
-	$coverdates = $_POST['datetimepicker'];
 	$gradepos = $_POST['grade'];
 	
 	for($i=0; $i<count($series); $i++){
 		logDebug('series[i]: '.var_export($series[$i], true));
 		if(!$series[$i]){ break; }
-		$comic_id = Issue::createIssue($db, $collections[$i], $series[$i], $issues[$i], $chrono[$i], $coverdates[$i], $gradepos[$i]);
+		$comic_id = Issue::createIssue($db, $collections[$i], $series[$i], $issues[$i], $chrono[$i], $gradepos[$i]);
 		logDebug('created issue: '.$comic_id);
 		$issue = new Issue($db, $curl, $comic_id);
 		$issue->addSeriesToIssue($series[$i]);
@@ -37,7 +36,7 @@ foreach($collections as $collection){
 $series = Series::getAllSeries($db);
 $series_options = '';
 foreach($series as $serie){
-	$series_options .= "<option value='{$serie['series_id']}'>{$serie['title']} {$serie['volume']} ({$serie['year']})</option>";
+	$series_options .= "<option value='{$serie['series_id']}'>{$serie['title']} vol.{$serie['volume']} ({$serie['year']})</option>";
 }
 $grading = $grades->getAllGrades();
 $gradingOptions = array();
@@ -45,7 +44,7 @@ foreach($grading as $cond){
 	$gradingOptions[] = "<option value='{$cond['position']}' title='{$cond['short_desc']}'>{$cond['name']}</option>";
 }
 
-$inputFieldCells1 =
+$inputFieldCells =
 	"<td>".
 		"<select name='collection[]' placeholder='Collection'>".
 			"<option value=''></option>{$collection_options}".
@@ -61,15 +60,14 @@ $inputFieldCells1 =
 	"</td>".
 	"<td>".
 		"<input type='text' name='chrono[]' placeholder='Chronological Index'/>".
-	"</td>";
-$inputFieldCells2 =
+	"</td>".
 	"<td>".
 		"<select name='grade[]' placeholder='Grading'>".
 			"<option value=''></option>";
 foreach($gradingOptions as $options){
-	$inputFieldCells2 .= $options;
+	$inputFieldCells .= $options;
 }
-$inputFieldCells2 .= 
+$inputFieldCells .= 
 		"</select>".
 	"</td>";
 ?>
@@ -80,20 +78,13 @@ $inputFieldCells2 .=
 	<table id='addIssuesTable'>
 		<thead>
 			<tr>
-				<td>Collection</td><td>Series</td><td>Issue</td><td>Chrono-index</td><td>Cover Date</td><td>Grading</td>
+				<td>Collection</td><td>Series</td><td>Issue</td><td>Chrono-index</td><td>Grading</td>
 			</tr>
 		</thead>
 		<tbody>
 <?php for($i=0; $i<$fields; $i++){ ?>
 			<tr>
-				<?=$inputFieldCells1?>
-				<td class='input-group date' id='datetimepicker<?=$i?>' data-format='yyyy-MM-dd' data-target-input='nearest'><!-- TODO: not sure i need all the class/target shit -->
-					<input name='datetimepicker[]' type='text' class='form-control datetimepicker-input' data-target='#datetimepicker<?=$i?>'/><!-- TODO: not sure i need all the class/target shit -->
-					<div class='input-group-append' data-target='#datetimepicker<?=$i?>' data-toggle='datetimepicker'><!-- TODO: not sure i need all the class/target shit -->
-						<div class='input-group-text'><i class='fa fa-calendar'></i></div><!-- TODO: not sure i need all the class/target shit -->
-					</div>
-				</td>
-				<?=$inputFieldCells2?>
+				<?=$inputFieldCells?>
 			</tr>
 <?php } ?>
 		</tbody>
@@ -102,34 +93,3 @@ $inputFieldCells2 .=
 		<button type='submit' name='submit' class="btn btn-primary bg-dark">Submit</button>
 	</div>
 </form>
-
-<script type="text/javascript">
-	<?php for($i=0; $i<$fields; $i++){ ?>
-		$(function(){
-			$('#datetimepicker<?=$i?>').datetimepicker({
-				format: 'L',
-				viewMode: 'years'
-			});
-		});
-	<?php } ?>
-</script>
-
-<?php /*
-<script>
-//	var htmlString = "<?=$inputFieldsDiv?>";
-//	var inputFieldsElem = document.createElement('div');
-//	inputFieldsElem.innerHTML = htmlString.trim();
-//	$('.add_button').click(function(e){
-//		e.preventDefault();
-//		var i;
-//		for(i=0; i<5; i++){
-//			document.getElementById("input_fields_wrap").appendChild(inputFieldsElem);
-//		}
-//	});
-//	$(crane_wrapper).on("click", ".remove_item_field", function(e){ //user click on remove text (cranes)
-//		e.preventDefault(); 
-//		$(this).parent('div').parent('div').remove(); 
-//		cranes_count--;
-//	});
-</script>
-*/

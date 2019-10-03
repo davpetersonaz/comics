@@ -24,11 +24,8 @@ class Issue{
 	}
 
 	//unsure what to default the grade-position to, just using "no grade" for now
-	public static function createIssue($db, $collection_id, $series_id, $issue, $chrono='', $coverdate='', $gradepos=8){
-		if($coverdate && preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $coverdate) === 1){
-			$coverdate = date('Y-m-d', strtotime($coverdate));
-		}
-		$lastInsertId = $db->addIssue($series_id, $collection_id, $issue, $chrono, $coverdate, $gradepos);
+	public static function createIssue($db, $collection_id, $series_id, $issue, $chrono='', $gradepos=8){
+		$lastInsertId = $db->addIssue($series_id, $collection_id, $issue, $chrono, $gradepos);
 		return $lastInsertId;
 	}
 	
