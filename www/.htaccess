@@ -1,0 +1,16 @@
+# Apache configuration file (see httpd.apache.org/docs/2.2/mod/quickreference.html)
+
+# disable directory listing
+Options -Indexes
+
+Options +FollowSymLinks
+
+RewriteEngine On
+RewriteRule ^(.*)/$ /$1 [L,R=301]
+RewriteCond %{REQUEST_URI} !^/ajax
+RewriteCond %{REQUEST_URI} !^/css
+RewriteCond %{REQUEST_URI} !^/images
+#RewriteCond %{REQUEST_URI} !^/index.php
+RewriteCond %{REQUEST_URI} !^/js
+RewriteCond %{REQUEST_URI} !^/robots.txt
+RewriteRule (.*) index.php?p=$1 [B,QSA,L]

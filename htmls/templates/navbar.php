@@ -1,0 +1,28 @@
+			<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+				<div class='full-width'>
+					<a class="navbar-brand" href="/home.php">Dave's Comics</a>
+<?php if($alreadyLoggedIn){ ?>
+					<div class='admin-buttons'>
+						<button class='btn' id='issues'>Issues</button>
+						<button class='btn' id='series'>Series</button>
+						<button class='btn' id='collections'>Collections</button>
+					</div>
+<?php } ?>
+				</div>
+			</nav>
+
+<script>
+$(document).ready(function(){
+	$('#issues').on('click', function(){
+		window.location.href = '/issues';
+	});
+	
+	$('#series').on('click', function(){
+		window.location.href = '/series';
+	});
+	
+	$('#collections').on('click', function(){
+		window.location.href = '/collections';
+	});
+});
+</script>

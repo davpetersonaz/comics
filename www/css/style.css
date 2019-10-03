@@ -1,0 +1,260 @@
+body{
+	width: 100%;
+	height: 100%;
+}
+/* common functions */
+.full-height{
+	height: 100%;
+}
+.full-width{
+	width: 100%;
+}
+.left-justify{
+	float: left;
+}
+.right-justify{
+	float: right;
+}
+.text-align-center{
+	text-align: center;
+}
+.text-align-left{
+	text-align: left;
+}
+.text-align-right{
+	text-align: right;
+}
+.invisible{
+	visibility: hidden;
+}
+.red-text{
+	color: red;
+}
+.bg-dark.btn-primary,
+.bg-dark.btn-primary:focus,
+.bg-dark.btn-primary:not(:disabled):not(.disabled):active,
+.bg-dark.btn-primary:not(:disabled):not(.disabled):active:focus{
+	border: 0;
+	box-shadow: none;
+}
+.hidden{
+	/*display: none;*/
+	visibility: hidden;
+}
+/* Sticky footer styles */
+html{
+	min-height: 100%;
+	position: relative;
+}
+body{
+	background-color: #FDFDFD;
+	margin-bottom: 60px; /* Margin bottom by footer height */
+}
+body > .container-fluid{
+	margin-top: 60px; /* height of footer */
+	height: 100%;
+}
+.admin-buttons{
+	float: right;
+}
+.footer{
+	/*background-color: #f8f8f8;*/
+	bottom: 0;
+	color: white;
+	height: 60px; /* Set the fixed height of the footer here */
+	line-height: 60px; /* Vertically center the text there */
+	position: absolute;
+	width: 100%;
+}
+.footer > .container{
+	max-width: 100%;
+}
+.footer > .container .left-justify{
+	display: inline-block;
+}
+.footer > .container .right-justify{
+	display: inline-block;
+	text-align: right;
+}
+.footer > .container #login{
+	margin-top: 10px;
+}
+.footer > .container button#login:hover,
+nav.navbar .admin-buttons button.btn:hover{
+	background: white;
+}
+/* footer modal */
+#loginModal{
+	background-color: rgb(0,0,0); /* Fallback color */
+	background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+	display: none; /* Hidden by default */
+	height: 100%; /* Full height */
+	left: 0;
+	overflow: auto; /* Enable scroll if needed */
+	position: fixed; /* Stay in place */
+	top: 0;
+	width: 100%; /* Full width */
+	z-index: 1; /* Sit on top */
+}
+#loginModal .modal-box{
+	border: 1px solid #888;
+	border-radius: 5px;
+	margin: 15% auto; /* 15% from the top and centered */
+	width: 25em; /* Could be more or less, depending on screen size */
+}
+#loginModal .modal-content{
+	background-color: #fefefe;
+	border: none;
+	border-radius: 0;
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
+	padding: 20px;
+}
+#loginModal .close-bar{
+	background-color: #eee;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+	height: 28px;
+	width: 100%;
+}
+#loginModal .close{
+	background-color: #ddd;
+	color: #aaa;
+	float: right;
+	font-size: 28px;
+	font-weight: bold;
+	padding-left: 4px;
+	padding-right: 4px;
+	text-align: right;
+}
+#loginModal .close:hover,
+#loginModal .close:focus{
+	color: black;
+	cursor: pointer;
+	text-decoration: none;
+} 
+/* navbar hidden dropdown */
+#navbarCollapse .dropdown:hover > .dropdown-menu{
+	display: block;
+}
+#navbarCollapse .dropdown > .dropdown-toggle:active{
+	pointer-events: none; /* clicking will make it sticky without this */
+}
+#navbarCollapse .btn,
+#navbarCollapse .btn-primary{
+	background-color: inherit;
+	border: none;
+	border-radius: 0;
+}
+#comiclist i.fa{
+	-webkit-text-stroke: 2px white;
+}
+.dataTable tbody tr,
+.dataTable tbody tr .img-responsive{
+	cursor: pointer;
+	height: 60px;
+}
+.dataTable tbody .popup-on-hover{
+	display: none;
+}
+.dataTable .picture a.small, 
+.dataTable .picture a.small:visited{ 
+	border: 0;
+	display: block; 
+	left: 0; 
+	max-height: 60px; 
+	top: 0; 
+}
+.dataTable .picture a img{
+	border: 0;
+}
+.dataTable .picture a .large{
+	border: 0; 
+	display: block; 
+	height: 0; 
+	left: 0;
+	top: 0; 
+	width: 0; 
+}
+.dataTable .picture a.small:hover .large{
+	border: 2px solid black;
+	display: block; 
+	height: auto; 
+	left: 5%; 
+	max-height: 80%;
+	position: fixed; 
+	top: 90px; 
+	width: auto; 
+}
+.details .image-border{
+	border: black 2px solid;
+	border-radius: 3px;
+	float: right;
+	margin-bottom: 4px;
+	margin-right: 16px;
+	/* this makes the size of the container fit all the contents */
+	overflow: hidden;/* hides the scrollbars but keeps the size of the block */
+/*	min-height: 1%;
+	min-width: 1%;*/
+}
+.details .image-border img{
+	position: relative;
+	/*padding: 4px;*/
+}
+.details .collection{
+	color: #CCC;
+	margin-bottom: 0;
+}
+.details span.smaller{
+	color: #ABABAB;
+	font-size: medium;
+}
+.details table{
+	margin-top: 12px;
+}
+.details .list-header{
+	font-size: x-large;
+	text-align: center;
+}
+.details .creators .table-left-column{
+	text-align: right;
+}
+.details .creators .table-right-column{
+	padding-left: 8px;
+	text-align: left;
+}
+.details .characters .table-left-column{
+	padding-right: 16px;
+	text-align: left;
+}
+.details .characters .table-right-column{
+	padding-left: 16px;
+	text-align: right;
+}
+.inline-input{
+	display: inline-block;
+}
+select{
+	/* make selects the same size a text-inputs */
+	height: 34px;
+	width: 206px;
+}
+#addIssuesTable td{
+	padding: 6px;
+}
+#addIssuesTable thead td,
+#addIssuesTable tfoot td{
+	padding: 0;
+	text-align: center;
+}
+#addIssuesForm .btn{
+	/*float: right;*/
+	margin-right: 1em;
+}
+#addIssuesForm .action-buttons{
+	margin-top: 1em;
+}
+.btn-above-table{
+	margin-bottom: 1em;
+	padding-top: .5em;
+}
