@@ -8,11 +8,11 @@ if(!isset($_SESSION['table_length']['home']) || $_SESSION['table_length']['home'
 
 // Array of database columns which should be read and sent back to DataTables.
 // Use a space where you want to insert a non-database field (for example a counter or static image)
-$columns = array('c.image_thumb', 'l.collection_name', 's.title', 's.volume', 'c.issue', 'c.cover_date', 'c.grade', 
-					'c.comic_id', 'l.collection_id', 'c.series_id', 's.comicvine_series_id', 
+$columns = array('c.image_thumb', 'l.collection_name', 's.name', 's.volume', 'c.issue', 'c.cover_date', 'c.grade', 
+					'c.issue_id', 'l.collection_id', 'c.series_id', 's.comicvine_series_id', 
 					's.comicvine_series_full', 'c.image_full', 'g.name', 'g.short_desc');
 $table = 'comics c';
-$indexColumn = 'comic_id';
+$indexColumn = 'issue_id';
 $bindParams = array();
 
 //search filtering
@@ -66,7 +66,7 @@ if (isset($_REQUEST['order'])){
 	}
 }
 //logDebug('sOrder: '.$order);
-if(empty($order)){ $order = 'ORDER BY c.collection_id ASC, s.title ASC, c.volume ASC, c.issue ASC'; }//want to add 'grade', but not sure how to order it
+if(empty($order)){ $order = 'ORDER BY c.collection_id ASC, s.name ASC, c.volume ASC, c.issue ASC'; }//want to add 'grade', but not sure how to order it
 
 //paging
 $limit = "";
@@ -118,12 +118,12 @@ foreach($mainQueryResult as $row){
 	$datatablerows[] = array(
 		$image_div,
 		($row['collection_name'] ? $row['collection_name'] : ''), 
-		($row['title'] ? $row['title'] : ''), 
+		($row['name'] ? $row['name'] : ''), 
 		$row['volume'], 
 		($row['issue'] ? ($row['issue'] === '88888' ? '<i class="fa fa-infinity"></i>' : $row['issue']) : ''), 
 		$coverdate, //format using javascript
 		($row['grade'] ? $row['grade'] : ''), 
-		($row['comic_id'] ? $row['comic_id'] : ''), 
+		($row['issue_id'] ? $row['issue_id'] : ''), 
 		($row['collection_id'] ? $row['collection_id'] : ''), 
 		($row['series_id'] ? $row['series_id'] : ''),
 		($row['comicvine_series_id'] ? $row['comicvine_series_id'] : ''),

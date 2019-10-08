@@ -4,6 +4,7 @@ $collection = $_POST['collectionid'];
 $seriesname = $_POST['series'];
 $volume = $_POST['volume'];
 $series_data = array();
+$pageLength = (isset($_SESSION['table_length']['home']) && $_SESSION['table_length']['home'] > 0 ? $_SESSION['table_length']['home'] : 25);
 
 $results = $curl->getSeriesByName($seriesname);
 logDebug('getSeriesByName results: '.count($results));
@@ -30,17 +31,6 @@ foreach($results as $result){
 	//return the list to selectseries 
 }		
 ?>
-
-<style>
-/*.preview{
-	position: absolute;
-	border: 1px solid #ccc;
-	background: #black;
-	padding: 5px;
-	display: none;
-	color: #fff;
-}*/
-</style>
 
 <h3>What series is this from?</h3>
 <table id="whatSeriesDatatable" class="display" style="width:100%">
@@ -86,6 +76,7 @@ foreach($results as $result){
 <script>
 $(document).ready(function(){
 	var seriesdatatable = $('#whatSeriesDatatable').DataTable({
+		"pageLength": <?=$pageLength?>,
 		"columnDefs": [ 
 			{ "searchable": false, "targets": [ 0, 8, 9 ] },
 			{ "orderable": false, "targets": [ 0, 8, 9 ] },
@@ -94,7 +85,7 @@ $(document).ready(function(){
 			{ "width": "2em", "targets": [ 0, 4, 5, 6, 7, 8, 9 ] }
 		]
 	});
-	
+
 	$('#whatSeriesDatatable tbody').on('click', 'tr', function(){
 		console.warn('row click', this);
 		$('body').css('cursor', 'progress');
@@ -103,6 +94,8 @@ $(document).ready(function(){
 		console.warn('currentRowData', currentRowData);
 		var collectionid = '<?=$_POST['collectionid']?>';
 		var seriesname = '<?=$_POST['series']?>';
+		var user_series = prompt("what is the series name?", seriesname);
+		if(user_series !== null){ seriesname = user_series; }
 		var volume = '<?=$_POST['volume']?>';
 		var user_volume = prompt("what is the volume number?", volume);
 		if(user_volume !== null){ volume = user_volume; }

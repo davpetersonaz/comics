@@ -1,13 +1,7 @@
 <?php
 
-
-//TODO: add numeric prefix to Grade and store in the database that way, will allow listing.php to sort on condition using SQL.
-//TODO: will have to add prefix on insertion into DB, and remove the prefix after extraction from DB.
-//TODO: maybe just do it in DB, have an insertion and an extraction function, handle it at the source
-
-
 class Issue{
-	
+
 	private function accentMainCharacters($characters){
 		foreach($characters as &$character){
 			if(in_array($character, $this->mainCharacters)){
@@ -16,33 +10,103 @@ class Issue{
 		}
 		return $characters;
 	}
-	
+
 	public function addSeriesToIssue($series_id){
-		$rowsAffected = $this->db->updateIssue($this->comic_id, array('series_id'=>$series_id));
+		$rowsAffected = $this->db->updateIssue($this->issue_id, array('series_id'=>$series_id));
 //		logDebug('updated issue, rowsAffected: '.$rowsAffected);
 		return $rowsAffected;
 	}
 
-	//unsure what to default the grade-position to, just using "no grade" for now
-	public static function createIssue($db, $collection_id, $series_id, $issue, $chrono='', $gradepos=8){
-		$lastInsertId = $db->addIssue($series_id, $collection_id, $issue, $chrono, $gradepos);
-		return $lastInsertId;
-	}
-	
-	public function exists(){
-		return ($this->comic_id ? true : false);
+	public function changeChronoIndex($new_chrono_index){
+		$this->chrono_index = $new_chrono_index;
+		return $this->db->changeChronoIndex($this->issue_id, $new_chrono_index);
 	}
 
-	public static function getAllIssues($db){
-		return $db->getAllIssues();
+	public function changeCollection($new_collection_id){
+		$this->collection_id = $new_collection_id;
+		return $this->db->changeCollectionId($this->issue_id, $new_collection_id);
 	}
-	
+
+	public function changeGrade($new_grade_id){
+		$this->grade = $new_grade_id;
+		return $this->db->changeGradeId($this->issue_id, $new_grade_id);
+	}
+
+	public function changeIssueNumber($new_issue_number){
+		$this->issue = $new_issue_number;
+		$rowsAffected = $this->db->changeIssueNumber($this->issue_id, $new_issue_number);
+		$this->updateIssueDetails();
+		return $rowsAffected;
+	}
+
+	public function changeNotes($new_notes){
+		$this->notes = $new_notes;
+		return $this->db->changeGradeId($this->issue_id, $new_notes);
+	}
+
+	public function changeSeries($new_series_id){
+		$this->series_id = $new_series_id;
+		return $this->db->changeSeriesId($this->issue_id, $new_series_id);
+	}
+
+	//unsure what to default the grade-position to, just using "no grade" for now
+	public static function createIssue(DB $db, $collection_id, $series_id, $issue, $chrono='', $gradepos=8, $notes=''){
+		$lastInsertId = $db->addIssue($series_id, $collection_id, $issue, $chrono, $gradepos, $notes);
+		return $lastInsertId;
+	}
+
+	public function delete(){
+		$rowsAffected = $this->db->deleteIssue($this->issue_id);
+		return $rowsAffected;
+	}
+
+	public static function getAllIssues(DB $db, Curl $curl){
+		$issues = array();
+		$dbissues = $db->getAllIssueIds();
+		logDebug('dbissues: '.var_export($dbissues, true));
+		foreach($dbissues as $dbissueid){
+			$issues[] = new Issue($db, $curl, $dbissueid);
+		}
+		usort($issues, 'Func::compareByObjectName');
+		return $issues;
+	}
+
+	public static function getAllIssuesInCollection(DB $db, Curl $curl, $collection_id){
+		$issues = array();
+		$dbissues = $db->getAllIssueIdsForCollection($collection_id);
+		logDebug('dbissues: '.var_export($dbissues, true));
+		foreach($dbissues as $dbissueid){
+			$issues[] = new Issue($db, $curl, $dbissueid);
+		}
+		usort($issues, 'Func::compareByObjectName');
+		return $issues;
+	}
+
+	public static function getAllIssuesInSeries(DB $db, Curl $curl, $series_id){
+		$issues = array();
+		$dbissues = $db->getAllIssueIdsForSeries($series_id);
+		logDebug('dbissues: '.var_export($dbissues, true));
+		foreach($dbissues as $dbissueid){
+			$issues[] = new Issue($db, $curl, $dbissueid);
+		}
+		usort($issues, 'Func::compareByObjectName');
+		return $issues;
+	}
+
 	public function getCharactersArray(){
 		$characters = array();
 		if(!empty(trim($this->characters))){
 			$characters = explode('|', $this->characters);
 		}
 		$characters = $this->accentMainCharacters($characters);
+		return $characters;
+	}
+
+	public function getCharactersDiedArray(){
+		$characters = array();
+		if(!empty(trim($this->character_died_in))){
+			$characters = explode('|', $this->character_died_in);
+		}
 		return $characters;
 	}
 
@@ -57,6 +121,11 @@ class Issue{
 		}
 		$creatorsArray = $this->sortCreatorsByJob($creatorsArray);
 		return $creatorsArray;
+	}
+
+	//can be used for dropdown options, title tooltips
+	public function getDisplayText(){
+		return "{$this->name} vol.{$this->volume} #{$this->issue}";
 	}
 
 	public function getFirstAppearanceCharactersArray(){
@@ -83,14 +152,6 @@ class Issue{
 		return $teams;
 	}
 
-	public function getCharactersDiedArray(){
-		$characters = array();
-		if(!empty(trim($this->character_died_in))){
-			$characters = explode('|', $this->character_died_in);
-		}
-		return $characters;
-	}
-
 	public function getIssueDetails($issue_id){
 		$issue = $this->db->getIssueDetails($issue_id);
 		return $issue;
@@ -101,7 +162,7 @@ class Issue{
 //		$issues = $this->db->getIssuesThatMatch($this->name, $comicvine[4], $comicvine[6], $comicvine[7]);
 //		return $issues;
 //	}
-	
+
 	private function sortCreatorsByJob($creators=array()){
 		$remainingCreators = $creators;
 		$tasks = array('writer', 'penciler', 'artist', 'inker', 'colorist', 'letterer', 'editor');
@@ -195,7 +256,7 @@ class Issue{
 			}
 
 			//save comicvine issue
-			$this->update($this->comic_id, $values);
+			$this->update($this->issue_id, $values);
 		}elseif(count($response) > 1){
 			//TODO: not sure if this all is necessary, probably just output error message instead???
 			$errormsg = "more than 1 result for series [{$this->comicvine_series_full}] issue [{$this->issue_number}]";
@@ -233,29 +294,66 @@ class Issue{
 		}
 	}
 
-	public function __construct($db, $curl, $issue_id=false){
-		$this->db = $db;
-		$this->curl = $curl;
-		if($issue_id){
-			$details = $this->db->getIssueDetails($issue_id);
-			if($details){
-				$this->comic_id = $issue_id;
-				foreach($details as $k=>$v){
-					if(!is_null($v)){
-						$this->$k = $v;
-					}
-				}
-			}
-		}
-	}
+	////////////////////////////////////////////////////////////////
 
 //	function __toString() {
 //		return "Issue: {$name} vol.{$series_volume} #{$issue} {$cover_date}";
 //	}
 
+	public function get($issue_id){
+		$details = $this->db->getIssueDetails($issue_id);
+		if($details){
+			foreach($details as $k=>$v){
+				if(!is_null($v)){
+					$this->$k = $v;
+				}
+			}
+		}
+	}
+
+	public function isIssue(){
+		return ($this->issue_id ? true : false);
+	}
+
+	public function getId(){ return $this->issue_id; }
+	public function getName(){ return $this->name; }
+	public function getSeriesId(){ return $this->series_id; }
+	public function getCollectionId(){ return $this->collection_id; }
+	public function getIssue(){ return $this->issue; }
+	public function getChronoIndex(){ return $this->chrono_index; }
+	public function getCollectionName(){ return $this->collection_name; }
+	public function getComicvineIssueId(){ return $this->comicvine_issue_id; }
+	public function getComicvineSeriesId(){ return $this->comicvine_series_id; }
+	public function getComicvineSeriesFull(){ return $this->comicvine_series_full; }
+	public function getComicvineUrl(){ return $this->comicvine_url; }
+	public function getCoverDate(){ return $this->cover_date; }
+	public function getGrade(){ return $this->grade; }
+	public function getNotes(){ return $this->notes; }
+	public function getImageFull(){ return $this->image_full; }
+	public function getImageThumb(){ return $this->image_thumb; }
+	public function getIssueTitle(){ return $this->issue_title; }
+	public function getSeriesTitle(){ return $this->series_title; }
+	public function getVolume(){ return $this->volume; }
+	public function getYear(){ return $this->year; }
+	public function getSynopsis(){ return $this->synopsis; }
+	public function getCharacters(){ return $this->characters; }
+	public function getCreators(){ return $this->creators; }
+	public function getCharactersDiedIn(){ return $this->character_died_in; }
+	public function getFirstAppearanceCharacters(){ return $this->first_appearance_characters; }
+	public function getFirstAppearanceObjects(){ return $this->first_appearance_objects; }
+	public function getFirstAppearanceTeams(){ return $this->first_appearance_teams; }
+
+	public function __construct(DB $db, Curl $curl, $issue_id=false){
+		$this->db = $db;
+		$this->curl = $curl;
+		if($issue_id){
+			$this->get($issue_id);
+		}
+	}
+
 	protected $db = false;
 	protected $curl = false;
-	public $comic_id = false;//db issue id
+	public $issue_id = false;//db issue id
 	public $series_id = false;//db series id
 	public $collection_id = false;//db colelction id
 	public $name = false;//my series name, not comicvine's
@@ -268,6 +366,7 @@ class Issue{
 	public $comicvine_url = false;//full url to this issue's page on comicvine
 	public $cover_date = false;//issue cover date
 	public $grade = 8;//grading for the physical copy of the issue //TODO: maybe split this out into separate table and keep issue as a "generic" version of the specific physical copy?
+	public $notes = false;
 	public $image_full = false;//large cover image
 	public $image_thumb = false;//cover image thumbnail
 	public $issue_title = false;//inside title for this issue
@@ -282,7 +381,7 @@ class Issue{
 	public $first_appearance_characters = '';
 	public $first_appearance_objects = '';
 	public $first_appearance_teams = '';
-	
+
 	public $mainCharacters = array(
 		'Adam Warlock',
 		'Batman',

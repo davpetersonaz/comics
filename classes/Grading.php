@@ -1,8 +1,8 @@
 <?php
 class Grading{
-	
+
 	//https://comicspriceguide.com/comic-book-grading
-	
+
 	public function getAllGrades(){
 		return $this->grades;
 	}
@@ -32,12 +32,12 @@ class Grading{
 	private function getAll(){
 		$this->grades = $this->db->getAllGrades();
 	}
-	
-	public function __construct($db){
+
+	public function __construct(DB $db){
 		$this->db = $db;
 		$this->getAll();
 	}
-	
+
 	private $db = false;
 	private $grades = array();
 }

@@ -1,8 +1,10 @@
 <?php $pageLength = (isset($_SESSION['table_length']['home']) && $_SESSION['table_length']['home'] > 0 ? $_SESSION['table_length']['home'] : 25); ?>
 
+<?php if($alreadyLoggedIn){ ?>
 <div class='btn-above-table'>
 	<button class='btn btn-primary bg-dark add-issues'>Add Issues</button>
 </div>
+<?php } ?>
 
 <table id="comiclist" class="display" style="width:100%">
 	<thead>
@@ -47,10 +49,11 @@
 var months = Array('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December');
 $(document).ready(function(){
 //	var userIsAdmin = <?=($alreadyLoggedIn?'true':'false')?>;
-	var comiclistdatatable = $('#comiclist').DataTable({
-        "processing": true,
-        "serverSide": true,
-        "ajax": "/ajax/listing.php",
+
+	$('#comiclist').DataTable({
+		"processing": true,
+		"serverSide": true,
+		"ajax": "/ajax/listing.php",
 		"pageLength": <?=$pageLength?>,
 <?php if($alreadyLoggedIn){ ?>
 		"order": [[ 5, 'asc' ],[ 6, 'asc' ]],
@@ -62,8 +65,9 @@ $(document).ready(function(){
 			{ "searchable": false, "targets": [ 0, 7, 8, 9, 10, 11, 12, 13 ] },
 			{ "visible": false, "targets": [ 7, 8, 9, 10, 11, 12, 13 ] },
 			{ "width": '2em', "targets": [ 0 ] },
-            {
-                "render": function ( data, type, row ) {
+			{ "className": "dt-center", "targets": [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 ] },// Center align both header and body content
+			{
+				"render": function ( data, type, row ) {
 //					console.warn('data:', data, 'type:', type, 'row:', row);
 //					console.warn('data 5', row[5]);
 					var dateString = row[5];
@@ -85,17 +89,17 @@ $(document).ready(function(){
 						}
 					}
 					return returnDate;
-                },
-                "targets": [ 5 ]
-            },
-            {
-                "render": function ( data, type, row ) {
+				},
+				"targets": [ 5 ]
+			},
+			{
+				"render": function ( data, type, row ) {
 //					console.warn('row[6]:', row[6], ', row[12]: ', row[12], ', row[13]: ', row[13]);
 					return '<span title="'+row[13]+'">'+row[12]+'</span>';
-                },
-                "targets": [ 6 ]
-            }
-        ]
+				},
+				"targets": [ 6 ]
+			}
+		]
 	});
 
 	//get issue details on row-click
@@ -116,6 +120,6 @@ $(document).ready(function(){
 	$('.add-issues').on('click', function(){
 		window.location.href = '/addIssues';
 	});
-	
+
 });
 </script>

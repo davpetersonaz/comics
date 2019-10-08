@@ -1,9 +1,4 @@
 <?php
-
-//TODO: probably can remove the cover date column, it isnt used to find the issue 
-//(it just uses the comicvine series id and the issue number))
-//and updateIssueDetails overrides it with comicvine info anyway.
-
 logDebug('addIssues: '.var_export($_POST, true));
 if(isset($_POST['submit'])){
 	$collections = $_POST['collection'];
@@ -11,13 +6,13 @@ if(isset($_POST['submit'])){
 	$issues = $_POST['issue'];
 	$chrono = $_POST['chrono'];
 	$gradepos = $_POST['grade'];
-	
+	$notes = $_POST['notes'];
+
 	for($i=0; $i<count($series); $i++){
-		logDebug('series[i]: '.var_export($series[$i], true));
 		if(!$series[$i]){ break; }
-		$comic_id = Issue::createIssue($db, $collections[$i], $series[$i], $issues[$i], $chrono[$i], $gradepos[$i]);
-		logDebug('created issue: '.$comic_id);
-		$issue = new Issue($db, $curl, $comic_id);
+		$issue_id = Issue::createIssue($db, $collections[$i], $series[$i], $issues[$i], $chrono[$i], $gradepos[$i], $notes[$i]);
+		logDebug('created issue: '.$issue_id);
+		$issue = new Issue($db, $curl, $issue_id);
 		$issue->addSeriesToIssue($series[$i]);
 		logDebug('issue is currently: '.var_export($issue, true));
 		$issue->updateIssueDetails();
@@ -28,20 +23,20 @@ if(isset($_POST['submit'])){
 }
 
 $fields = 10;
-$collections = Collection::getCollections($db);
+$collections = Collection::getAllCollections($db);
 $collection_options = '';
 foreach($collections as $collection){
-	$collection_options .= "<option value='{$collection['collection_id']}'>{$collection['collection_name']}</option>";
+	$collection_options .= "<option value='{$collection->getId()}'>{$collection->getName()}</option>";
 }
 $series = Series::getAllSeries($db);
 $series_options = '';
 foreach($series as $serie){
-	$series_options .= "<option value='{$serie['series_id']}'>{$serie['title']} vol.{$serie['volume']} ({$serie['year']})</option>";
+	$series_options .= "<option value='{$serie->getId()}'>{$serie->getName()} vol.{$serie->getVolume()} ({$serie->getYear()})</option>";
 }
 $grading = $grades->getAllGrades();
 $gradingOptions = array();
 foreach($grading as $cond){
-	$gradingOptions[] = "<option value='{$cond['position']}' title='{$cond['short_desc']}'>{$cond['name']}</option>";
+	$gradingOptions[] = "<option value='{$cond['position']}' title='{$cond['long_desc']}'>{$cond['name']}</option>";
 }
 
 $inputFieldCells =
@@ -69,6 +64,9 @@ foreach($gradingOptions as $options){
 }
 $inputFieldCells .= 
 		"</select>".
+	"</td>".
+	"<td>".
+		"<input type='text' name='notes[]' placeholder='Notes'/>".
 	"</td>";
 ?>
 
@@ -78,7 +76,7 @@ $inputFieldCells .=
 	<table id='addIssuesTable'>
 		<thead>
 			<tr>
-				<td>Collection</td><td>Series</td><td>Issue</td><td>Chrono-index</td><td>Grading</td>
+				<td>Collection</td><td>Series</td><td>Issue</td><td>Chrono-index</td><td>Grading</td><td>Notes</td>
 			</tr>
 		</thead>
 		<tbody>

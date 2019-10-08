@@ -13,14 +13,14 @@ if(isset($_POST['submit'])){
 		}
 	}
 	?>
-		<p class='red-text'>Collection(s) have been added, create some more...</p>
+	<script>window.location.href='/collections';</script>
 	<?php
 }
 
 $fields = 5;
 $inputFieldCells =
 	"<td>".
-		"<input type='text' name='name[]' placeholder='Cellection Name'/>".
+		"<input type='text' name='name[]' placeholder='Collection Name'/>".
 	"</td>";
 ?>
 

@@ -1,31 +1,8 @@
 <?php
-/*
-logDebug('addSeries: '.var_export($_POST, true));
-if(isset($_POST['submit'])){
-	$collection = $_POST['collection'];
-	$newSeries = $_POST['series'];
-	$volume = $_POST['volume'];
-	$existingSeries = Series::getSeriesByName($db, $newSeries, $volume);
-	if(!$existingSeries){
-		
-		
-		
-		$series = new Series($db);
-		$series_id = $series->createSeries($title, $volume, $collection_id, $comicvine_info);
-		logDebug('created series: '.$series_id);
-	}else{
-		logDebug('series already exists: '.$existingSeries['title']);
-	}
-	?>
-		<p class='red-text'>The series has been added, create more...</p>
-	<?php
-}
-*/
-
-$collections = Collection::getCollections($db);
+$collections = Collection::getAllCollections($db);
 $collection_options = '';
 foreach($collections as $collection){
-	$collection_options .= "<option value='{$collection['collection_id']}'>{$collection['collection_name']}</option>";
+	$collection_options .= "<option value='{$collection->getId()}'>{$collection->getName()}</option>";
 }
 ?>
 
@@ -78,7 +55,7 @@ $(document).ready(function(){
 		form.appendChild(hiddenField3);
 		document.body.appendChild(form);
 		console.warn('form', form);
-		alert('submitting form');
+//		alert('submitting form');
 		form.submit();//to addSeriesSelect
 	});
 });
