@@ -45,7 +45,7 @@ $(document).ready(function(){
 		$.ajax({
 			method: 'POST',
 			url: '/ajax/lookup.php',
-			data: { collection_change: id, new_name: new_name } 
+			data: { collection_name_change: id, new_name: new_name } 
 		}).done(function(data){
 			console.warn('collection name changed');
 		});

@@ -99,7 +99,7 @@ foreach($issues as $issue){
 	foreach($grades->getAllGrades() as $grade_array){
 //		logDebug('grade_array: '.var_export($grade_array, true));
 		$selected = (intval($grade_array['position']) === intval($issue->getGrade()) ? ' selected' : '');
-		$grade_div .= "<option value='{$grade_array['position']}' title='{$grade_array['short_desc']}' {$selected}>{$grade_array['name']}</option>";
+		$grade_div .= "<option value='{$grade_array['position']}' title='{$grade_array['short_desc']}' {$selected}>{$grade_array['grade_name']}</option>";
 	}
 	$grade_div .= "</select>";
 	$notes_div = "<input type='text' name='notes[]' class='notes' id='notes{$issue->getId()}' value='{$issue->getNotes()}'/>";

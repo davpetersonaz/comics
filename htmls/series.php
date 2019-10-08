@@ -1,4 +1,10 @@
 <?php 
+
+
+//TODO: ADD COLUMNS FOR 1ST AND LAST ISSUE OF SERIES
+
+
+
 $pageLength = (isset($_SESSION['table_length']['home']) && $_SESSION['table_length']['home'] > 0 ? $_SESSION['table_length']['home'] : 25);
 $collectionChoice = (isset($_GET['coll']) ? intval($_GET['coll']) : false);
 if($collectionChoice){
@@ -81,6 +87,8 @@ $(document).ready(function(){
 			{ "orderable": false, "targets": [ 8 ] },
 			{ "searchable": false, "targets": [ 8 ] },
 			{ "width": '1em', "targets": [ 8 ] },
+			{ "width": '2em', "targets": [ 2, 5, 6 ] },
+			{ "width": '3em', "targets": [ 7 ] },
 			{ "className": "dt-center", "targets": [ 0, 1, 2, 3, 4, 5, 6, 7, 8 ] }// Center align both header and body content of columns
 		],
 		//and declare the input columns for the functions above
@@ -88,6 +96,7 @@ $(document).ready(function(){
 			null,
 			{ "orderDataType": "dom-text", type: 'string' },
 			{ "orderDataType": "dom-text-numeric" },
+			null,
 			null,
 			null,
 			null,
