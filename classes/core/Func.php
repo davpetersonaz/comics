@@ -1,6 +1,10 @@
 <?php
 class Func{
-	
+
+	public static function compareByObjectName($a, $b){
+		return strcmp($a->getName(), $b->getName());
+	}
+
 	public static function logQueryAndValues($query, $values=array(), $callingFunction=false){
 //		logDebug('logQueryAndValues: '.var_export($values, true));
 		if($values){
@@ -11,5 +15,5 @@ class Func{
 		}
 		logDebug(($callingFunction ? $callingFunction.': ' : '').$query);
 	}
-	
+
 }
