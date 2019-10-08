@@ -8,9 +8,9 @@ if(!isset($_SESSION['table_length']['home']) || $_SESSION['table_length']['home'
 
 // Array of database columns which should be read and sent back to DataTables.
 // Use a space where you want to insert a non-database field (for example a counter or static image)
-$columns = array('c.image_thumb', 'l.collection_name', 's.name', 's.volume', 'c.issue', 'c.cover_date', 'c.grade', 
+$columns = array('c.image_thumb', 'l.collection_name', 's.series_name', 's.volume', 'c.issue', 'c.cover_date', 'c.grade', 
 					'c.issue_id', 'l.collection_id', 'c.series_id', 's.comicvine_series_id', 
-					's.comicvine_series_full', 'c.image_full', 'g.name', 'g.short_desc');
+					's.comicvine_series_full', 'c.image_full', 'g.grade_name', 'g.short_desc');
 $table = 'comics c';
 $indexColumn = 'issue_id';
 $bindParams = array();
@@ -118,7 +118,7 @@ foreach($mainQueryResult as $row){
 	$datatablerows[] = array(
 		$image_div,
 		($row['collection_name'] ? $row['collection_name'] : ''), 
-		($row['name'] ? $row['name'] : ''), 
+		($row['series_name'] ? $row['series_name'] : ''), 
 		$row['volume'], 
 		($row['issue'] ? ($row['issue'] === '88888' ? '<i class="fa fa-infinity"></i>' : $row['issue']) : ''), 
 		$coverdate, //format using javascript
@@ -128,7 +128,7 @@ foreach($mainQueryResult as $row){
 		($row['series_id'] ? $row['series_id'] : ''),
 		($row['comicvine_series_id'] ? $row['comicvine_series_id'] : ''),
 		($row['comicvine_series_full'] ? $row['comicvine_series_full'] : ''),
-		($row['name'] ? $row['name'] : ''),
+		($row['grade_name'] ? $row['grade_name'] : ''),
 		($row['short_desc'] ? $row['short_desc'] : '')
 	);
 }	
