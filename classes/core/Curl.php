@@ -3,6 +3,20 @@ class Curl{
 	
 	/* TODO: right up a blog on how to connect to the stupid comicvine api over php/curl, and make sure to include info on using USERAGENT */
 	
+	public static function getComivineIssueUrl($comicvine_id){
+		//https://comicvine.gamespot.com/api/issue/4000-6686/?api_key=5881a5da17876142d003f9bcf843d4db4ce9fce2&format=json
+		$url = self::$baseUrl."issue/{$comicvine_id}/?api_key=".self::$apikey."&format=json";
+		logDebug('getComivineIssueUrl: '.$url);
+		return $url;
+	}
+	
+	public static function getComivineSeriesUrl($comicvine_id){
+		//https://comicvine.gamespot.com/api/volume/4050-2290/?api_key=5881a5da17876142d003f9bcf843d4db4ce9fce2&format=json
+		$url = self::$baseUrl."volume/{$comicvine_id}/?api_key=".self::$apikey."&format=json";
+		logDebug('getComivineSeriesUrl: '.$url);
+		return $url;
+	}
+	
 	public function getIssueByComicvineId($comicvine_issue_id){
 		//https://comicvine.gamespot.com/api/issue/4000-6686/?api_key=5881a5da17876142d003f9bcf843d4db4ce9fce2&format=json
 		return $this->getResults('issue', $comicvine_issue_id);
@@ -59,7 +73,7 @@ class Curl{
 		}else{ 
 			$idparam = '/'.$param;
 		}
-		$apiUrl = "{$this->baseUrl}{$resouce}{$idparam}/?api_key={$this->apikey}&format=json".($suffix ? '&'.$suffix : '');
+		$apiUrl = self::$baseUrl."{$resouce}{$idparam}/?api_key=".self::$apikey."&format=json".($suffix ? '&'.$suffix : '');
 		if(!empty($filters)){
 			$apiUrl .=	"&filter=";
 			$i = 0;
@@ -106,6 +120,6 @@ class Curl{
 	}
 
 	protected $ch = false;
-	protected $baseUrl = 'https://comicvine.gamespot.com/api/';
-	protected $apikey = '5881a5da17876142d003f9bcf843d4db4ce9fce2';
+	protected static $baseUrl = 'https://comicvine.gamespot.com/api/';
+	protected static $apikey = '5881a5da17876142d003f9bcf843d4db4ce9fce2';
 }

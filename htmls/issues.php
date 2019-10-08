@@ -1,4 +1,12 @@
 <?php 
+
+
+//TODO: add comicvine_issue_id (full) after grade.
+//TODO: then check everything in
+//TODO: then start adding user_id columns to issues/series/collections classes/queries
+
+
+
 logDebug('issues GET: '.var_export($_GET, true));
 $pageLength = (isset($_SESSION['table_length']['home']) && $_SESSION['table_length']['home'] > 0 ? $_SESSION['table_length']['home'] : 25);
 
@@ -53,6 +61,7 @@ $series = Series::getAllSeries($db);
 			<th>chrono</th>
 			<th>cover date</th>
 			<th>grade</th>
+			<th>comicvine (full)</th>
 			<th>notes</th>
 			<th> </th>
 		</tr>
@@ -66,7 +75,7 @@ foreach($issues as $issue){
 	$image_div = '';
 	if($issue->image_thumb && $issue->getImageFull()){
 		$image_div =	
-					"<div ID='picture{$issue->getId()}' class='picture'>".
+					"<div id='picture{$issue->getId()}' class='picture'>".
 						"<a href='#nogo' class='small' title='{$issue->getDisplayText()}'>".
 							"<img class='img-responsive' src='{$issue->getImageThumb()}'>".
 							"<img class='large popup-on-hover' src='{$issue->getImageFull()}'>".
@@ -102,6 +111,7 @@ foreach($issues as $issue){
 		$grade_div .= "<option value='{$grade_array['position']}' title='{$grade_array['short_desc']}' {$selected}>{$grade_array['grade_name']}</option>";
 	}
 	$grade_div .= "</select>";
+	$comicvine_issue_id_div = "<span id='comicvine{$issue->getId()}' class='comicvine-link' data-comicvine-issue-id='{$issue->getComicvineIssueId()}'>{$issue->getComicvineIssueId()}</span>";
 	$notes_div = "<input type='text' name='notes[]' class='notes' id='notes{$issue->getId()}' value='{$issue->getNotes()}'/>";
 	$delete_div = "<span class='delete' id='delete{$issue->getId()}' data-issue-text='{$issue->getDisplayText()}'><i class='fa fa-times'></i></span>";
 	?>
@@ -113,6 +123,7 @@ foreach($issues as $issue){
 			<td><?=$chrono_div?></td>
 			<td><?=$cover_div?></td>
 			<td><?=$grade_div?></td>
+			<td><?=$comicvine_issue_id_div?></td>
 			<td><?=$notes_div?></td>
 			<td><?=$delete_div?></td>
 		</tr>
@@ -128,6 +139,7 @@ foreach($issues as $issue){
 			<th>chrono</th>
 			<th>cover date</th>
 			<th>grade</th>
+			<th>comicvine (full)</th>
 			<th>notes</th>
 			<th> </th>
 		</tr>
@@ -142,21 +154,21 @@ $(document).ready(function(){
 		return this.api().column( col, {order:'index'} ).nodes().map( function(td, i){
 			return $('input', td).val();
 		});
-	}
+	};
 
 	//this creates an array of values for numeric input boxes, parsed as numbers
 	$.fn.dataTable.ext.order['dom-text-numeric'] = function (settings, col){
 		return this.api().column( col, {order:'index'} ).nodes().map( function(td, i){
 			return $('input', td).val() * 1;
 		});
-	}
+	};
 
 	//this creates an array of values for select options
 	$.fn.dataTable.ext.order['dom-select'] = function(settings, col){
 		return this.api().column( col, {order:'index'} ).nodes().map( function(td, i){
 			return $('select', td).val();
 		});
-	}
+	};
 
 	$('#issuesTable').dataTable({
 		//how shall i sort this? 
@@ -164,10 +176,11 @@ $(document).ready(function(){
 		"order": [[ 1, 'asc' ],[ 2, 'asc' ],[ 3, 'asc' ],[ 6, 'asc' ]],
 		"pageLength": <?=$pageLength?>,
 		"columnDefs": [ 
-			{ "orderable": false, "targets": [ 0, 8 ] },
-			{ "searchable": false, "targets": [ 0, 8 ] },
-			{ "width": '1em', "targets": [ 8 ] },
-			{ "className": "dt-center", "targets": [ 0, 1, 2, 3, 4, 5, 6, 7, 8 ] }// Center align both header and body content
+			{ "orderable": false, "targets": [ 0, 9 ] },
+			{ "searchable": false, "targets": [ 0, 9 ] },
+			{ "width": '1em', "targets": [ 9 ] },
+			{ "width": '3em', "targets": [ 7 ] },
+			{ "className": "dt-center", "targets": [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 ] }//center align both header and body content
 		],
 		//and declare the input columns for the functions above
 		"columns": [
@@ -178,6 +191,7 @@ $(document).ready(function(){
 			{ "orderDataType": "dom-text", type: 'string' },
 			null,
 			{ "orderDataType": "dom-select" },
+			null,
 			{ "orderDataType": "dom-text", type: 'string' },
 			null
 		]
@@ -288,6 +302,17 @@ $(document).ready(function(){
 			}else{
 				alert(data);
 			}
+		});
+	});
+
+	$('.comicvine-link').on('click', function(){
+		var id = $(this).attr('data-comicvine-issue-id');
+		$.ajax({
+			method: 'POST',
+			url: '/ajax/lookup.php',
+			data: { comicvine_issue_id: id } 
+		}).done(function(data){
+			window.open(data, '_blank');
 		});
 	});
 

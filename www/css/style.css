@@ -186,6 +186,19 @@ nav.navbar .admin-buttons button.btn:hover{
 	top: 90px; 
 	width: auto; 
 }
+.dataTable tbody tr input.issue,
+.dataTable tbody tr input.chrono,
+.dataTable tbody tr input.volume,
+.dataTable tbody tr input.grade{
+	width: 100px;
+}
+.dataTable tbody tr select.grade,
+.dataTable tbody tr select.collection{
+	width: 150px;
+}
+.dataTable tbody tr select.series{
+	width: 300px;
+}
 .details .image-border{
 	border: black 2px solid;
 	border-radius: 3px;

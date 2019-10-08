@@ -1,9 +1,8 @@
 <?php 
 
 
-//TODO: ADD COLUMNS FOR 1ST AND LAST ISSUE OF SERIES
-
-
+//TODO: SERIES SHOULD NOT HAVE TO BE TIED TO A COLLECTION
+	
 
 $pageLength = (isset($_SESSION['table_length']['home']) && $_SESSION['table_length']['home'] > 0 ? $_SESSION['table_length']['home'] : 25);
 $collectionChoice = (isset($_GET['coll']) ? intval($_GET['coll']) : false);
@@ -13,10 +12,22 @@ if($collectionChoice){
 	$series = Series::getAllSeries($db); 
 }
 //logDebug('series: '.var_export($series, true)); 
+$collections = Collection::getAllCollections($db);
 ?>
 
 <div class='btn-above-table'>
 	<button class='btn btn-primary bg-dark add-series'>Add Series</button>
+</div>
+
+<div class='btn-above-table' style='float:left;'>
+	filter by collection:<br />
+	<select id='series-by-collection'>
+		<option value=''></option>
+<?php foreach($collections as $collection){ ?>
+	<?php $selected = ($collectionChoice && intval($collectionChoice) === intval($collection->getId()) ? 'selected' : ''); ?>
+		<option value='<?=$collection->getId()?>' <?=$selected?>><?=$collection->getName()?></option>
+<?php } ?>
+	</select>
 </div>
 
 <table id='seriesTable' class="display">
@@ -27,6 +38,8 @@ if($collectionChoice){
 			<th>volume</th>
 			<th>collection</th>
 			<th>year</th>
+			<th>first</th>
+			<th>last</th>
 			<th>comicvine (short)</th>
 			<th>comicvine (full)</th>
 			<th>usage</th>
@@ -41,8 +54,10 @@ if($collectionChoice){
 			<td><input type="text" class='volume' id='volume<?=$serie->getId()?>' value="<?=$serie->getVolume()?>"</td>
 			<td><?=$serie->getCollectionName()?></td>
 			<td><?=$serie->getYear()?></td>
+			<td><?=$serie->getFirstIssue()?></td>
+			<td><?=$serie->getLastIssue()?></td>
 			<td><?=$serie->getComicvineId()?></td>
-			<td><?=$serie->getComicvineIdFull()?></td>
+			<td id='comicvine<?=$serie->getComicvineIdFull()?>' class='comicvine-link'><?=$serie->getComicvineIdFull()?></td><?php /* TODO: MAKE THIS A LINK TO COMICVINE-API */ ?>
 			<td><?=$serie->getIssueCount()?></td>
 			<td><span class='delete' id='delete<?=$serie->getId()?>' data-series-text='<?=$serie->getDisplayText()?>' data-series-issues='<?=$serie->getIssueCount()?>'><i class='fa fa-times'></i></span></td>
 		</tr>
@@ -55,6 +70,8 @@ if($collectionChoice){
 			<th>volume</th>
 			<th>collection</th>
 			<th>year</th>
+			<th>first</th>
+			<th>last</th>
 			<th>comicvine (short)</th>
 			<th>comicvine (full)</th>
 			<th>usage</th>
@@ -84,12 +101,12 @@ $(document).ready(function(){
 		"order": [[ 1, 'asc' ],[ 2, 'asc' ],[ 4, 'asc' ]],//i could just go title/year instead of title/vol/year
 		"pageLength": <?=$pageLength?>,
 		"columnDefs": [ 
-			{ "orderable": false, "targets": [ 8 ] },
-			{ "searchable": false, "targets": [ 8 ] },
-			{ "width": '1em', "targets": [ 8 ] },
-			{ "width": '2em', "targets": [ 2, 5, 6 ] },
-			{ "width": '3em', "targets": [ 7 ] },
-			{ "className": "dt-center", "targets": [ 0, 1, 2, 3, 4, 5, 6, 7, 8 ] }// Center align both header and body content of columns
+			{ "orderable": false, "targets": [ 10 ] },
+			{ "searchable": false, "targets": [ 10 ] },
+			{ "width": '1em', "targets": [ 10 ] },
+			{ "width": '2em', "targets": [ 0 ] },
+			{ "width": '3em', "targets": [ 5, 6, 7, 8, 9 ] },
+			{ "className": "dt-center", "targets": [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ] }// Center align both header and body content of columns
 		],
 		//and declare the input columns for the functions above
 		"columns": [
@@ -101,8 +118,16 @@ $(document).ready(function(){
 			null,
 			null,
 			null,
+			null,
+			null,
 			null
 		]
+	});
+
+	$('#series-by-collection').change(function(){
+		console.warn('series-by-collection change', this);
+		var collection_id = $(this).find(":selected").val();
+		window.location.href = '/series?coll='+collection_id;
 	});
 
 	$('.series_name').change(function(){
@@ -132,6 +157,19 @@ $(document).ready(function(){
 			data: { volume_change: id, new_volume: new_volume } 
 		}).done(function(data){
 			console.warn('series volume changed');
+		});
+	});
+	
+	$('.comicvine-link').on('click', function(){
+		var element_id = $(this).attr('id');
+		var id = element_id.slice(9);
+		console.warn('id', id);
+		$.ajax({
+			method: 'POST',
+			url: '/ajax/lookup.php',
+			data: { comicvine_series_id: id } 
+		}).done(function(data){
+			window.open(data, '_blank');
 		});
 	});
 

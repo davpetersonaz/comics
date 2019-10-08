@@ -21,9 +21,11 @@ class Series{
 		$this->volume = intval($volume);
 		$this->collection_id = intval($collection_id);
 		$this->year = $comicvine_info[4];
+		$this->first_issue = $comicvine_info[6];
+		$this->last_issue = $comicvine_info[7];
 		$this->comicvine_series_id = $comicvine_info[8];
 		$this->comicvine_series_full = $comicvine_info[9];
-		$this->series_id = $this->db->addSeries($this->series_name, $this->volume, $this->collection_id, $this->year, $this->comicvine_series_id, $this->comicvine_series_full);
+		$this->series_id = $this->db->addSeries($this->series_name, $this->volume, $this->collection_id, $this->year, $this->first_issue, $this->last_issue, $this->comicvine_series_id, $this->comicvine_series_full);
 		return $this->series_id;
 	}	
 
@@ -73,6 +75,8 @@ class Series{
 			if($series['collection_id']){ $this->collection_id = $series['collection_id']; }
 			if($series['collection_name']){ $this->collection_name = $series['collection_name']; }
 			if($series['year']){ $this->year = $series['year']; }
+			if($series['first_issue']){ $this->first_issue = $series['first_issue']; }
+			if($series['last_issue']){ $this->last_issue = $series['last_issue']; }
 			if($series['comicvine_series_id']){ $this->comicvine_series_id = $series['comicvine_series_id']; }
 			if($series['comicvine_series_full']){ $this->comicvine_series_full = $series['comicvine_series_full']; }
 			$this->issue_count = $series['issue_count'];
@@ -89,6 +93,8 @@ class Series{
 	public function getCollectionId(){ return $this->collection_id; }
 	public function getCollectionName(){ return $this->collection_name; }
 	public function getYear(){ return $this->year; }
+	public function getFirstIssue(){ return $this->first_issue; }
+	public function getLastIssue(){ return $this->last_issue; }
 	public function getComicvineId(){ return $this->comicvine_series_id; }
 	public function getComicvineIdFull(){ return $this->comicvine_series_full; }
 	public function getIssueCount(){ return $this->issue_count; }
@@ -107,6 +113,8 @@ class Series{
 	protected $collection_id = false;//ordering in my physical collection (the id in the collections table)
 	protected $collection_name = false;//from collections table
 	protected $year = false;//copyright year
+	protected $first_issue = false;//first issue of series
+	protected $last_issue = false;//last issue of series
 	protected $comicvine_series_id = false;//comicvine series id, ex) Avengers vol.1 is 2128
 	protected $comicvine_series_full = false;//comicvine series full id, ex) Avengers vol.1 is 4000-2128
 	protected $issue_count = 0;

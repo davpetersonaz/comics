@@ -1,3 +1,8 @@
+<?php 
+//TODO: ADD LOGOUT BUTTON
+?>
+
+
 		<footer class="footer bg-dark">
 			<div class="container">
 				<div class="left-justify">
@@ -6,6 +11,10 @@
 <?php if(!$alreadyLoggedIn){ ?>
 				<div class='right-justify'>
 					<button id="login" class="btn">Login</button>
+				</div>
+<?php }else{ ?>
+				<div class='right-justify'>
+					<button id="logout" class="btn">Logout</button>
 				</div>
 <?php } ?>
 			</div>
@@ -57,6 +66,18 @@ $(document).ready(function(){
 			$('#loginModal').css('display', 'none');
 		}
 	}; 	
+
+	//logout
+	$('#logout').on('click', function(){
+		$.ajax({
+			method: 'POST',
+			url: '/ajax/login.php',
+			data: { logout: true } 
+		}).done(function(data){
+			//logged out
+			window.location.reload();
+		});
+	});
 
 });
 </script>

@@ -2,16 +2,19 @@
 include_once('../../config.php');
 logDebug('ajax/lookup POST: '.var_export($_POST, true));
 
-//comes from addSeriesSelect, create a new series from the comicvine info
-if(isset($_POST['comicvine']) && is_array($_POST['comicvine'])){
-	$comicvine = $_POST['comicvine'];
-//	$issue_id = (isset($_POST['issueid']) ? $_POST['issueid'] : false);//will be false if coming from addSeriesSelect
-	unset($comicvine['issue_id']);//TODO: i don't think this is necessary
-	$series = new Series($db);
-	//comicvine, seriesname, collectionid, volume
-	$series_id = $series->createSeries($_POST['seriesname'], $_POST['volume'], $_POST['collectionid'], $comicvine);
-	logDebug('series created: '.var_export($series_id, true));
-	echo $series_id;
+if(isset($_POST['chrono_index_change'], $_POST['new_chrono_index'])){
+	$issue = new Issue($db, $curl, $_POST['chrono_index_change']);
+	if($issue->isIssue()){
+		$rowsAffected = $issue->changeChronoIndex($_POST['new_chrono_index']);
+		logDebug('rowsAffected: '.$rowsAffected);
+		if($rowsAffected === 0){
+			echo 'no rows affected';
+		}else{
+			echo 'done';
+		}
+	}else{
+		echo 'no issue found';
+	}
 }
 
 elseif(isset($_POST['collection_change'], $_POST['new_collection_id'])){
@@ -44,98 +47,28 @@ elseif(isset($_POST['collection_name_change'], $_POST['new_name'])){
 	}
 }
 
-elseif(isset($_POST['series_change'], $_POST['new_series_id'])){
-	$issue = new Issue($db, $curl, $_POST['series_change']);
-	logDebug('issue: '.var_export($issue, true));
-	if($issue->isIssue()){
-		$rowsAffected = $issue->changeSeries($_POST['new_series_id']);
-		logDebug('rowsAffected: '.$rowsAffected);
-		if($rowsAffected === 0){
-			echo 'no rows affected';
-		}else{
-			echo 'done';
-		}
-	}else{
-		echo 'no issue found';
-	}
+//comes from addSeriesSelect, create a new series from the comicvine info
+elseif(isset($_POST['comicvine']) && is_array($_POST['comicvine'])){
+	$comicvine = $_POST['comicvine'];
+//	$issue_id = (isset($_POST['issueid']) ? $_POST['issueid'] : false);//will be false if coming from addSeriesSelect
+	unset($comicvine['issue_id']);//TODO: i don't think this is necessary
+	$series = new Series($db);
+	//comicvine, seriesname, collectionid, volume
+	$series_id = $series->createSeries($_POST['seriesname'], $_POST['volume'], $_POST['collectionid'], $comicvine);
+	logDebug('series created: '.var_export($series_id, true));
+	echo $series_id;
 }
 
-elseif(isset($_POST['series_name_change'], $_POST['new_name'])){
-	$series = new Series($db, $_POST['series_name_change']);
-	logDebug('series: '.var_export($series, true));
-	if($series->isSeries()){
-		$rowsAffected = $series->changeSeriesName($_POST['new_name']);
-		logDebug('rowsAffected: '.$rowsAffected);
-		if($rowsAffected === 0){
-			echo 'no rows affected';
-		}else{
-			echo 'done';
-		}
-	}else{
-		echo 'no series found';
-	}
+elseif(isset($_POST['comicvine_issue_id'])){
+	$issue_link = Curl::getComivineIssueUrl($_POST['comicvine_issue_id']);
+	logDebug('issue-link: '.$issue_link);
+	echo $issue_link;
 }
 
-elseif(isset($_POST['volume_change'], $_POST['new_volume'])){
-	$series = new Series($db, $_POST['volume_change']);
-	if($series->isSeries()){
-		$rowsAffected = $series->changeSeriesVolume($_POST['new_volume']);
-		logDebug('rowsAffected: '.$rowsAffected);
-		if($rowsAffected === 0){
-			echo 'no rows affected';
-		}else{
-			echo 'done';
-		}
-	}else{
-		echo 'no series found';
-	}
-}
-
-elseif(isset($_POST['chrono_index_change'], $_POST['new_chrono_index'])){
-	$issue = new Issue($db, $curl, $_POST['chrono_index_change']);
-	if($issue->isIssue()){
-		$rowsAffected = $issue->changeChronoIndex($_POST['new_chrono_index']);
-		logDebug('rowsAffected: '.$rowsAffected);
-		if($rowsAffected === 0){
-			echo 'no rows affected';
-		}else{
-			echo 'done';
-		}
-	}else{
-		echo 'no issue found';
-	}
-}
-
-elseif(isset($_POST['grade_change'], $_POST['new_grade_id'])){
-	$issue = new Issue($db, $curl, $_POST['grade_change']);
-	logDebug('issue: '.var_export($issue, true));
-	if($issue->isIssue()){
-		$rowsAffected = $issue->changeGrade($_POST['new_grade_id']);
-		logDebug('rowsAffected: '.$rowsAffected);
-		if($rowsAffected === 0){
-			echo 'no rows affected';
-		}else{
-			echo 'done';
-		}
-	}else{
-		echo 'no issue found';
-	}
-}
-
-elseif(isset($_POST['notes_change'], $_POST['new_notes'])){
-	$issue = new Issue($db, $curl, $_POST['notes_change']);
-	logDebug('issue: '.var_export($issue, true));
-	if($issue->isIssue()){
-		$rowsAffected = $issue->changeNotes($_POST['new_notes']);
-		logDebug('rowsAffected: '.$rowsAffected);
-		if($rowsAffected === 0){
-			echo 'no rows affected';
-		}else{
-			echo 'done';
-		}
-	}else{
-		echo 'no issue found';
-	}
+elseif(isset($_POST['comicvine_series_id'])){
+	$series_link = Curl::getComivineSeriesUrl($_POST['comicvine_series_id']);
+	logDebug('series-link: '.$series_link);
+	echo $series_link;
 }
 
 elseif(isset($_POST['delete_collection'])){
@@ -183,6 +116,22 @@ elseif(isset($_POST['delete_series'])){
 	}
 }
 
+elseif(isset($_POST['grade_change'], $_POST['new_grade_id'])){
+	$issue = new Issue($db, $curl, $_POST['grade_change']);
+	logDebug('issue: '.var_export($issue, true));
+	if($issue->isIssue()){
+		$rowsAffected = $issue->changeGrade($_POST['new_grade_id']);
+		logDebug('rowsAffected: '.$rowsAffected);
+		if($rowsAffected === 0){
+			echo 'no rows affected';
+		}else{
+			echo 'done';
+		}
+	}else{
+		echo 'no issue found';
+	}
+}
+
 elseif(isset($_POST['issue_number_change'], $_POST['new_issue_number'])){
 	$issue = new Issue($db, $curl, $_POST['issue_number_change']);
 	if($issue->isIssue()){
@@ -195,6 +144,69 @@ elseif(isset($_POST['issue_number_change'], $_POST['new_issue_number'])){
 		}
 	}else{
 		echo 'no issue found';
+	}
+}
+
+elseif(isset($_POST['notes_change'], $_POST['new_notes'])){
+	$issue = new Issue($db, $curl, $_POST['notes_change']);
+	logDebug('issue: '.var_export($issue, true));
+	if($issue->isIssue()){
+		$rowsAffected = $issue->changeNotes($_POST['new_notes']);
+		logDebug('rowsAffected: '.$rowsAffected);
+		if($rowsAffected === 0){
+			echo 'no rows affected';
+		}else{
+			echo 'done';
+		}
+	}else{
+		echo 'no issue found';
+	}
+}
+
+elseif(isset($_POST['series_change'], $_POST['new_series_id'])){
+	$issue = new Issue($db, $curl, $_POST['series_change']);
+	logDebug('issue: '.var_export($issue, true));
+	if($issue->isIssue()){
+		$rowsAffected = $issue->changeSeries($_POST['new_series_id']);
+		logDebug('rowsAffected: '.$rowsAffected);
+		if($rowsAffected === 0){
+			echo 'no rows affected';
+		}else{
+			echo 'done';
+		}
+	}else{
+		echo 'no issue found';
+	}
+}
+
+elseif(isset($_POST['series_name_change'], $_POST['new_name'])){
+	$series = new Series($db, $_POST['series_name_change']);
+	logDebug('series: '.var_export($series, true));
+	if($series->isSeries()){
+		$rowsAffected = $series->changeSeriesName($_POST['new_name']);
+		logDebug('rowsAffected: '.$rowsAffected);
+		if($rowsAffected === 0){
+			echo 'no rows affected';
+		}else{
+			echo 'done';
+		}
+	}else{
+		echo 'no series found';
+	}
+}
+
+elseif(isset($_POST['volume_change'], $_POST['new_volume'])){
+	$series = new Series($db, $_POST['volume_change']);
+	if($series->isSeries()){
+		$rowsAffected = $series->changeSeriesVolume($_POST['new_volume']);
+		logDebug('rowsAffected: '.$rowsAffected);
+		if($rowsAffected === 0){
+			echo 'no rows affected';
+		}else{
+			echo 'done';
+		}
+	}else{
+		echo 'no series found';
 	}
 }
 

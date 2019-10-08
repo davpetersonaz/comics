@@ -13,8 +13,8 @@ class DB extends DBcore{
 		return $lastInsertId;
 	}
 
-	public function addSeries($name, $volume, $collection_id, $year, $comicvine_series_id, $comicvine_series_full){
-		$values = array('series_name'=>$name, 'collection_id'=>$collection_id, 'year'=>$year,
+	public function addSeries($name, $volume, $collection_id, $year, $first_issue, $last_issue, $comicvine_series_id, $comicvine_series_full){
+		$values = array('series_name'=>$name, 'collection_id'=>$collection_id, 'year'=>$year, 'first_issue'=>$first_issue, 'last_issue'=>$last_issue,
 						'comicvine_series_id'=>$comicvine_series_id, 'comicvine_series_full'=>$comicvine_series_full);
 		if($volume){
 			$values['volume'] = $volume;
@@ -212,7 +212,8 @@ class DB extends DBcore{
 	}	
 
 	public function getSeries($series_id){
-		$query = "SELECT s.series_id, s.collection_id, s.year, s.series_name, s.volume, s.comicvine_series_id, s.comicvine_series_full,
+		$query = "SELECT s.series_id, s.collection_id, s.year, s.series_name, s.volume, s.first_issue, s.last_issue,
+						s.comicvine_series_id, s.comicvine_series_full,
 						c.collection_name, COUNT(i.issue_id) AS issue_count
 					FROM series s
 					LEFT JOIN comics i USING (series_id)
