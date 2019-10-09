@@ -36,7 +36,7 @@ foreach($series as $serie){
 $grading = $grades->getAllGrades();
 $gradingOptions = array();
 foreach($grading as $cond){
-	$gradingOptions[] = "<option value='{$cond['position']}' title='{$cond['long_desc']}'>{$cond['name']}</option>";
+	$gradingOptions[] = "<option value='{$cond['position']}' title='{$cond['long_desc']}'>{$cond['grade_name']}</option>";
 }
 
 $inputFieldCells =
