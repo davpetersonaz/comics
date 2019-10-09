@@ -15,17 +15,16 @@ class Series{
 		return $this->db->countIssuesInSeries($this->series_id);
 	}
 
-	public function createSeries($name, $volume, $collection_id, $comicvine_info){
+	public function createSeries($name, $volume, $comicvine_info){
 		logDebug('comicvine: '.var_export($comicvine_info, true));
 		$this->series_name = $name;
 		$this->volume = intval($volume);
-		$this->collection_id = intval($collection_id);
 		$this->year = $comicvine_info[4];
 		$this->first_issue = $comicvine_info[6];
 		$this->last_issue = $comicvine_info[7];
 		$this->comicvine_series_id = $comicvine_info[8];
 		$this->comicvine_series_full = $comicvine_info[9];
-		$this->series_id = $this->db->addSeries($this->series_name, $this->volume, $this->collection_id, $this->year, $this->first_issue, $this->last_issue, $this->comicvine_series_id, $this->comicvine_series_full);
+		$this->series_id = $this->db->addSeries($this->series_name, $this->volume, $this->year, $this->first_issue, $this->last_issue, $this->comicvine_series_id, $this->comicvine_series_full);
 		return $this->series_id;
 	}	
 
@@ -37,17 +36,6 @@ class Series{
 	public static function getAllSeries(DB $db){
 		$series = array();
 		$dbseries = $db->getAllSeriesIds();
-		foreach($dbseries as $dbseriesid){
-			$series[] = new Series($db, $dbseriesid);
-		}
-		usort($series, 'Func::compareByObjectName');
-		return $series;
-	}
-
-	public static function getAllSeriesInCollection(DB $db, $collection_id){
-		$series = array();
-		$dbseries = $db->getAllSeriesIdsForCollection($collection_id);
-		logDebug('dbseries: '.var_export($dbseries, true));
 		foreach($dbseries as $dbseriesid){
 			$series[] = new Series($db, $dbseriesid);
 		}
@@ -72,8 +60,6 @@ class Series{
 			$this->series_id = $series_id;
 			if($series['series_name']){ $this->series_name = $series['series_name']; }
 			if($series['volume']){ $this->volume = $series['volume']; }
-			if($series['collection_id']){ $this->collection_id = $series['collection_id']; }
-			if($series['collection_name']){ $this->collection_name = $series['collection_name']; }
 			if($series['year']){ $this->year = $series['year']; }
 			if($series['first_issue']){ $this->first_issue = $series['first_issue']; }
 			if($series['last_issue']){ $this->last_issue = $series['last_issue']; }
@@ -90,8 +76,6 @@ class Series{
 	public function getId(){ return $this->series_id; }
 	public function getName(){ return $this->series_name; }
 	public function getVolume(){ return $this->volume; }
-	public function getCollectionId(){ return $this->collection_id; }
-	public function getCollectionName(){ return $this->collection_name; }
 	public function getYear(){ return $this->year; }
 	public function getFirstIssue(){ return $this->first_issue; }
 	public function getLastIssue(){ return $this->last_issue; }
@@ -110,8 +94,6 @@ class Series{
 	protected $series_id = false;//db series id
 	protected $series_name = false;//my series name, not comicvine's name
 	protected $volume = false;//my series volume number, not comicvine's volume
-	protected $collection_id = false;//ordering in my physical collection (the id in the collections table)
-	protected $collection_name = false;//from collections table
 	protected $year = false;//copyright year
 	protected $first_issue = false;//first issue of series
 	protected $last_issue = false;//last issue of series

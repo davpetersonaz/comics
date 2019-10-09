@@ -54,7 +54,7 @@ elseif(isset($_POST['comicvine']) && is_array($_POST['comicvine'])){
 	unset($comicvine['issue_id']);//TODO: i don't think this is necessary
 	$series = new Series($db);
 	//comicvine, seriesname, collectionid, volume
-	$series_id = $series->createSeries($_POST['seriesname'], $_POST['volume'], $_POST['collectionid'], $comicvine);
+	$series_id = $series->createSeries($_POST['seriesname'], $_POST['volume'], $comicvine);
 	logDebug('series created: '.var_export($series_id, true));
 	echo $series_id;
 }

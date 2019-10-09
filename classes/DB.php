@@ -13,8 +13,8 @@ class DB extends DBcore{
 		return $lastInsertId;
 	}
 
-	public function addSeries($name, $volume, $collection_id, $year, $first_issue, $last_issue, $comicvine_series_id, $comicvine_series_full){
-		$values = array('series_name'=>$name, 'collection_id'=>$collection_id, 'year'=>$year, 'first_issue'=>$first_issue, 'last_issue'=>$last_issue,
+	public function addSeries($name, $volume, $year, $first_issue, $last_issue, $comicvine_series_id, $comicvine_series_full){
+		$values = array('series_name'=>$name, 'year'=>$year, 'first_issue'=>$first_issue, 'last_issue'=>$last_issue,
 						'comicvine_series_id'=>$comicvine_series_id, 'comicvine_series_full'=>$comicvine_series_full);
 		if($volume){
 			$values['volume'] = $volume;
@@ -148,9 +148,8 @@ class DB extends DBcore{
 	}
 
 	public function getAllSeries(){
-		$query = "SELECT s.series_id, s.year, s.series_name, s.volume, s.comicvine_series_id, s.comicvine_series_full, c.collection_name
+		$query = "SELECT s.series_id, s.year, s.series_name, s.volume, s.comicvine_series_id, s.comicvine_series_full
 					FROM series s
-					LEFT JOIN collections c USING (collection_id)
 					ORDER BY series_name ASC, volume ASC";
 //		self::logQueryAndValues($query, array(), 'getAllSeries');
 		$rows = $this->select($query);
@@ -165,22 +164,12 @@ class DB extends DBcore{
 		return array_column($rows, 'series_id');
 	}
 
-	public function getAllSeriesIdsForCollection($collection_id){
-		$query = "SELECT s.series_id
-					FROM series s 
-					WHERE s.collection_id=:collection_id";
-		$values = array('collection_id'=>$collection_id);
-//		self::logQueryAndValues($query, $values, 'getAllSeriesIdsForCollection');
-		$rows = $this->select($query, $values);
-		return array_column($rows, 'series_id');
-	}
-
 	public function getCollection($collection_id){
-		$query = "SELECT c.collection_id, c.collection_name, COUNT(s.series_id) AS series_count 
+		$query = "SELECT c.collection_id, c.collection_name, COUNT(i.issue_id) AS issue_count 
 					FROM collections c
-					LEFT JOIN series s USING (collection_id)
+					LEFT JOIN comics i USING (collection_id)
 					WHERE collection_id=".intval($collection_id);
-//		self::logQueryAndValues($query, array(), 'getCollection');
+		self::logQueryAndValues($query, array(), 'getCollection');
 		$rows = $this->select($query);
 		return (isset($rows[0]) ? $rows[0] : false);
 	}
@@ -212,12 +201,11 @@ class DB extends DBcore{
 	}	
 
 	public function getSeries($series_id){
-		$query = "SELECT s.series_id, s.collection_id, s.year, s.series_name, s.volume, s.first_issue, s.last_issue,
+		$query = "SELECT s.series_id, s.year, s.series_name, s.volume, s.first_issue, s.last_issue,
 						s.comicvine_series_id, s.comicvine_series_full,
-						c.collection_name, COUNT(i.issue_id) AS issue_count
+						COUNT(i.issue_id) AS issue_count
 					FROM series s
 					LEFT JOIN comics i USING (series_id)
-					LEFT JOIN collections c ON s.collection_id=c.collection_id
 					WHERE s.series_id=:series_id";
 		$values = array('series_id'=>$series_id);
 //		$this->logQueryAndValues($query, $values, 'getSeries');
@@ -226,7 +214,7 @@ class DB extends DBcore{
 	}
 
 	public function getSeriesByName($seriesName, $volume){
-		$query = "SELECT series_id, collection_id, year, series_name, volume, comicvine_series_id, comicvine_series_full
+		$query = "SELECT series_id, year, series_name, volume, comicvine_series_id, comicvine_series_full
 					FROM series
 					WHERE series_name=:name AND volume=:volume";
 		$values = array('name'=>$seriesName, 'volume'=>$volume);
@@ -235,8 +223,8 @@ class DB extends DBcore{
 		return ($rows[0] ? $rows[0] : false);
 	}
 
-	public function saveComicvineSeriesInfo($collection_id, $year, $name, $volume, $comicvine_series_id, $comicvine_series_full){
-		$values = array('collection_id'=>$collection_id, 'year'=>$year, 'series_name'=>$name, 'volume'=>$volume, 
+	public function saveComicvineSeriesInfo($year, $name, $volume, $comicvine_series_id, $comicvine_series_full){
+		$values = array('year'=>$year, 'series_name'=>$name, 'volume'=>$volume, 
 						'comicvine_series_id'=>$comicvine_series_id, 'comicvine_series_full'=>$comicvine_series_full);
 //		logDebug('saveComicvineSeriesInfo: '.var_export($values, true));
 		if($this->verifyColumns('series', $values)){
@@ -292,7 +280,7 @@ class DB extends DBcore{
 		parent::__construct(self::HOST, self::USER, self::PASS, self::DB_TABLES);
 	}
 
-	const DB_TABLES = array('collections', 'comics', 'series');
+	const DB_TABLES = array('collections', 'comics', 'series', 'grades', 'users');
 	const HOST = 'mysql:host=localhost;dbname=davpeter_comic';
 	const USER = 'davpeter_comic';
 	const PASS = 'c0micsRahhSUM';

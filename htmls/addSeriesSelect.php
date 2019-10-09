@@ -1,6 +1,5 @@
 <?php
 logDebug('addSeriesSelect: '.var_export($_POST, true));
-$collection = $_POST['collectionid'];
 $seriesname = $_POST['series'];
 $volume = $_POST['volume'];
 $series_data = array();
@@ -92,7 +91,6 @@ $(document).ready(function(){
 		$('body').css('pointer-events', 'none');
 		var currentRowData = seriesdatatable.row(this).data();
 		console.warn('currentRowData', currentRowData);
-		var collectionid = '<?=$_POST['collectionid']?>';
 		var seriesname = '<?=$_POST['series']?>';
 		var user_series = prompt("what is the series name?", seriesname);
 		if(user_series !== null){ seriesname = user_series; }
@@ -103,7 +101,7 @@ $(document).ready(function(){
 		$.ajax({
 			method: 'POST',
 			url: '/ajax/lookup.php',
-			data: { comicvine: currentRowData, collectionid: collectionid, volume: volume, seriesname: seriesname } 
+			data: { comicvine: currentRowData, volume: volume, seriesname: seriesname } 
 		}).done(function(data){
 			console.warn('response (series_id)', data);//series_id
 //			alert('addSelectSeries: redirecting to addSeries');

@@ -36,7 +36,7 @@ class Collection{
 		if($collection){
 			$this->collection_id = $collection['collection_id'];
 			$this->name = $collection['collection_name'];
-			$this->series_count = $collection['series_count'];
+			$this->issue_count = $collection['issue_count'];
 		}
 	}
 
@@ -46,17 +46,18 @@ class Collection{
 
 	public function getId(){ return $this->collection_id; }
 	public function getName(){ return $this->name; }
-	public function getSeriesCount(){ return $this->series_count; }
+	public function getIssueCount(){ return $this->issue_count; }
 
 	public function __construct(DB $db, $collection_id=false){
 		$this->db = $db;
 		if($collection_id){
 			$this->get($collection_id);
 		}
+		logDebug('collection: '.var_export($this, true));
 	}
 
 	protected $db = false;
 	protected $collection_id = false;//db collection id
 	protected $name = false;//my collection name
-	protected $series_count = 0;
+	protected $issue_count = 0;//number of issues in collection
 }

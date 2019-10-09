@@ -1,5 +1,6 @@
 <?php $pageLength = (isset($_SESSION['table_length']['home']) && $_SESSION['table_length']['home'] > 0 ? $_SESSION['table_length']['home'] : 25); ?>
 <?php $collections = Collection::getAllCollections($db); ?>
+<?php logDebug('collections: '.var_export($collections, true)); ?>
 
 <div class='btn-above-table'>
 	<button class='btn btn-primary bg-dark add-collections'>Add Collections</button>
@@ -13,8 +14,8 @@
 			<td><?=$collection->getId()?></td>
 			<td><?=$collection->getName()?></td>
 			<td><input type="text" class='collection_name' id='collection<?=$collection->getId()?>' value='<?=$collection->getName()?>'></td>
-			<td><?=$collection->getSeriesCount()?></td>
-			<td><span class='delete' id='delete<?=$collection->getId()?>' data-collection-text='<?=$collection->getName()?>' data-collection-series='<?=$collection->getSeriesCount()?>'><i class='fa fa-times'></i></span></td>
+			<td><?=$collection->getIssueCount()?></td>
+			<td><span class='delete' id='delete<?=$collection->getId()?>' data-collection-text='<?=$collection->getName()?>' data-collection-issues='<?=$collection->getIssueCount()?>'><i class='fa fa-times'></i></span></td>
 		</tr>
 <?php } ?>
 	</tbody>
@@ -31,7 +32,6 @@ $(document).ready(function(){
 			{ "searchable": false, "targets": [ 2, 4 ] },
 			{ "orderable": false, "targets": [ 2, 4 ] },
 			{ "width": '1em', "targets": [ 4 ] },
-			{ "width": '2em', "targets": [ 3 ] },
 			{ "className": "dt-center", "targets": [ 0, 1, 2, 3, 4 ] }// Center align both header and body content of columns
 		]
 	});
@@ -56,10 +56,10 @@ $(document).ready(function(){
 		var element_id = $(this).attr('id');
 		var collection_id = element_id.slice(6);
 		var collection_name = $(this).attr('data-collection-text');
-		var series_count = $(this).attr('data-collection-series');
-		if(series_count > 0){
-			alert('you must delete all series for this collection first');
-			window.location.href='/series?coll='+collection_id;
+		var issue_count = $(this).attr('data-collection-issues');
+		if(issue_count > 0){
+			alert('you must delete all issues in this collection first');
+			window.location.href='/issues?coll='+collection_id;
 			return;
 		}
 		if(confirm("are you sure you wish to delete: "+collection_name)){
