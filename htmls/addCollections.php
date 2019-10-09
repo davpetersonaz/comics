@@ -20,7 +20,7 @@ if(isset($_POST['submit'])){
 $fields = 5;
 $inputFieldCells =
 	"<td>".
-		"<input type='text' name='name[]' placeholder='Collection Name'/>".
+		"<input type='text' name='name[]' class='name' placeholder='Collection Name'/>".
 	"</td>";
 ?>
 

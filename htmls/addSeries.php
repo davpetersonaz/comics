@@ -9,10 +9,10 @@
 		<tbody>
 			<tr>
 				<td>
-					<input type='text' name='series' placeholder='Series Name'/>
+					<input type='text' name='series' class='series' placeholder='Series Name'/>
 				</td>
 				<td>
-					<input type='text' name='volume' placeholder='Volume'/>
+					<input type='text' name='volume' class='volume' placeholder='Volume'/>
 				</td>
 			</tr>
 		</tbody>

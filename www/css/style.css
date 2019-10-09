@@ -80,6 +80,7 @@ body > .container-fluid{
 	margin-top: 10px;
 }
 .footer > .container button#login:hover,
+.footer > .container button#logout:hover,
 nav.navbar .admin-buttons button.btn:hover{
 	background: white;
 }
@@ -186,17 +187,18 @@ nav.navbar .admin-buttons button.btn:hover{
 	top: 90px; 
 	width: auto; 
 }
-.dataTable tbody tr input.issue,
-.dataTable tbody tr input.chrono,
-.dataTable tbody tr input.volume,
-.dataTable tbody tr input.grade{
+tbody tr input.issue,
+tbody tr input.chrono,
+tbody tr input.volume,
+tbody tr input.grade{
 	width: 100px;
 }
-.dataTable tbody tr select.grade,
-.dataTable tbody tr select.collection{
+tbody tr select.grade,
+tbody tr select.collection{
 	width: 150px;
 }
-.dataTable tbody tr select.series{
+tbody tr select.series,
+#issues-by-series{
 	width: 300px;
 }
 .details .image-border{

@@ -41,23 +41,23 @@ foreach($grading as $cond){
 
 $inputFieldCells =
 	"<td>".
-		"<select name='collection[]' placeholder='Collection'>".
+		"<select name='collection[]' class='collection' placeholder='Collection'>".
 			"<option value=''></option>{$collection_options}".
 		"</select>".
 	"</td>".
 	"<td>".
-		"<select name='series[]' placeholder='Series'>".
+		"<select name='series[]' class='series' placeholder='Series'>".
 			"<option value=''></option>{$series_options}".
 		"</select>".
 	"</td>".
 	"<td>".
-		"<input type='text' name='issue[]' placeholder='Issue Number'/>".
+		"<input type='text' name='issue[]' class='issue' placeholder='Issue Number'/>".
 	"</td>".
 	"<td>".
-		"<input type='text' name='chrono[]' placeholder='Chronological Index'/>".
+		"<input type='text' name='chrono[]' class='chrono' placeholder='Chronological Index'/>".
 	"</td>".
 	"<td>".
-		"<select name='grade[]' placeholder='Grading'>".
+		"<select name='grade[]' class='grade' placeholder='Grading'>".
 			"<option value=''></option>";
 foreach($gradingOptions as $options){
 	$inputFieldCells .= $options;
@@ -66,7 +66,7 @@ $inputFieldCells .=
 		"</select>".
 	"</td>".
 	"<td>".
-		"<input type='text' name='notes[]' placeholder='Notes'/>".
+		"<input type='text' name='notes[]' class='notes' placeholder='Notes'/>".
 	"</td>";
 ?>
 
