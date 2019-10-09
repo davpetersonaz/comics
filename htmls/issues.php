@@ -1,12 +1,4 @@
 <?php 
-
-
-//TODO: add comicvine_issue_id (full) after grade.
-//TODO: then check everything in
-//TODO: then start adding user_id columns to issues/series/collections classes/queries
-
-
-
 logDebug('issues GET: '.var_export($_GET, true));
 $pageLength = (isset($_SESSION['table_length']['home']) && $_SESSION['table_length']['home'] > 0 ? $_SESSION['table_length']['home'] : 25);
 

@@ -8,14 +8,16 @@ class DB extends DBcore{
 	}
 
 	public function addIssue($series_id, $collection_id, $issue, $chrono='', $grade=8, $notes=''){
-		$values = array('series_id'=>$series_id, 'collection_id'=>$collection_id, 'issue'=>$issue, 'chrono_index'=>$chrono, 'grade'=>$grade, 'notes'=>$notes);
+		$values = array('series_id'=>$series_id, 'collection_id'=>$collection_id, 'issue'=>$issue, 
+						'chrono_index'=>$chrono, 'grade'=>$grade, 'notes'=>$notes);
 		$lastInsertId = $this->insert('comics', $values);
 		return $lastInsertId;
 	}
 
-	public function addSeries($name, $volume, $year, $first_issue, $last_issue, $comicvine_series_id, $comicvine_series_full){
+	public function addSeries($name, $volume, $year, $first_issue, $last_issue, $comicvine_series_id, $comicvine_series_full, $image_thumb, $image_full){
 		$values = array('series_name'=>$name, 'year'=>$year, 'first_issue'=>$first_issue, 'last_issue'=>$last_issue,
-						'comicvine_series_id'=>$comicvine_series_id, 'comicvine_series_full'=>$comicvine_series_full);
+						'comicvine_series_id'=>$comicvine_series_id, 'comicvine_series_full'=>$comicvine_series_full, 
+						'image_thumb'=>$image_thumb, 'image_full'=>$image_full);
 		if($volume){
 			$values['volume'] = $volume;
 		}
@@ -202,13 +204,13 @@ class DB extends DBcore{
 
 	public function getSeries($series_id){
 		$query = "SELECT s.series_id, s.year, s.series_name, s.volume, s.first_issue, s.last_issue,
-						s.comicvine_series_id, s.comicvine_series_full,
+						s.comicvine_series_id, s.comicvine_series_full, s.image_thumb, s.image_full,
 						COUNT(i.issue_id) AS issue_count
 					FROM series s
 					LEFT JOIN comics i USING (series_id)
 					WHERE s.series_id=:series_id";
 		$values = array('series_id'=>$series_id);
-//		$this->logQueryAndValues($query, $values, 'getSeries');
+		$this->logQueryAndValues($query, $values, 'getSeries');
 		$rows = $this->select($query, $values);
 		return (isset($rows[0]) ? $rows[0] : false);
 	}

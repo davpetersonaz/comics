@@ -51,7 +51,6 @@ elseif(isset($_POST['collection_name_change'], $_POST['new_name'])){
 elseif(isset($_POST['comicvine']) && is_array($_POST['comicvine'])){
 	$comicvine = $_POST['comicvine'];
 //	$issue_id = (isset($_POST['issueid']) ? $_POST['issueid'] : false);//will be false if coming from addSeriesSelect
-	unset($comicvine['issue_id']);//TODO: i don't think this is necessary
 	$series = new Series($db);
 	//comicvine, seriesname, collectionid, volume
 	$series_id = $series->createSeries($_POST['seriesname'], $_POST['volume'], $comicvine);

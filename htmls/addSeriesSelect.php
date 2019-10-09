@@ -25,6 +25,8 @@ foreach($results as $result){
 	$newArray[] = $result['last_issue']['issue_number'];
 	$newArray[] = "{$result['id']}";//comicvine series short-id (xxxx)
 	$newArray[] = (preg_match('/^.*\/(\d+-\d+)\/$/', $result['site_detail_url'], $matches) === 1 && isset($matches[1]) ? "{$matches[1]}" : '');//comicvine series full-id (xxxx-xxxx)
+	$newArray[] = $result['image']['thumb_url'];
+	$newArray[] = $result['image']['super_url'];
 //	logDebug('row: '.implode(', ', $newArray));
 	$series_data[] = $newArray;
 	//return the list to selectseries 
@@ -45,6 +47,8 @@ foreach($results as $result){
 			<th>last</th>
 			<th>comicvine id</th>
 			<th>full id</th>
+			<th>image thumb</th>
+			<th>image full</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -68,6 +72,8 @@ foreach($results as $result){
 			<th>last</th>
 			<th>comicvine id</th>
 			<th>full id</th>
+			<th>image thumb</th>
+			<th>image full</th>
 		</tr>
 	</tfoot>
 </table>
@@ -77,9 +83,9 @@ $(document).ready(function(){
 	var seriesdatatable = $('#whatSeriesDatatable').DataTable({
 		"pageLength": <?=$pageLength?>,
 		"columnDefs": [ 
-			{ "searchable": false, "targets": [ 0, 8, 9 ] },
-			{ "orderable": false, "targets": [ 0, 8, 9 ] },
-			{ "visible": false, "targets": [ 8, 9 ] },
+			{ "searchable": false, "targets": [ 0, 8, 9, 10, 11 ] },
+			{ "orderable": false, "targets": [ 0, 8, 9, 10, 11 ] },
+			{ "visible": false, "targets": [ 8, 9, 10, 11 ] },
 			{ "width": "4em", "targets": [ 2 ] },
 			{ "width": "2em", "targets": [ 0, 4, 5, 6, 7, 8, 9 ] }
 		]

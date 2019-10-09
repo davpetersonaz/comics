@@ -24,7 +24,11 @@ class Series{
 		$this->last_issue = $comicvine_info[7];
 		$this->comicvine_series_id = $comicvine_info[8];
 		$this->comicvine_series_full = $comicvine_info[9];
-		$this->series_id = $this->db->addSeries($this->series_name, $this->volume, $this->year, $this->first_issue, $this->last_issue, $this->comicvine_series_id, $this->comicvine_series_full);
+		$this->image_thumb = $comicvine_info[10];
+		$this->image_full = $comicvine_info[11];
+		$this->series_id =	$this->db->addSeries($this->series_name, $this->volume, $this->year, 
+							$this->first_issue, $this->last_issue, $this->comicvine_series_id, 
+							$this->comicvine_series_full, $this->image_thumb, $this->image_full);
 		return $this->series_id;
 	}	
 
@@ -65,6 +69,8 @@ class Series{
 			if($series['last_issue']){ $this->last_issue = $series['last_issue']; }
 			if($series['comicvine_series_id']){ $this->comicvine_series_id = $series['comicvine_series_id']; }
 			if($series['comicvine_series_full']){ $this->comicvine_series_full = $series['comicvine_series_full']; }
+			if($series['image_thumb']){ $this->image_thumb = $series['image_thumb']; }
+			if($series['image_full']){ $this->image_full = $series['image_full']; }
 			$this->issue_count = $series['issue_count'];
 		}
 	}
@@ -81,6 +87,8 @@ class Series{
 	public function getLastIssue(){ return $this->last_issue; }
 	public function getComicvineId(){ return $this->comicvine_series_id; }
 	public function getComicvineIdFull(){ return $this->comicvine_series_full; }
+	public function getImageThumb(){ return $this->image_thumb; }
+	public function getImageFull(){ return $this->image_full; }
 	public function getIssueCount(){ return $this->issue_count; }
 
 	public function __construct(DB $db, $series_id=false){
@@ -99,5 +107,7 @@ class Series{
 	protected $last_issue = false;//last issue of series
 	protected $comicvine_series_id = false;//comicvine series id, ex) Avengers vol.1 is 2128
 	protected $comicvine_series_full = false;//comicvine series full id, ex) Avengers vol.1 is 4000-2128
+	protected $image_thumb = false;//thumbnail for first issue
+	protected $image_full = false;//full image for first issue
 	protected $issue_count = 0;
 }

@@ -10,6 +10,7 @@ $series = Series::getAllSeries($db);
 <table id='seriesTable' class="display">
 	<thead>
 		<tr>
+			<th> </th>
 			<th>id</th>
 			<th>title</th>
 			<th>volume</th>
@@ -25,9 +26,17 @@ $series = Series::getAllSeries($db);
 	<tbody>
 <?php foreach($series as $serie){ ?>
 		<tr>
+			<td>
+				<div id='picture<?=$serie->getId()?>' class='picture'>
+					<a href='#nogo' class='small' title='<?=$serie->getDisplayText()?>'>
+						<img class='img-responsive' src='<?=$serie->getImageThumb()?>'>
+						<img class='large popup-on-hover' src='<?=$serie->getImageFull()?>'>
+					</a>
+				</div>
+			</td>
 			<td><?=$serie->getId()?></td>
 			<td><input type="text" class='series_name' id='series<?=$serie->getId()?>' value='<?=$serie->getName()?>'></td>
-			<td><input type="text" class='volume' id='volume<?=$serie->getId()?>' value="<?=$serie->getVolume()?>"</td>
+			<td><input type="text" class='volume' id='volume<?=$serie->getId()?>' value="<?=$serie->getVolume()?>"></td>
 			<td><?=$serie->getYear()?></td>
 			<td><?=$serie->getFirstIssue()?></td>
 			<td><?=$serie->getLastIssue()?></td>
@@ -40,6 +49,7 @@ $series = Series::getAllSeries($db);
 	</tbody>
 	<tfoot>
 		<tr>
+			<th> </th>
 			<th>id</th>
 			<th>title</th>
 			<th>volume</th>
@@ -72,16 +82,17 @@ $(document).ready(function(){
 	};
 
 	$('#seriesTable').dataTable({
-		"order": [[ 1, 'asc' ],[ 2, 'asc' ],[ 3, 'asc' ]],//i could just go title/year instead of title/vol/year
+		"order": [[ 2, 'asc' ],[ 3, 'asc' ],[ 4, 'asc' ]],//i could just go title/year instead of title/vol/year
 		"pageLength": <?=$pageLength?>,
 		"columnDefs": [ 
-			{ "orderable": false, "targets": [ 9 ] },
-			{ "searchable": false, "targets": [ 9 ] },
-			{ "width": '1em', "targets": [ 9 ] },
-			{ "className": "dt-center", "targets": [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 ] }// Center align both header and body content of columns
+			{ "orderable": false, "targets": [ 10 ] },
+			{ "searchable": false, "targets": [ 10 ] },
+			{ "width": '1em', "targets": [ 10 ] },
+			{ "className": "dt-center", "targets": [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ] }// Center align both header and body content of columns
 		],
 		//and declare the input columns for the functions above
 		"columns": [
+			null,
 			null,
 			{ "orderDataType": "dom-text", type: 'string' },
 			{ "orderDataType": "dom-text-numeric" },
@@ -167,6 +178,11 @@ $(document).ready(function(){
 
 	$('.add-series').on('click', function(){
 		window.location.href = '/addSeries';
+	});
+
+	$(".popup-on-hover").hover(function(){
+		console.warn('hover', this);
+		$(this).show();
 	});
 
 });
