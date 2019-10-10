@@ -52,4 +52,10 @@ $db = new DB();
 $curl = new Curl();
 $grades = new Grading($db);
 
+logDebug('server host: '.$_SERVER['HTTP_HOST']);
+if($_SERVER['HTTP_HOST'] === 'sale.davpeterson.com'){
+	$_SESSION['siteUser'] = 4;//sale.davpeterson.com
+}else{
+	$_SESSION['siteUser'] = 3;//comics.davpeterson.com
+}
 //logDebug('config complete');

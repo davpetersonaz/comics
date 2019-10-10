@@ -22,7 +22,7 @@
 		<script src="/js/tempusdominus-bootstrap-4.min.js" type="text/javascript"></script>
 <?php } ?>
 		<!-- title -->
-		<title>Dave's Comic List</title>
+		<title><?=User::getUserHeader($db, $_SESSION['siteUser'])?></title>
 	</head>
 	<body>
 		<header>
