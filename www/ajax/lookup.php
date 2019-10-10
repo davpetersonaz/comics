@@ -1,4 +1,4 @@
-<?php
+f<?php
 include_once('../../config.php');
 logDebug('ajax/lookup POST: '.var_export($_POST, true));
 

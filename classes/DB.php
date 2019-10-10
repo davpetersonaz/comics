@@ -49,6 +49,12 @@ class DB extends DBcore{
 		return $rowsAffected;
 	}
 
+	public function changeNotes($issue_id, $new_notes){
+		$values = array('notes'=>$new_notes);
+		$rowsAffected = $this->update('comics', $values, 'issue_id='.intval($issue_id));
+		return $rowsAffected;
+	}
+
 	public function  changeIssueNumber($issue_id, $new_issue_number){
 		$values = array('issue'=>$new_issue_number);
 		$rowsAffected = $this->update('comics', $values, 'issue_id='.intval($issue_id));

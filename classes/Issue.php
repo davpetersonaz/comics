@@ -40,7 +40,7 @@ class Issue{
 
 	public function changeNotes($new_notes){
 		$this->notes = $new_notes;
-		return $this->db->changeGradeId($this->issue_id, $new_notes);
+		return $this->db->changeNotes($this->issue_id, $new_notes);
 	}
 
 	public function changeSeries($new_series_id){
