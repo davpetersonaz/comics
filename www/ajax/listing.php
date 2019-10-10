@@ -1,6 +1,6 @@
 <?php
 include_once('../../config.php');
-logDebug('ajax/listing REQUEST: '.var_export($_REQUEST, true)); //NOTE: this is very verbose
+//logDebug('ajax/listing REQUEST: '.var_export($_REQUEST, true)); //NOTE: this is very verbose
 
 if(!isset($_SESSION['table_length']['home']) || $_SESSION['table_length']['home'] != $_REQUEST['length']){
 	$_SESSION['table_length']['home'] = $_REQUEST['length'];
@@ -10,7 +10,7 @@ if(!isset($_SESSION['table_length']['home']) || $_SESSION['table_length']['home'
 // Use a space where you want to insert a non-database field (for example a counter or static image)
 $columns = array('c.image_thumb', 'l.collection_name', 's.series_name', 's.volume', 'c.issue', 'c.cover_date', 'c.grade', 
 					'c.issue_id', 'l.collection_id', 'c.series_id', 's.comicvine_series_id', 
-					's.comicvine_series_full', 'c.image_full', 'g.grade_name', 'g.short_desc');
+					's.comicvine_series_full', 'c.image_full', 'g.grade_name', 'g.short_desc', 'c.user_id');
 $table = 'comics c';
 $indexColumn = 'issue_id';
 $bindParams = array();
@@ -48,7 +48,7 @@ for($i=0; $i<count($columns); $i++){
 }
 
 //logDebug('sWhere: '.$where);
-//$where .= (empty($where) ? 'WHERE ' : ' AND ').' ('.(CURRENT_HOST!==HOST_EQUIPMENTNETWORK?'c.crane_cnt>0 OR p.part_cnt>0 OR ':'').'e.eq_cnt>0)';
+$where .= (empty($where) ? 'WHERE ' : ' AND ')."c.user_id=".$_SESSION['siteUser'];
 
 //ordering
 $order = '';
@@ -97,7 +97,7 @@ $total = $db->selectFoundRows();
 
 //total dataset length
 $resultTotal = $db->selectCountFromTable($indexColumn, $table);
-//logDebug('aResultTotal: '.var_export($resultTotal, true));
+logDebug('aResultTotal: '.var_export($resultTotal, true));
 $totalTableRows = $resultTotal[0]['rowcount'];
 $datatablerows = array();
 

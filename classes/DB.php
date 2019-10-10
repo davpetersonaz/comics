@@ -2,14 +2,14 @@
 class DB extends DBcore{
 
 	public function addCollection($name){
-		$values = array('collection_name'=>$name);
+		$values = array('collection_name'=>$name, 'user_id'=>$_SESSION['user_id']);
 		$lastInsertId = $this->insert('collections', $values);
 		return $lastInsertId;
 	}
 
 	public function addIssue($series_id, $collection_id, $issue, $chrono='', $grade=8, $notes=''){
 		$values = array('series_id'=>$series_id, 'collection_id'=>$collection_id, 'issue'=>$issue, 
-						'chrono_index'=>$chrono, 'grade'=>$grade, 'notes'=>$notes);
+						'chrono_index'=>$chrono, 'grade'=>$grade, 'notes'=>$notes, 'user_id'=>$_SESSION['user_id']);
 		$lastInsertId = $this->insert('comics', $values);
 		return $lastInsertId;
 	}
@@ -17,7 +17,7 @@ class DB extends DBcore{
 	public function addSeries($name, $volume, $year, $first_issue, $last_issue, $comicvine_series_id, $comicvine_series_full, $image_thumb, $image_full){
 		$values = array('series_name'=>$name, 'year'=>$year, 'first_issue'=>$first_issue, 'last_issue'=>$last_issue,
 						'comicvine_series_id'=>$comicvine_series_id, 'comicvine_series_full'=>$comicvine_series_full, 
-						'image_thumb'=>$image_thumb, 'image_full'=>$image_full);
+						'image_thumb'=>$image_thumb, 'image_full'=>$image_full, 'user_id'=>$_SESSION['user_id']);
 		if($volume){
 			$values['volume'] = $volume;
 		}
@@ -92,7 +92,7 @@ class DB extends DBcore{
 	}
 
 	public function getAllCollectionIds(){
-		$query = "SELECT c.collection_id FROM collections c";
+		$query = "SELECT c.collection_id FROM collections c {$this->whereUserid('c')}";
 //		self::logQueryAndValues($query, array(), 'getAllCollectionIds');
 		$rows = $this->select($query);
 		return array_column($rows, 'collection_id');
@@ -108,7 +108,7 @@ class DB extends DBcore{
 	}
 
 	public function getAllIssueIds(){
-		$query = "SELECT c.issue_id FROM comics c";
+		$query = "SELECT c.issue_id FROM comics c {$this->whereUserid('c')}";
 //		self::logQueryAndValues($query, array(), 'getAllIssueIds');
 		$rows = $this->select($query);
 		return array_column($rows, 'issue_id');
@@ -117,7 +117,8 @@ class DB extends DBcore{
 	public function getAllIssueIdsForCollection($collection_id){
 		$query = "SELECT c.issue_id
 					FROM comics c 
-					WHERE c.collection_id=:collection_id";
+					{$this->whereUserid('c')}
+						AND c.collection_id=:collection_id";
 		$values = array('collection_id'=>$collection_id);
 //		self::logQueryAndValues($query, $values, 'getAllIssueIdsForCollection');
 		$rows = $this->select($query, $values);
@@ -127,7 +128,8 @@ class DB extends DBcore{
 	public function getAllIssueIdsForSeries($series_id){
 		$query = "SELECT c.issue_id
 					FROM comics c 
-					WHERE series_id=:series_id";
+					{$this->whereUserid('c')}
+						AND c.series_id=:series_id";
 		$values = array('series_id'=>$series_id);
 //		self::logQueryAndValues($query, $values, 'getAllIssueIdsForSeries');
 		$rows = $this->select($query, $values);
@@ -142,6 +144,7 @@ class DB extends DBcore{
 					LEFT JOIN collections l ON c.collection_id=l.collection_id
 					LEFT JOIN series s ON c.series_id=s.series_id
 					LEFT JOIN grades g ON c.grade=g.position
+					{$this->whereUserid('c')}
 					ORDER BY s.series_name ASC, c.issue ASC, c.grade ASC";
 //		self::logQueryAndValues($query, array(), 'getAllIssues');
 		$rows = $this->select($query);
@@ -152,6 +155,7 @@ class DB extends DBcore{
 	public function getAllSeries(){
 		$query = "SELECT s.series_id, s.year, s.series_name, s.volume, s.comicvine_series_id, s.comicvine_series_full
 					FROM series s
+					{$this->whereUserid('s')}
 					ORDER BY series_name ASC, volume ASC";
 //		self::logQueryAndValues($query, array(), 'getAllSeries');
 		$rows = $this->select($query);
@@ -160,7 +164,7 @@ class DB extends DBcore{
 	}
 
 	public function getAllSeriesIds(){
-		$query = "SELECT s.series_id FROM series s";
+		$query = "SELECT s.series_id FROM series s {$this->whereUserid('s')}";
 		$rows = $this->select($query);
 //		self::logQueryAndValues($query, array(), 'getAllSeriesIds');
 		return array_column($rows, 'series_id');
@@ -170,24 +174,26 @@ class DB extends DBcore{
 		$query = "SELECT c.collection_id, c.collection_name, COUNT(i.issue_id) AS issue_count 
 					FROM collections c
 					LEFT JOIN comics i USING (collection_id)
-					WHERE collection_id=".intval($collection_id);
+					{$this->whereUserid('c')}
+						AND collection_id=".intval($collection_id);
 		self::logQueryAndValues($query, array(), 'getCollection');
 		$rows = $this->select($query);
 		return (isset($rows[0]) ? $rows[0] : false);
 	}
 
 	public function getCollectionByName($name){
-		$query = "SELECT collection_id, collection_name 
-					FROM collections 
-					WHERE collection_name=:collection_name
-					ORDER BY collection_name";
+		$query = "SELECT c.collection_id, c.collection_name 
+					FROM collections c
+					{$this->whereUserid('c')}
+						AND c.collection_name=:collection_name
+					ORDER BY c.collection_name";
 		$values = array('collection_name'=>$name);
 		$rows = $this->select($query, $values);
 		return (isset($rows[0]) ? $rows[0] : false);
 	}
 
 	public function getIssueDetails($issue_id){
-		$query = 'SELECT c.issue_id, c.series_id, c.collection_id, c.issue, c.chrono_index, 
+		$query = "SELECT c.issue_id, c.series_id, c.collection_id, c.issue, c.chrono_index, 
 						c.cover_date, c.grade, c.notes, c.comicvine_issue_id, c.comicvine_url, 
 						c.issue_title, c.creators, c.characters, c.synopsis, c.image_full, c.image_thumb,
 						s.year, s.series_name, s.volume, s.comicvine_series_id, s.comicvine_series_full, 
@@ -195,7 +201,8 @@ class DB extends DBcore{
 					FROM comics c
 					LEFT JOIN series s USING (series_id)
 					LEFT JOIN collections l ON c.collection_id=l.collection_id
-					WHERE issue_id=:issue_id';
+					{$this->whereUserid('c')}
+						AND issue_id=:issue_id";
 		$values = array('issue_id'=>$issue_id);
 //		$this->logQueryAndValues($query, $values, 'getIssueDetails');
 		$rows = $this->select($query, $values);
@@ -208,7 +215,8 @@ class DB extends DBcore{
 						COUNT(i.issue_id) AS issue_count
 					FROM series s
 					LEFT JOIN comics i USING (series_id)
-					WHERE s.series_id=:series_id";
+					{$this->whereUserid('s')}
+						AND s.series_id=:series_id";
 		$values = array('series_id'=>$series_id);
 		$this->logQueryAndValues($query, $values, 'getSeries');
 		$rows = $this->select($query, $values);
@@ -216,18 +224,33 @@ class DB extends DBcore{
 	}
 
 	public function getSeriesByName($seriesName, $volume){
-		$query = "SELECT series_id, year, series_name, volume, comicvine_series_id, comicvine_series_full
-					FROM series
-					WHERE series_name=:name AND volume=:volume";
+		$query = "SELECT s.series_id, s.year, s.series_name, s.volume, s.comicvine_series_id, s.comicvine_series_full
+					FROM series s
+					{$this->whereUserid('s')}
+						AND s.series_name=:name AND s.volume=:volume";
 		$values = array('name'=>$seriesName, 'volume'=>$volume);
 //		$this->logQueryAndValues($query, $values, 'getSeriesByName');
 		$rows = $this->select($query, $values);
-		return ($rows[0] ? $rows[0] : false);
+		return (isset($rows[0]) ? $rows[0] : false);
+	}
+	
+	public function getUserByNumber($user_id){
+		$query = "SELECT uid FROM users WHERE user_id=:user_id";
+		$values = array('user_id'=>$user_id);
+		$rows = $this->select($query, $values);
+		return (isset($rows[0]['uid']) ? true : false);
+	}
+	
+	public function getUserHeader($user_id){
+		$query = "SELECT header FROM users WHERE user_id=:user_id";
+		$values = array('user_id'=>$user_id);
+		$rows = $this->select($query, $values);
+		return (isset($rows[0]['header']) ? $rows[0]['header'] : false);
 	}
 
 	public function saveComicvineSeriesInfo($year, $name, $volume, $comicvine_series_id, $comicvine_series_full){
-		$values = array('year'=>$year, 'series_name'=>$name, 'volume'=>$volume, 
-						'comicvine_series_id'=>$comicvine_series_id, 'comicvine_series_full'=>$comicvine_series_full);
+		$values = array('year'=>$year, 'series_name'=>$name, 'volume'=>$volume, 'comicvine_series_id'=>$comicvine_series_id, 
+						'comicvine_series_full'=>$comicvine_series_full, 'user_id'=>$_SESSION['user_id']);
 //		logDebug('saveComicvineSeriesInfo: '.var_export($values, true));
 		if($this->verifyColumns('series', $values)){
 			$lastInsertId = $this->insert('series', $values);
@@ -237,10 +260,10 @@ class DB extends DBcore{
 	}
 
 	public function selectCountFromTable($indexColumn, $table){
-		if(' ' === substr($table, strlen($table)-2, 1)){ $table = substr($table, 0, strlen($table)-2); }
-		$query = "SELECT COUNT({$indexColumn}) AS rowcount FROM {$table}";
+		if(' ' === substr($table, strlen($table)-2, 1)){ $table = substr($table, 0, strlen($table)-2); }//remove table abbr
+		$query = "SELECT COUNT({$indexColumn}) AS rowcount FROM {$table} {$this->whereUserid()}";
 		$values = array();
-//		$this->logQueryAndValues($query, $values, 'selectCountFromTable');
+		$this->logQueryAndValues($query, $values, 'selectCountFromTable');
 		$resultTotal = $this->select($query, $values);
 		return $resultTotal;
 	}
@@ -276,6 +299,11 @@ class DB extends DBcore{
 	public function genericSelect($query, $values=array(), $pdoFetch=PDO::FETCH_ASSOC){
 //		$this->logQueryAndValues($query, $values, 'genericSelect');
 		return $this->select($query, $values, $pdoFetch);
+	}
+	
+	private function whereUserid($prefix=''){
+		if($prefix){ $prefix = $prefix.'.'; }
+		return " WHERE {$prefix}user_id=".$_SESSION['siteUser'];
 	}
 
 	public function __construct(){

@@ -6,7 +6,7 @@ class Collection{
 		return $this->db->changeCollectionName($this->collection_id, $new_name);
 	}
 
-	public static function createCollection($db, $collection_name){
+	public static function createCollection(DB $db, $collection_name){
 		return $db->addCollection($collection_name);
 	}
 
@@ -15,11 +15,11 @@ class Collection{
 		return $rowsAffected;
 	}
 
-	public static function getCollectionByName($db, $collection_name){
+	public static function getCollectionByName(DB $db, $collection_name){
 		return $db->getCollectionByName($collection_name);
 	}
 
-	public static function getAllCollections($db){
+	public static function getAllCollections(DB $db){
 		$collections = array();
 		$dbcollections = $db->getAllCollectionIds();
 		foreach($dbcollections as $dbcollectionid){
@@ -53,7 +53,7 @@ class Collection{
 		if($collection_id){
 			$this->get($collection_id);
 		}
-		logDebug('collection: '.var_export($this, true));
+//		logDebug('collection: '.var_export($this, true));
 	}
 
 	protected $db = false;

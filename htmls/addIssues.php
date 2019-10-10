@@ -22,7 +22,7 @@ if(isset($_POST['submit'])){
 	<?php
 }
 
-$fields = 10;
+$fields = 8;
 $collections = Collection::getAllCollections($db);
 $collection_options = '';
 foreach($collections as $collection){
