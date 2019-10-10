@@ -1,6 +1,6 @@
 			<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
 				<div class='full-width'>
-					<a class="navbar-brand" href="/home.php">Dave's Comics</a>
+					<a class="navbar-brand" href="/home.php"><?=User::getUserHeader($db, $_SESSION['siteUser'])?></a>
 <?php if($alreadyLoggedIn){ ?>
 					<div class='admin-buttons'>
 						<button class='btn' id='issues'>Issues</button>

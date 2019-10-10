@@ -244,6 +244,7 @@ class DB extends DBcore{
 	public function getUserHeader($user_id){
 		$query = "SELECT header FROM users WHERE user_id=:user_id";
 		$values = array('user_id'=>$user_id);
+		$this->logQueryAndValues($query, $values, 'getUserHeader');
 		$rows = $this->select($query, $values);
 		return (isset($rows[0]['header']) ? $rows[0]['header'] : false);
 	}

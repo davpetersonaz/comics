@@ -21,7 +21,7 @@
 		<script src="/js/moment.js" type="text/javascript"></script>
 		<script src="/js/tempusdominus-bootstrap-4.min.js" type="text/javascript"></script>
 <?php } ?>
-		<!-- title -->
+		<!-- title -->\
 		<title><?=User::getUserHeader($db, $_SESSION['siteUser'])?></title>
 	</head>
 	<body>
