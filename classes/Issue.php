@@ -45,10 +45,16 @@ class Issue{
 
 	public function changeSeries($new_series_id){
 		$this->series_id = $new_series_id;
-		return $this->db->changeSeriesId($this->issue_id, $new_series_id);
+		$rowsAffected = $this->db->changeSeriesId($this->issue_id, $new_series_id);
+		//reset series-related member vars before calling updateIssueDetails
+		$series = new Series($this->db, $new_series_id);
+		$this->comicvine_series_id = $series->getComicvineId();
+		$this->comicvine_series_full = $series->getComicvineIdFull();
+		$this->series_name = $series->getName();
+		$this->updateIssueDetails();
+		return $rowsAffected;
 	}
 
-	//unsure what to default the grade-position to, just using "no grade" for now
 	public static function createIssue(DB $db, $collection_id, $series_id, $issue, $chrono='', $gradepos=8, $notes=''){
 		$lastInsertId = $db->addIssue($series_id, $collection_id, $issue, $chrono, $gradepos, $notes);
 		return $lastInsertId;
@@ -62,7 +68,7 @@ class Issue{
 	public static function getAllIssues(DB $db, Curl $curl){
 		$issues = array();
 		$dbissues = $db->getAllIssueIds();
-		logDebug('dbissues: '.var_export($dbissues, true));
+//		logDebug('dbissues: '.var_export($dbissues, true));
 		foreach($dbissues as $dbissueid){
 			$issues[] = new Issue($db, $curl, $dbissueid);
 		}
@@ -73,7 +79,7 @@ class Issue{
 	public static function getAllIssuesInCollection(DB $db, Curl $curl, $collection_id){
 		$issues = array();
 		$dbissues = $db->getAllIssueIdsForCollection($collection_id);
-		logDebug('dbissues: '.var_export($dbissues, true));
+//		logDebug('dbissues: '.var_export($dbissues, true));
 		foreach($dbissues as $dbissueid){
 			$issues[] = new Issue($db, $curl, $dbissueid);
 		}
@@ -84,7 +90,7 @@ class Issue{
 	public static function getAllIssuesInSeries(DB $db, Curl $curl, $series_id){
 		$issues = array();
 		$dbissues = $db->getAllIssueIdsForSeries($series_id);
-		logDebug('dbissues: '.var_export($dbissues, true));
+//		logDebug('dbissues: '.var_export($dbissues, true));
 		foreach($dbissues as $dbissueid){
 			$issues[] = new Issue($db, $curl, $dbissueid);
 		}
@@ -190,7 +196,7 @@ class Issue{
 	public function updateIssueDetails(){
 		logDebug('get basic details');
 		$response = $this->curl->getIssuesBySeriesAndIssue($this->comicvine_series_id, $this->issue);
-		if(count($response) === 1){//just one result, should happen most of the time
+		if(count($response) > 0){//just use the first one, some have multiple elements (like 4050-20272)
 			$comicvine_info = $response[0];
 			logDebug('found it: '.var_export($comicvine_info, true));
 			$this->comicvine_issue_id = '';
@@ -219,7 +225,6 @@ class Issue{
 						$characters = array_column($comicvine_info['character_credits'], 'name');
 						$values['characters'] = $this->characters = implode('|', $characters);
 					}
-					logDebug('this->characters: '.var_export($this->characters, true));
 					//creators
 					$creators = array();
 					if($comicvine_info['person_credits']){
@@ -256,37 +261,12 @@ class Issue{
 
 			//save comicvine issue
 			$this->update($this->issue_id, $values);
-		}elseif(count($response) > 1){
-			//TODO: not sure if this all is necessary, probably just output error message instead???
-			$errormsg = "more than 1 result for series [{$this->comicvine_series_full}] issue [{$this->issue_number}]";
-			echo "<p>{$errormsg}</p>";
-			echo "<pre>". var_export($response, true)."</pre>";
-			logDebug($errormsg);
-			exit;
-			//or, i could just accept the first result as the most obvious,
-			//or, i could throw up a list so i could choose the proper issue...
-	//		$returnArray = array();
-	//		foreach($decodedResponse['results'] as $result){
-	//			$row = array();
-	//			//display: cover_date, id (xxxx), icon: https://comicvine.gamespot.com/api/image/square_avatar/2464633-avengers001.jpg, 
-	//			$row[] = "<div class='picture'>".
-	//								"<a class='small' href='#nogo' title='small image'>".
-	//									"<img src='{$result['image']['thumb_url']}' class='img-responsive'>".
-	//									"<img class='large' src='{$result['image']['super_url']}'>".
-	//								"</a>".
-	//							"</div>";
-	//			$row[] = $result['cover_date'];
-	//			$row[] = $result['id'];
-	//			$returnArray[] = $row;
-	//		}Grade
-	//		echo json_encode($returnArray, JSON_UNESCAPED_SLASHES);
-	//		exit;
 		}else{
 			//cannot find on comicvine??
 			logDebug("no results found on comicvine");
 			logDebug("for series: ".var_export($this->comicvine_series_full, true));
 			logDebug('with response: '.var_export($response, true));
-			$errormsg = "no results found on comicvine for series [{$this->comicvine_series_full}]: ".var_export($response, true);
+			$errormsg = "no results found on comicvine for series [{$this->comicvine_series_full}], issue [{$this->issue}]: ".var_export($response, true);
 			echo "<p>{$errormsg}</p>";
 			logDebug($errormsg);
 			exit;
@@ -319,7 +299,7 @@ class Issue{
 	public function getSeriesId(){ return $this->series_id; }
 	public function getCollectionId(){ return $this->collection_id; }
 	public function getIssue(){ return $this->issue; }
-	public function getChronoIndex(){ return $this->chrono_index; }
+	public function getChronoIndex(){ return Func::trimFloat($this->chrono_index); }
 	public function getCollectionName(){ return $this->collection_name; }
 	public function getComicvineIssueId(){ return $this->comicvine_issue_id; }
 	public function getComicvineSeriesId(){ return $this->comicvine_series_id; }
@@ -331,7 +311,7 @@ class Issue{
 	public function getImageFull(){ return $this->image_full; }
 	public function getImageThumb(){ return $this->image_thumb; }
 	public function getIssueTitle(){ return $this->issue_title; }
-	public function getSeriesTitle(){ return $this->series_title; }
+	public function getSeriesName(){ return $this->series_name; }
 	public function getVolume(){ return $this->volume; }
 	public function getYear(){ return $this->year; }
 	public function getSynopsis(){ return $this->synopsis; }
@@ -369,7 +349,7 @@ class Issue{
 	public $image_full = false;//large cover image
 	public $image_thumb = false;//cover image thumbnail
 	public $issue_title = false;//inside title for this issue
-	public $series_title = false;//from series table, my series title, not comicvine's
+	public $series_name = false;//from series table, my series title, not comicvine's
 	public $volume = false;//from series table, my series volume number, not comicvine's -- TODO: maybe should be $series_volume??
 	public $year = false;//from series table, the copyright year of the first issue
 	public $synopsis = false;//description of the issue's plot
@@ -393,6 +373,7 @@ class Issue{
 		'Captain America',
 		'Carol Danvers',
 		'Clea',
+		'Dick Grayson',
 		'Doctor Strange',
 		'Dream of the Endless (Morpheus)',
 		'Falcon',
@@ -417,6 +398,7 @@ class Issue{
 		'Sunspot',
 		'Thing',
 		'Thor',
+		'Tim Drake',
 		'Vision',
 		'War Machine',
 		'Wasp',

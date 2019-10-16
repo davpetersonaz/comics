@@ -1,4 +1,14 @@
-<?php $pageLength = (isset($_SESSION['table_length']['home']) && $_SESSION['table_length']['home'] > 0 ? $_SESSION['table_length']['home'] : 25); ?>
+<?php
+
+
+
+//TODO: ADD A PRINT BUTTON
+//TODO: ADD DROPDOWN FOR SORTING coll/series/vol/issue/grade, series/vol/issue/grade, and ??? -- remember the value in SESSION 
+
+
+
+?>
+<?php $pageLength = (isset($_SESSION['table_length']['home']) && $_SESSION['table_length']['home'] > 0 ? $_SESSION['table_length']['home'] : 100); ?>
 
 <?php if($alreadyLoggedIn){ ?>
 <div class='btn-above-table'>
@@ -119,6 +129,11 @@ $(document).ready(function(){
 
 	$('.add-issues').on('click', function(){
 		window.location.href = '/addIssues';
+	});
+
+	$('#comiclist tbody').on('page.dt', function() {
+		$('html, body').animate({ scrollTop: $(".dataTables_wrapper").offset().top }, 'slow');
+		$('thead tr th:first-child').focus().blur();
 	});
 
 });

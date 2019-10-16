@@ -16,4 +16,12 @@ class Func{
 		logDebug(($callingFunction ? $callingFunction.': ' : '').$query);
 	}
 
+	public static function trimFloat($floatval){
+		while(strpos($floatval, '.') && substr($floatval, -1) === '0'){
+			$floatval = rtrim($floatval, '0');
+		}
+		$floatval = rtrim($floatval, '.');
+		return $floatval;
+	}
+
 }

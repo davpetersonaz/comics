@@ -42,15 +42,16 @@ $notes = $issue->getNotes();
 	<div class='col-xs-12 col-sm-6'>
 
 		<h5 class='collection'><span class='smaller'>collection:</span> <?=$issue->getCollectionName()?> <?=$issue->getChronoIndex()?></h5>
-		<h1><?=$issue->getIssueTitle()?><span class='smaller'> (vol. <?=$issue->getVolume()?>)</span></h1>
-		<h4>Issue <?=($issue->getIssue() == '88888' ? '<i class="fa fa-infinity"></i>' : $issue->getIssue())?></h4>
+		<h1><?=$issue->getSeriesName()?><span class='smaller'> (vol. <?=$issue->getVolume()?>)</span></h1>
+		<h4>Issue <?=($issue->getIssue() == 'infinity' ? '<i class="fa fa-infinity"></i>' : $issue->getIssue())?></h4>
 		<h5><?=$cover_date?></h5>
-		<h5 title='<?=$grade['long_desc']?>'>condition: <?=$grade['name']?></h5>
+		<h5 title='<?=$grade['long_desc']?>'>condition: <?=$grade['grade_name']?></h5>
 		Comicvine link: <a href='<?=$comicvine_link?>'><?=$comicvine_link?></a>
-
+		
+<?php if($creators){ ?>
 		<table class="creators">
 			<tr><td colspan=2 class="list-header">Creators:</td></tr>
-<?php foreach($creators as $creator=>$position){ ?>
+	<?php foreach($creators as $creator=>$position){ ?>
 			<tr>
 				<td class='table-left-column'>
 					<b><?=$creator?></b>:
@@ -59,27 +60,31 @@ $notes = $issue->getNotes();
 					<?=$position?>
 				</td>
 			</tr>
-<?php } ?>
+	<?php } ?>
 		</table>
+<?php } ?>
 
+<?php if($characters){ ?>
 		<table class="characters">
 			<tr><td colspan=2 class="list-header">Characters:</td></tr>
-<?php for($i=0; $i<count($characters); ){ ?>
-	<?php if($i%2 === 0){ ?>
+	<?php for($i=0; $i<count($characters); ){ ?>
+		<?php if($i%2 === 0){ ?>
 			<tr>
-	<?php } ?>
+		<?php } ?>
 				<td class='table-left-column'>
 					<?=$characters[$i++]?>
 				</td>
 				<td class='table-right-column'>
 					<?=(isset($characters[$i]) ? $characters[$i++] : '')?>
 				</td>
-	<?php if($i%2 === 0){ ?>
+		<?php if($i%2 === 0){ ?>
 			</tr>
+		<?php } ?>
 	<?php } ?>
-<?php } ?>
 		</table>
+<?php } ?>
 
+		<h2 class='issue-title'><?=$issue->getIssueTitle()?></h2>
 		<p><?=$issue->getSynopsis()?></p>
 
 <?php if($character_firsts){ ?>
@@ -110,7 +115,7 @@ $notes = $issue->getNotes();
 	<?php } ?>
 <?php } ?>
 
-<?php if($alreadyLoggedIn){ ?>
+<?php if($alreadyLoggedIn && $notes){ ?>
 		<b>User Notes</b>:<br />
 		<?=$notes?>
 <?php } ?>

@@ -1,4 +1,12 @@
-f<?php
+<?php
+
+
+//TODO: isset(comicvine) doesnt properly prevent duplicates from being created?? may want to match by name/volume, or comicvine-full-id??!!?
+
+//TODO: create a change-log to log previous and new values of changed items, and the item name, user-id, time, maybe for every value changed?? naw, just include an array of the changed values
+
+
+
 include_once('../../config.php');
 logDebug('ajax/lookup POST: '.var_export($_POST, true));
 
@@ -48,14 +56,20 @@ elseif(isset($_POST['collection_name_change'], $_POST['new_name'])){
 }
 
 //comes from addSeriesSelect, create a new series from the comicvine info
+//TODO: for some reason this doesn't work
 elseif(isset($_POST['comicvine']) && is_array($_POST['comicvine'])){
 	$comicvine = $_POST['comicvine'];
-//	$issue_id = (isset($_POST['issueid']) ? $_POST['issueid'] : false);//will be false if coming from addSeriesSelect
 	$series = new Series($db);
-	//comicvine, seriesname, collectionid, volume
-	$series_id = $series->createSeries($_POST['seriesname'], $_POST['volume'], $comicvine);
-	logDebug('series created: '.var_export($series_id, true));
-	echo $series_id;
+	//see if the series already exists
+	$exists = $series->doesSeriesExist($comicvine[9]);
+	if($exists){
+		echo 'series exists already: '.$_POST['seriesname'];
+	}else{
+		//comicvine, seriesname, collectionid, volume
+		$series_id = $series->createSeries($_POST['seriesname'], $_POST['volume'], $comicvine);
+		logDebug('series created: '.var_export($series_id, true));
+		echo 'done';
+	}
 }
 
 elseif(isset($_POST['comicvine_issue_id'])){
@@ -209,8 +223,6 @@ elseif(isset($_POST['volume_change'], $_POST['new_volume'])){
 	}
 }
 
-exit;
-
 /*
 	stdClass::__set_state(array(
 	   'aliases' => 'The Mighty Avengers',
@@ -260,3 +272,5 @@ exit;
 	)),
 
 */
+
+exit;

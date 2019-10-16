@@ -1,4 +1,10 @@
 <?php
+
+
+//TODO: PROBABLY SHOULD ADD A 'DESCRIPTION' FIELD
+
+
+
 class Collection{
 
 	public function changeCollectionName($new_name){

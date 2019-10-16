@@ -1,6 +1,6 @@
-<?php $pageLength = (isset($_SESSION['table_length']['home']) && $_SESSION['table_length']['home'] > 0 ? $_SESSION['table_length']['home'] : 25); ?>
+<?php $pageLength = (isset($_SESSION['table_length']['home']) && $_SESSION['table_length']['home'] > 0 ? $_SESSION['table_length']['home'] : 100); ?>
 <?php $collections = Collection::getAllCollections($db); ?>
-<?php logDebug('collections: '.var_export($collections, true)); ?>
+<?php // logDebug('collections: '.var_export($collections, true)); ?>
 
 <div class='btn-above-table'>
 	<button class='btn btn-primary bg-dark add-collections'>Add Collections</button>
@@ -36,7 +36,7 @@ $(document).ready(function(){
 		]
 	});
 
-	$('.collection_name').change(function(){
+	$('#collectionsTable').on('change', '.collection_name', function(){
 		console.warn('onChange', this);
 		var element_id = $(this).attr('id');
 		var id = element_id.slice(10);
@@ -80,6 +80,12 @@ $(document).ready(function(){
 
 	$('.add-collections').on('click', function(){
 		window.location.href = '/addCollections';
+	});
+
+	//https://stackoverflow.com/questions/21609257/jquery-datatables-scroll-to-top-when-pages-clicked-from-bottom
+	$('#collectionsTable').on('page.dt', function() {
+		$('html, body').animate({ scrollTop: $(".dataTables_wrapper").offset().top }, 'slow');
+		$('thead tr th:first-child').focus().blur();
 	});
 
 });

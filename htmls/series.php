@@ -1,10 +1,20 @@
 <?php 
-$pageLength = (isset($_SESSION['table_length']['home']) && $_SESSION['table_length']['home'] > 0 ? $_SESSION['table_length']['home'] : 25);
+
+
+//TODO: MAYBE ... click on a row and it brings up /issues?serXX
+
+//TODO: add "publisher" column
+
+//TODO: click on 'usage' and it should go to a 'issues' listing filtered on the series
+
+
+$pageLength = (isset($_SESSION['table_length']['home']) && $_SESSION['table_length']['home'] > 0 ? $_SESSION['table_length']['home'] : 100);
 $series = Series::getAllSeries($db); 
 ?>
 
 <div class='btn-above-table'>
 	<button class='btn btn-primary bg-dark add-series'>Add Series</button>
+	<button class='btn btn-primary bg-dark add-issues'>Add Issues</button>
 </div>
 
 <table id='seriesTable' class="display">
@@ -35,7 +45,7 @@ $series = Series::getAllSeries($db);
 				</div>
 			</td>
 			<td><?=$serie->getId()?></td>
-			<td><input type="text" class='series_name' id='series<?=$serie->getId()?>' value='<?=$serie->getName()?>'></td>
+			<td><input type="text" class='series_name' id='series<?=$serie->getId()?>' value="<?=$serie->getName()?>"></td>
 			<td><input type="text" class='volume' id='volume<?=$serie->getId()?>' value="<?=$serie->getVolume()?>"></td>
 			<td><?=$serie->getYear()?></td>
 			<td><?=$serie->getFirstIssue()?></td>
@@ -106,7 +116,7 @@ $(document).ready(function(){
 		]
 	});
 
-	$('.series_name').change(function(){
+	$('#seriesTable').on('change', '.series_name', function(){
 		console.warn('onChange', this);
 		var element_id = $(this).attr('id');
 		var id = element_id.slice(6);
@@ -121,7 +131,7 @@ $(document).ready(function(){
 		});
 	});
 
-	$('.volume').change(function(){
+	$('#seriesTable').on('change', '.volume', function(){
 		console.warn('onChange', this);
 		var element_id = $(this).attr('id');
 		var id = element_id.slice(6);
@@ -135,8 +145,8 @@ $(document).ready(function(){
 			console.warn('series volume changed');
 		});
 	});
-	
-	$('.comicvine-link').on('click', function(){
+
+	$('#seriesTable').on('click', '.comicvine-link', function(){
 		var element_id = $(this).attr('id');
 		var id = element_id.slice(9);
 		console.warn('id', id);
@@ -176,6 +186,10 @@ $(document).ready(function(){
 		}
 	});
 
+	$('.add-issues').on('click', function(){
+		window.location.href = '/addIssues';
+	});
+	
 	$('.add-series').on('click', function(){
 		window.location.href = '/addSeries';
 	});
@@ -183,6 +197,12 @@ $(document).ready(function(){
 	$(".popup-on-hover").hover(function(){
 		console.warn('hover', this);
 		$(this).show();
+	});
+
+	//https://stackoverflow.com/questions/21609257/jquery-datatables-scroll-to-top-when-pages-clicked-from-bottom
+	$('#seriesTable').on('page.dt', function() {
+		$('html, body').animate({ scrollTop: $(".dataTables_wrapper").offset().top }, 'slow');
+		$('thead tr th:first-child').focus().blur();
 	});
 
 });

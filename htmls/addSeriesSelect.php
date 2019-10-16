@@ -1,9 +1,23 @@
 <?php
+
+
+
+//TODO: IF NO SERIES' FOUND, THEN JUST GO BACK TO addSeries AND PUT A MESSAGE UP SAYING COULDN'T FIND
+
+//not sure if i can fix:
+//after clicking cancel, the sorting/ordering controls become useless, some datatable issue?
+//MAYBE JUST RELOAD THE PAGE ON CANCEL???!!
+
+//TODO: on the javascript seriesvolume prompt, parse the series volume from comicvine and use that as the default (instead of default=1)
+
+//TODO: ON-CLICK OF COMICVINE-ID, SEND TO COMICVINE WEBPAGE FOR THAT ID
+
+
+
 logDebug('addSeriesSelect: '.var_export($_POST, true));
 $seriesname = $_POST['series'];
-$volume = $_POST['volume'];
 $series_data = array();
-$pageLength = (isset($_SESSION['table_length']['home']) && $_SESSION['table_length']['home'] > 0 ? $_SESSION['table_length']['home'] : 25);
+$pageLength = (isset($_SESSION['table_length']['home']) && $_SESSION['table_length']['home'] > 0 ? $_SESSION['table_length']['home'] : 100);
 
 $results = $curl->getSeriesByName($seriesname);
 logDebug('getSeriesByName results: '.count($results));
@@ -86,7 +100,7 @@ $(document).ready(function(){
 			{ "searchable": false, "targets": [ 0, 8, 9, 10, 11 ] },
 			{ "orderable": false, "targets": [ 0, 8, 9, 10, 11 ] },
 			{ "visible": false, "targets": [ 8, 9, 10, 11 ] },
-			{ "width": "4em", "targets": [ 2 ] },
+//			{ "width": "4em", "targets": [ 2 ] },
 			{ "width": "2em", "targets": [ 0, 4, 5, 6, 7, 8, 9 ] }
 		]
 	});
@@ -97,12 +111,10 @@ $(document).ready(function(){
 		$('body').css('pointer-events', 'none');
 		var currentRowData = seriesdatatable.row(this).data();
 		console.warn('currentRowData', currentRowData);
-		var seriesname = '<?=$_POST['series']?>';
-		var user_series = prompt("what is the series name?", seriesname);
-		if(user_series !== null){ seriesname = user_series; }
-		var volume = '<?=$_POST['volume']?>';
-		var user_volume = prompt("what is the volume number?", volume);
-		if(user_volume !== null){ volume = user_volume; }
+		var seriesname = prompt("what is the series name?", "<?=$seriesname?>");
+		if(seriesname === null){ return; }
+		var volume = prompt("what is the volume number?", 1);
+		if(volume === null){ return; }
 //		alert('posting to lookup');
 		$.ajax({
 			method: 'POST',
@@ -110,8 +122,12 @@ $(document).ready(function(){
 			data: { comicvine: currentRowData, volume: volume, seriesname: seriesname } 
 		}).done(function(data){
 			console.warn('response (series_id)', data);//series_id
-//			alert('addSelectSeries: redirecting to addSeries');
-			location.href = '/addSeries';
+			if(data !== 'done'){
+				alert(data);
+			}else{
+//				alert('addSelectSeries: redirecting to addSeries');
+				location.href = '/addSeries';
+			}
 		});
 	});
 
@@ -119,5 +135,12 @@ $(document).ready(function(){
 		console.warn('hover', this);
 		$(this).show();
 	});
+
+	//https://stackoverflow.com/questions/21609257/jquery-datatables-scroll-to-top-when-pages-clicked-from-bottom
+	$('#whatSeriesDatatable').on('page.dt', function() {
+		$('html, body').animate({ scrollTop: $(".dataTables_wrapper").offset().top }, 'slow');
+		$('thead tr th:first-child').focus().blur();
+	});
+
 });
 </script>

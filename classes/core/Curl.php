@@ -1,39 +1,42 @@
 <?php
 class Curl{
-	
+
 	/* TODO: right up a blog on how to connect to the stupid comicvine api over php/curl, and make sure to include info on using USERAGENT */
-	
+
 	public static function getComivineIssueUrl($comicvine_id){
 		//https://comicvine.gamespot.com/api/issue/4000-6686/?api_key=5881a5da17876142d003f9bcf843d4db4ce9fce2&format=json
 		$url = self::$baseUrl."issue/{$comicvine_id}/?api_key=".self::$apikey."&format=json";
 		logDebug('getComivineIssueUrl: '.$url);
 		return $url;
 	}
-	
+
 	public static function getComivineSeriesUrl($comicvine_id){
 		//https://comicvine.gamespot.com/api/volume/4050-2290/?api_key=5881a5da17876142d003f9bcf843d4db4ce9fce2&format=json
 		$url = self::$baseUrl."volume/{$comicvine_id}/?api_key=".self::$apikey."&format=json";
 		logDebug('getComivineSeriesUrl: '.$url);
 		return $url;
 	}
-	
+
 	public function getIssueByComicvineId($comicvine_issue_id){
 		//https://comicvine.gamespot.com/api/issue/4000-6686/?api_key=5881a5da17876142d003f9bcf843d4db4ce9fce2&format=json
 		return $this->getResults('issue', $comicvine_issue_id);
 	}
-	
+
 	public function getIssuesBySeriesAndIssue($comicvine_series_id, $issue_number){
 		//https://comicvine.gamespot.com/api/issues/?filter=volume:2128,issue_number:1&api_key=5881a5da17876142d003f9bcf843d4db4ce9fce2&format=json
-		return $this->getResults('issues', array(), 'filter=volume:'.intval($comicvine_series_id).',issue_number:'.intval($issue_number));
+		//massage the issue number for a couple corner cases
+		if($issue_number === '1/2'){ $issue_number = "½"; }
+		if($issue_number === 'infinity'){ $issue_number = "∞"; }
+		return $this->getResults('issues', array(), 'filter=volume:'.intval($comicvine_series_id).urlencode(',issue_number:'.$issue_number));
 	}
-	
+
 	public function getSeriesByName($name){
 		$filters['name'] = urlencode(preg_replace("/[".CHARS_TO_REMOVE_FOR_SEARCH."]/", '', $name));
 		logDebug('call curl: '.var_export($filters, true));
 		$decodedResponse = $this->getResults('volumes', $filters);
 		return $decodedResponse;
 	}
-	
+
 	public function getSeriesByNameAndIssue($name, $issue){
 		$filters['name'] = urlencode(preg_replace("/[".CHARS_TO_REMOVE_FOR_SEARCH."]/", '', $name));
 		$filters['issue'] = urlencode(preg_replace("/[".CHARS_TO_REMOVE_FOR_SEARCH."]/", '', $issue));
@@ -42,7 +45,7 @@ class Curl{
 		$decodedResponse = $this->getResults('volumes', $filters);
 		return $decodedResponse;
 	}
-	
+
 	public function getResults($resouce, $param, $suffix=false){
 		$page_results = $total_results = $offset = $sanity_check = 0;
 		$finalResults = array();
@@ -64,7 +67,7 @@ class Curl{
 		}while($offset < $total_results && $sanity_check < 13);
 		return $finalResults;
 	}
-	
+
 	public function post($resouce, $param, $suffix=false){
 		//prepare
 		$idparam = '';

@@ -51,7 +51,7 @@ body{
 	margin-bottom: 60px; /* Margin bottom by footer height */
 }
 body > .container-fluid{
-	margin-top: 60px; /* height of footer */
+	margin-top: 30px; /* height of footer */
 	height: 100%;
 }
 .admin-buttons{
@@ -150,6 +150,12 @@ nav.navbar .admin-buttons button.btn:hover{
 #comiclist i.fa{
 	-webkit-text-stroke: 2px white;
 }
+.dataTables_wrapper{
+	padding-bottom: 1em;
+}
+#issuesTable_wrapper.dataTables_wrapper .dataTables_filter{
+	float: left;
+}
 .dataTable tbody tr,
 .dataTable tbody tr .img-responsive{
 	cursor: pointer;
@@ -198,8 +204,13 @@ tbody tr select.collection{
 	width: 150px;
 }
 tbody tr select.series,
-#issues-by-series{
+#issues-by-series,
+#seriesTable .series_name{
 	width: 300px;
+}
+.details{
+	padding-bottom: 1em;
+	padding-top: 1em;
 }
 .details .image-border{
 	border: black 2px solid;
@@ -217,7 +228,7 @@ tbody tr select.series,
 	/*padding: 4px;*/
 }
 .details .collection{
-	color: #CCC;
+	color: #ABABAB;
 	margin-bottom: 0;
 }
 .details span.smaller{
@@ -246,6 +257,9 @@ tbody tr select.series,
 	padding-left: 16px;
 	text-align: right;
 }
+.details .issue-title{
+	padding-top: 12px;
+}
 .inline-input{
 	display: inline-block;
 }
@@ -253,6 +267,9 @@ select{
 	/* make selects the same size a text-inputs */
 	height: 34px;
 	width: 206px;
+}
+.add-header{
+	padding-top: 8px;
 }
 #addIssuesTable td{
 	padding: 6px;
@@ -266,10 +283,14 @@ select{
 	/*float: right;*/
 	margin-right: 1em;
 }
-#addIssuesForm .action-buttons{
+.action-buttons{
+	margin-bottom: 4em;
 	margin-top: 1em;
 }
 .btn-above-table{
 	margin-bottom: 1em;
-	padding-top: .5em;
+	padding-top: 0.5em;
+}
+.btn-above-table .btn-primary{
+	margin-right: 1em;
 }

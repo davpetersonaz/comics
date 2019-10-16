@@ -24,7 +24,7 @@ $inputFieldCells =
 	"</td>";
 ?>
 
-<h2>Add Collections</h2>
+<h2 class='add-header'>Add Collections</h2>
 
 <form id='addCollectionsForm' method='POST' action=''>
 	<table id='addCollectionsTable'>
@@ -45,3 +45,10 @@ $inputFieldCells =
 		<button type='submit' name='submit' class="btn btn-primary bg-dark">Submit</button>
 	</div>
 </form>
+
+<script>
+$(document).ready(function(){
+	//focus on first input
+	$('form:first *:input[type!=hidden]:first').focus();		
+});
+</script>

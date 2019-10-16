@@ -1,6 +1,18 @@
 <?php 
+
+
+//TOOD: #1 -- do server-side processing
+
+//TODO: GOTTA FIGURE OUT HOW TO SORT DATES, AND GRADES, MAY HAVE TO SWITCH TO DATATABLES-SSP AND ALLOW THE DB TO SORT THE RAW DATA
+
+//TODO: WHY DOESNT SEARCH WORK???
+
+//TODO: clicking on cover-image not only opens the link in a new tab, it also opens the link in the current tab.
+
+
+
 logDebug('issues GET: '.var_export($_GET, true));
-$pageLength = (isset($_SESSION['table_length']['home']) && $_SESSION['table_length']['home'] > 0 ? $_SESSION['table_length']['home'] : 25);
+$pageLength = 100;//(isset($_SESSION['table_length']['home']) && $_SESSION['table_length']['home'] > 0 ? $_SESSION['table_length']['home'] : 25);
 
 //TODO: i could add another option -- select by both collection and series, but i'd have to add a submit button though.
 $collectionChoice = (isset($_GET['coll']) ? intval($_GET['coll']) : false);
@@ -19,6 +31,8 @@ $series = Series::getAllSeries($db);
 
 <div class='btn-above-table'>
 	<button class='btn btn-primary bg-dark add-issues'>Add Issues</button>
+	<button class='btn btn-primary bg-dark add-series'>Add Series</button>
+	<button class='btn btn-primary bg-dark add-collection'>Add Collection</button>
 </div>
 
 <div class='btn-above-table' style='float:left;'>
@@ -74,29 +88,30 @@ foreach($issues as $issue){
 						"</a>".
 					"</div>";
 	}
-	logDebug('image_div: '.$image_div);
-	$collection_div = "<select id='collection{$issue->getId()}' class='collection' name='collection[]'>";
+//	logDebug('image_div: '.$image_div);
+	$collection_div = "<select id='collection{$issue->getId()}' class='collection'>";
 	foreach($collections as $collection){
 		$selected = (intval($collection->getId()) === intval($issue->getCollectionId()) ? ' selected' : '');
 		$collection_div .= "<option value='{$collection->getId()}' {$selected}>{$collection->getName()}</option>";
 	}
 	$collection_div .= "</select>";
 //	logDebug('collection_div: '.$collection_div);
-	$series_div = "<select id='series{$issue->getId()}' class='series' name='series[]'>";
+	$series_div = "<select id='series{$issue->getId()}' class='series'>";
 	foreach($series as $serie){
 		$selected = (intval($serie->getId()) === intval($issue->getSeriesId()) ? ' selected' : '');
 		$series_div .= "<option value='{$serie->getId()}' {$selected}>{$serie->getName()} vol.{$serie->getVolume()} ({$serie->getYear()})</option>";
 	}
 	$series_div .= "</select>";
 //	logDebug('series_div: '.$series_div);
-	$issue_div = "<input type='text' name='issue[]' class='issue' id='issue{$issue->getId()}' value='{$issue->getIssue()}'/>";
+	$issue_div = "<input type='text' class='issue' id='issue{$issue->getId()}' value='{$issue->getIssue()}'/>";
 //	logDebug('issue_div: '.$issue_div);
-	$chrono_div = "<input type='text' name='chrono[]' class='chrono' id='chrono{$issue->getId()}' value='{$issue->getChronoIndex()}'/>";
+	$chrono = Func::trimFloat($issue->getChronoIndex());
+	$chrono_div = "<input type='text' class='chrono' id='chrono{$issue->getId()}' value='".($chrono ? $chrono : '')."'/>";
 //	logDebug('chrono_div: '.$chrono_div);
 	$coverdate = new DateTime("{$issue->getCoverDate()}");
 	$cover_div = ($coverdate->format('m') === '01' ? $coverdate->format('M Y') : $coverdate->format('M j, Y'));
 //	logDebug('cover_div: '.$cover_div);
-	$grade_div = "<select id='grade{$issue->getId()}' class='grade' name='grade[]'>";
+	$grade_div = "<select id='grade{$issue->getId()}' class='grade'>";
 	foreach($grades->getAllGrades() as $grade_array){
 //		logDebug('grade_array: '.var_export($grade_array, true));
 		$selected = (intval($grade_array['position']) === intval($issue->getGrade()) ? ' selected' : '');
@@ -104,7 +119,7 @@ foreach($issues as $issue){
 	}
 	$grade_div .= "</select>";
 	$comicvine_issue_id_div = "<span id='comicvine{$issue->getId()}' class='comicvine-link' data-comicvine-issue-id='{$issue->getComicvineIssueId()}'>{$issue->getComicvineIssueId()}</span>";
-	$notes_div = "<input type='text' name='notes[]' class='notes' id='notes{$issue->getId()}' value='{$issue->getNotes()}'/>";
+	$notes_div = "<input type='text' class='notes' id='notes{$issue->getId()}' value='{$issue->getNotes()}'/>";
 	$delete_div = "<span class='delete' id='delete{$issue->getId()}' data-issue-text='{$issue->getDisplayText()}'><i class='fa fa-times'></i></span>";
 	?>
 		<tr>
@@ -162,9 +177,10 @@ $(document).ready(function(){
 		});
 	};
 
+	//how shall i sort this? 
+	//by collection/coverdate/grade? by collection/chrono/grade? by collection/series/issue/grade?
 	$('#issuesTable').dataTable({
-		//how shall i sort this? 
-		//by collection/coverdate/grade? by collection/chrono/grade? by collection/series/issue/grade?
+		"dom": 'frtip',
 		"order": [[ 1, 'asc' ],[ 2, 'asc' ],[ 3, 'asc' ],[ 6, 'asc' ]],
 		"pageLength": <?=$pageLength?>,
 		"columnDefs": [ 
@@ -179,7 +195,8 @@ $(document).ready(function(){
 			null,
 			{ "orderDataType": "dom-select" },
 			{ "orderDataType": "dom-select" },
-			{ "orderDataType": "dom-text-numeric" },
+//			{ "orderDataType": "dom-text-numeric" },
+			{ "orderDataType": "dom-text", type: 'string' },
 			{ "orderDataType": "dom-text", type: 'string' },
 			null,
 			{ "orderDataType": "dom-select" },
@@ -201,13 +218,14 @@ $(document).ready(function(){
 		window.location.href = '/issues?ser='+series_id;
 	});
 
-	$('.picture').on('click', function(){
+	$('#issuesTable').on('click', '.picture', function(){
 		var element_id = $(this).attr('id');
 		var issue_id = element_id.slice(7);
+		window.open('/details?id='+issue_id, '_blank');
 		window.location.href = '/details?id='+issue_id;
 	});
 
-	$('.collection').change(function(){
+	$('#issuesTable').on('change', '.collection', function(){
 		console.warn('collection change', this);
 		var element_id = $(this).attr('id');
 		var issue_id = element_id.slice(10);
@@ -225,7 +243,7 @@ $(document).ready(function(){
 		});
 	});
 
-	$('.series').change(function(){
+	$('#issuesTable').on('change', '.series', function(){
 		console.warn('series change', this);
 		var element_id = $(this).attr('id');
 		var issue_id = element_id.slice(6);
@@ -237,13 +255,14 @@ $(document).ready(function(){
 		}).done(function(data){
 			if(data === 'done'){
 				console.warn('series changed');
+				window.location.reload();
 			}else{
 				alert(data);
 			}
 		});
 	});
 
-	$('.issue').change(function(){
+	$('#issuesTable').on('change', '.issue', function(){
 		console.warn('issue onChange', this);
 		var element_id = $(this).attr('id');
 		var issue_id = element_id.slice(5);
@@ -255,13 +274,14 @@ $(document).ready(function(){
 		}).done(function(data){
 			if(data === 'done'){
 				console.warn('issue number changed');
+				window.location.reload();
 			}else{
 				alert(data);
 			}
 		});
 	});
 
-	$('.chrono').change(function(){
+	$('#issuesTable').on('change', '.chrono', function(){
 		console.warn('chrono onChange', this);
 		var element_id = $(this).attr('id');
 		var issue_id = element_id.slice(6);
@@ -279,7 +299,7 @@ $(document).ready(function(){
 		});
 	});
 
-	$('.grade').change(function(){
+	$('#issuesTable').on('change', '.grade', function(){
 		console.warn('grade change', this);
 		var element_id = $(this).attr('id');
 		var issue_id = element_id.slice(5);
@@ -297,7 +317,7 @@ $(document).ready(function(){
 		});
 	});
 
-	$('.comicvine-link').on('click', function(){
+	$('#issuesTable').on('change', '.comicvine-link', function(){
 		var id = $(this).attr('data-comicvine-issue-id');
 		$.ajax({
 			method: 'POST',
@@ -308,7 +328,7 @@ $(document).ready(function(){
 		});
 	});
 
-	$('.notes').change(function(){
+	$('#issuesTable').on('change', '.notes', function(){
 		console.warn('notes onChange', this);
 		var element_id = $(this).attr('id');
 		var issue_id = element_id.slice(5);
@@ -351,9 +371,24 @@ $(document).ready(function(){
 		window.location.href = '/addIssues';
 	});
 
+	$('.add-series').on('click', function(){
+		window.location.href = '/addSeries';
+	});
+
+	$('.add-collection').on('click', function(){
+		window.location.href = '/addCollections';
+	});
+
 	$(".popup-on-hover").hover(function(){
 		console.warn('hover', this);
 		$(this).show();
+	});
+
+	//this ain't workin
+	//https://stackoverflow.com/questions/21609257/jquery-datatables-scroll-to-top-when-pages-clicked-from-bottom
+	$('#issuesTable').on('page.dt', function() {
+		$('html, body').animate({ scrollTop: $(".dataTables_wrapper").offset().top }, 'slow');
+		$('thead tr th:first-child').focus().blur();
 	});
 
 });

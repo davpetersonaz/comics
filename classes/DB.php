@@ -1,5 +1,12 @@
 <?php
 class DB extends DBcore{
+	
+	
+	//TODO: ON ALL QUERIES THAT ALTER THE DATABASE ... 
+	//UPDATE A NEW TABLE THAT CONTAINS ONE ROW WHICH IS THE LAST UPDATE TIME,
+	//and then in router we can load a cache of all issues/series/collections only if the current time is after the last-update-time
+	
+	
 
 	public function addCollection($name){
 		$values = array('collection_name'=>$name, 'user_id'=>$_SESSION['user_id']);
@@ -143,7 +150,7 @@ class DB extends DBcore{
 	}
 
 	public function getAllIssues(){
-		$query = "SELECT c.issue_id, c.series_id, c.collection_id, c.issue, c.chrono_index, c.grade, c.note, c.cover_date, 
+		$query = "SELECT c.issue_id, c.series_id, c.collection_id, c.issue, c.chrono_index, c.grade, c.notes, c.cover_date, 
 						c.comicvine_issue_id, c.comicvine_url, c.issue_title, c.creators, c.characters, c.image_full, c.image_thumb, 
 						l.collection_name, s.series_name, s.volume, g.position, g.abbr, g.grade_name, g.short_desc, g.long_desc
 					FROM comics c
@@ -152,7 +159,7 @@ class DB extends DBcore{
 					LEFT JOIN grades g ON c.grade=g.position
 					{$this->whereUserid('c')}
 					ORDER BY s.series_name ASC, c.issue ASC, c.grade ASC";
-//		self::logQueryAndValues($query, array(), 'getAllIssues');
+		self::logQueryAndValues($query, array(), 'getAllIssues');
 		$rows = $this->select($query);
 //		logDebug('result: '. var_export($rows, true));
 		return $rows;
@@ -182,7 +189,7 @@ class DB extends DBcore{
 					LEFT JOIN comics i USING (collection_id)
 					{$this->whereUserid('c')}
 						AND collection_id=".intval($collection_id);
-		self::logQueryAndValues($query, array(), 'getCollection');
+//		self::logQueryAndValues($query, array(), 'getCollection');
 		$rows = $this->select($query);
 		return (isset($rows[0]) ? $rows[0] : false);
 	}
@@ -224,7 +231,17 @@ class DB extends DBcore{
 					{$this->whereUserid('s')}
 						AND s.series_id=:series_id";
 		$values = array('series_id'=>$series_id);
-		$this->logQueryAndValues($query, $values, 'getSeries');
+//		$this->logQueryAndValues($query, $values, 'getSeries');
+		$rows = $this->select($query, $values);
+		return (isset($rows[0]) ? $rows[0] : false);
+	}
+
+	public function getSeriesByComicvineFull($comicvine_series_full){
+		$query = "SELECT series_id 
+					FROM series 
+					WHERE comicvine_series_full=:comicvine_series_full";
+		$values = array('comicvine_series_full'=>$comicvine_series_full);
+		$this->logQueryAndValues($query, $values, 'getSeriesByComicvineFull');
 		$rows = $this->select($query, $values);
 		return (isset($rows[0]) ? $rows[0] : false);
 	}
@@ -239,18 +256,18 @@ class DB extends DBcore{
 		$rows = $this->select($query, $values);
 		return (isset($rows[0]) ? $rows[0] : false);
 	}
-	
+
 	public function getUserByNumber($user_id){
 		$query = "SELECT uid FROM users WHERE user_id=:user_id";
 		$values = array('user_id'=>$user_id);
 		$rows = $this->select($query, $values);
 		return (isset($rows[0]['uid']) ? true : false);
 	}
-	
+
 	public function getUserHeader($user_id){
 		$query = "SELECT header FROM users WHERE user_id=:user_id";
 		$values = array('user_id'=>$user_id);
-		$this->logQueryAndValues($query, $values, 'getUserHeader');
+//		$this->logQueryAndValues($query, $values, 'getUserHeader');
 		$rows = $this->select($query, $values);
 		return (isset($rows[0]['header']) ? $rows[0]['header'] : false);
 	}
@@ -307,7 +324,7 @@ class DB extends DBcore{
 //		$this->logQueryAndValues($query, $values, 'genericSelect');
 		return $this->select($query, $values, $pdoFetch);
 	}
-	
+
 	private function whereUserid($prefix=''){
 		if($prefix){ $prefix = $prefix.'.'; }
 		return " WHERE {$prefix}user_id=".$_SESSION['siteUser'];

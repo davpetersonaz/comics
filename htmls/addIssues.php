@@ -1,4 +1,28 @@
 <?php
+
+
+//TODO: WHEN ISSUES ARE ADDED, SHOW THE COVERS ACROSS THE TOP, THAT WAY USER CAN VERIFY THE CORRECT ISSUES WERE CREATED
+
+//TODO: IF ISSUE CANNOT BE FOUND ON COMICVINE, IT CREATES A PARTIAL ISSUE RECORD, 
+//IT SHOULD NOT CREATE ANYTHING AND IT SHOULD DISPLAY A FRIENDLY ERROR MESSAGE,
+
+//MAYBE INCLUDE A LINK TO THE SERIES ON COMICVINE, also include link to api-rul used??
+
+//TODO: INCLUDE A CHECKBOX FOR 'AUTOGRAPHED'
+
+//TODO: if no issue is found (on submit), it just displays: 
+//			no results found on comicvine for series [4050-4200], issue [0]: array ( )
+//probably should add the series-display-text/first/last and clean the text up, and include a button to go back to addIssues
+//maybe include a link to comicvine-search with the given comicvine-series-id and issue-number...
+
+//TODO: default the 'collection' option to the previous choice, even if nothing was selected (store as session-var)
+
+//TODO: make notes field wider
+
+//TODO: disable the return key so it doesn't submit the form prematurely (require clicking the submit button
+
+
+
 logDebug('addIssues: '.var_export($_POST, true));
 if(isset($_POST['submit'])){
 	$collections = $_POST['collection'];
@@ -22,7 +46,7 @@ if(isset($_POST['submit'])){
 	<?php
 }
 
-$fields = 8;
+$fields = 10;
 $collections = Collection::getAllCollections($db);
 $collection_options = '';
 foreach($collections as $collection){
@@ -31,7 +55,7 @@ foreach($collections as $collection){
 $series = Series::getAllSeries($db);
 $series_options = '';
 foreach($series as $serie){
-	$series_options .= "<option value='{$serie->getId()}'>{$serie->getName()} vol.{$serie->getVolume()} ({$serie->getYear()})</option>";
+	$series_options .= "<option value='{$serie->getId()}'>{$serie->getDisplayText()}</option>";
 }
 $grading = $grades->getAllGrades();
 $gradingOptions = array();
@@ -70,7 +94,11 @@ $inputFieldCells .=
 	"</td>";
 ?>
 
-<h2>Add Issues</h2>
+<div class='btn-above-table'>
+	<button class='btn btn-primary bg-dark add-series'>Add Series</button>
+</div>
+
+<h2 class='add-header'>Add Issues</h2>
 
 <form id='addIssuesForm' method='POST' action=''>
 	<table id='addIssuesTable'>
@@ -91,3 +119,14 @@ $inputFieldCells .=
 		<button type='submit' name='submit' class="btn btn-primary bg-dark">Submit</button>
 	</div>
 </form>
+
+<script>
+$(document).ready(function(){
+	//focus on first input
+	$('form:first *:input[type!=hidden]:first').focus();		
+
+	$('.add-series').on('click', function(){
+		window.location.href = '/addSeries';
+	});
+});
+</script>
