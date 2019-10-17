@@ -10,20 +10,13 @@
 //TODO: clicking on cover-image not only opens the link in a new tab, it also opens the link in the current tab.
 
 
-
 logDebug('issues GET: '.var_export($_GET, true));
 $pageLength = 100;//(isset($_SESSION['table_length']['home']) && $_SESSION['table_length']['home'] > 0 ? $_SESSION['table_length']['home'] : 25);
 
 //TODO: i could add another option -- select by both collection and series, but i'd have to add a submit button though.
-$collectionChoice = (isset($_GET['coll']) ? intval($_GET['coll']) : false);
-$seriesChoice = (isset($_GET['ser']) ? intval($_GET['ser']) : false);
-if($collectionChoice){
-	$issues = Issue::getAllIssuesInCollection($db, $curl, $collectionChoice);
-}elseif($seriesChoice){
-	$issues = Issue::getAllIssuesInSeries($db, $curl, $seriesChoice);
-}else{
-	$issues = Issue::getAllIssues($db, $curl);
-}
+$collectionChoice = (isset($_GET['coll']) ? "?coll={$_GET['coll']}" : '');
+$seriesChoice = (isset($_GET['ser']) ? ($collectionChoice?'&':'?')."ser={$_GET['ser']}" : '');
+
 $collections = Collection::getAllCollections($db);
 $series = Series::getAllSeries($db);
 //logDebug('grades->getAllGrades(): '.var_export($grades->getAllGrades(), true));
@@ -73,69 +66,6 @@ $series = Series::getAllSeries($db);
 		</tr>
 	</thead>
 	<tbody>
-
-<?php 
-logDebug('issues size: '.count($issues));
-foreach($issues as $issue){
-	logDebug('processing issue');
-	$image_div = '';
-	if($issue->image_thumb && $issue->getImageFull()){
-		$image_div =	
-					"<div id='picture{$issue->getId()}' class='picture'>".
-						"<a href='#nogo' class='small' title='{$issue->getDisplayText()}'>".
-							"<img class='img-responsive' src='{$issue->getImageThumb()}'>".
-							"<img class='large popup-on-hover' src='{$issue->getImageFull()}'>".
-						"</a>".
-					"</div>";
-	}
-//	logDebug('image_div: '.$image_div);
-	$collection_div = "<select id='collection{$issue->getId()}' class='collection'>";
-	foreach($collections as $collection){
-		$selected = (intval($collection->getId()) === intval($issue->getCollectionId()) ? ' selected' : '');
-		$collection_div .= "<option value='{$collection->getId()}' {$selected}>{$collection->getName()}</option>";
-	}
-	$collection_div .= "</select>";
-//	logDebug('collection_div: '.$collection_div);
-	$series_div = "<select id='series{$issue->getId()}' class='series'>";
-	foreach($series as $serie){
-		$selected = (intval($serie->getId()) === intval($issue->getSeriesId()) ? ' selected' : '');
-		$series_div .= "<option value='{$serie->getId()}' {$selected}>{$serie->getName()} vol.{$serie->getVolume()} ({$serie->getYear()})</option>";
-	}
-	$series_div .= "</select>";
-//	logDebug('series_div: '.$series_div);
-	$issue_div = "<input type='text' class='issue' id='issue{$issue->getId()}' value='{$issue->getIssue()}'/>";
-//	logDebug('issue_div: '.$issue_div);
-	$chrono = Func::trimFloat($issue->getChronoIndex());
-	$chrono_div = "<input type='text' class='chrono' id='chrono{$issue->getId()}' value='".($chrono ? $chrono : '')."'/>";
-//	logDebug('chrono_div: '.$chrono_div);
-	$coverdate = new DateTime("{$issue->getCoverDate()}");
-	$cover_div = ($coverdate->format('m') === '01' ? $coverdate->format('M Y') : $coverdate->format('M j, Y'));
-//	logDebug('cover_div: '.$cover_div);
-	$grade_div = "<select id='grade{$issue->getId()}' class='grade'>";
-	foreach($grades->getAllGrades() as $grade_array){
-//		logDebug('grade_array: '.var_export($grade_array, true));
-		$selected = (intval($grade_array['position']) === intval($issue->getGrade()) ? ' selected' : '');
-		$grade_div .= "<option value='{$grade_array['position']}' title='{$grade_array['short_desc']}' {$selected}>{$grade_array['grade_name']}</option>";
-	}
-	$grade_div .= "</select>";
-	$comicvine_issue_id_div = "<span id='comicvine{$issue->getId()}' class='comicvine-link' data-comicvine-issue-id='{$issue->getComicvineIssueId()}'>{$issue->getComicvineIssueId()}</span>";
-	$notes_div = "<input type='text' class='notes' id='notes{$issue->getId()}' value='{$issue->getNotes()}'/>";
-	$delete_div = "<span class='delete' id='delete{$issue->getId()}' data-issue-text='{$issue->getDisplayText()}'><i class='fa fa-times'></i></span>";
-	?>
-		<tr>
-			<td><?=$image_div?></td>
-			<td><?=$collection_div?></td>
-			<td><?=$series_div?></td>
-			<td><?=$issue_div?></td>
-			<td><?=$chrono_div?></td>
-			<td><?=$cover_div?></td>
-			<td><?=$grade_div?></td>
-			<td><?=$comicvine_issue_id_div?></td>
-			<td><?=$notes_div?></td>
-			<td><?=$delete_div?></td>
-		</tr>
-	<?php logDebug("finished processing issue: {$issue->getCollectionName()} / {$issue->getIssueTitle()} / {$issue->getVolume()} / {$issue->getIssue()}"); ?>
-<?php } ?>
 	</tbody>
 	<tfoot>
 		<tr>
@@ -180,10 +110,14 @@ $(document).ready(function(){
 	//how shall i sort this? 
 	//by collection/coverdate/grade? by collection/chrono/grade? by collection/series/issue/grade?
 	$('#issuesTable').dataTable({
+		"processing": true,
+		"serverSide": true,
+		"ajax": "/ajax/issues.php<?=$collectionChoice?><?=$seriesChoice?>",
 		"dom": 'frtip',
 		"order": [[ 1, 'asc' ],[ 2, 'asc' ],[ 3, 'asc' ],[ 6, 'asc' ]],
 		"pageLength": <?=$pageLength?>,
 		"columnDefs": [ 
+			{ "visible": false, "targets": [  ] },
 			{ "orderable": false, "targets": [ 0, 9 ] },
 			{ "searchable": false, "targets": [ 0, 9 ] },
 			{ "width": '1em', "targets": [ 9 ] },

@@ -60,7 +60,7 @@ var months = Array('January', 'February', 'March', 'April', 'May', 'June', 'July
 $(document).ready(function(){
 //	var userIsAdmin = <?=($alreadyLoggedIn?'true':'false')?>;
 
-	$('#comiclist').DataTable({
+	var comiclistdatatable = $('#comiclist').DataTable({
 		"processing": true,
 		"serverSide": true,
 		"ajax": "/ajax/listing.php",
@@ -104,7 +104,6 @@ $(document).ready(function(){
 			},
 			{
 				"render": function ( data, type, row ) {
-//					console.warn('row[6]:', row[6], ', row[12]: ', row[12], ', row[13]: ', row[13]);
 					return '<span title="'+row[13]+'">'+row[12]+'</span>';
 				},
 				"targets": [ 6 ]

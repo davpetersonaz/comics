@@ -110,6 +110,15 @@ class DB extends DBcore{
 		$rows = $this->select($query);
 		return array_column($rows, 'collection_id');
 	}
+	
+	public function getAllCollections(){
+		$query = "SELECT c.collection_id, c.collection_name 
+					FROM collections c 
+					{$this->whereUserid('c')} 
+					ORDER BY c.collection_name ASC";
+		$rows = $this->select($query);
+		return $rows;
+	}
 
 	public function getAllGrades(){
 		$query = "SELECT position, abbr, grade_name, short_desc, long_desc 
@@ -204,7 +213,7 @@ class DB extends DBcore{
 		$rows = $this->select($query, $values);
 		return (isset($rows[0]) ? $rows[0] : false);
 	}
-
+	
 	public function getIssueDetails($issue_id){
 		$query = "SELECT c.issue_id, c.series_id, c.collection_id, c.issue, c.chrono_index, 
 						c.cover_date, c.grade, c.notes, c.comicvine_issue_id, c.comicvine_url, 
