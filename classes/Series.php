@@ -38,7 +38,7 @@ class Series{
 	}
 
 	public function doesSeriesExist($comicvine_series_full){
-		$this->db->getSeriesByComicvineFull($comicvine_series_full);
+		$rows = $this->db->getSeriesByComicvineFull($comicvine_series_full);
 		return (isset($rows[0]['series_id']) ? true : false);
 	}
 
@@ -55,6 +55,9 @@ class Series{
 	//can be used for dropdown options, title tooltips
 	public function getDisplayText(){
 		return "{$this->series_name}".($this->volume > 1 ? " vol.{$this->volume}" : "")." ({$this->year})";
+	}
+	public static function getDisplayTextStatic($name, $volume, $year){
+		return "{$name}".($volume > 1 ? " vol.{$volume}" : "")." ({$year})";
 	}
 
 	public static function getSeriesByName(DB $db, $name, $volume){

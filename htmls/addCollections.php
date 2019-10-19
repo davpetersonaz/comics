@@ -2,11 +2,12 @@
 logDebug('addCollections: '.var_export($_POST, true));
 if(isset($_POST['submit'])){
 	$newCollections = $_POST['name'];
+	$newDescriptions = $_POST['description'];
 	for($i=0; $i<count($newCollections); $i++){
 		if(!$newCollections[$i]){ break; }
 		$existingCollection = Collection::getCollectionByName($db, $newCollections[$i]);
 		if(!$existingCollection){
-			$collection_id = Collection::createCollection($db, $newCollections[$i]);
+			$collection_id = Collection::createCollection($db, $newCollections[$i], $newDescriptions[$i]);
 			logDebug('created collection: '.$collection_id);
 		}else{
 			logDebug('collection already exists: '.$existingCollection['collection_name']);
@@ -18,10 +19,6 @@ if(isset($_POST['submit'])){
 }
 
 $fields = 5;
-$inputFieldCells =
-	"<td>".
-		"<input type='text' name='name[]' class='name' placeholder='Collection Name'/>".
-	"</td>";
 ?>
 
 <h2 class='add-header'>Add Collections</h2>
@@ -31,12 +28,14 @@ $inputFieldCells =
 		<thead>
 			<tr>
 				<td>Collection</td>
+				<td>Description</td>
 			</tr>
 		</thead>
 		<tbody>
 <?php for($i=0; $i<$fields; $i++){ ?>
 			<tr>
-				<?=$inputFieldCells?>
+				<td><input type='text' name='name[]' class='name' placeholder='Collection Name'/></td>
+				<td><input type='text' name='description[]' class='description' placeholder='Description'/></td>
 			</tr>
 <?php } ?>
 		</tbody>

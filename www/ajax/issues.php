@@ -1,6 +1,6 @@
 <?php
 include_once('../../config.php');
-logDebug('ajax/issues REQUEST: '.var_export($_REQUEST, true)); //NOTE: this is very verbose
+//logDebug('ajax/issues REQUEST: '.var_export($_REQUEST, true)); //NOTE: this is very verbose
 
 //TODO: maybe make this work per-page, or just default each page however i want, and then add these as user-defined settings.
 //if(!isset($_SESSION['table_length']['home']) || $_SESSION['table_length']['home'] != $_REQUEST['length']){
@@ -132,7 +132,7 @@ foreach($mainQueryResult as $row){
 	$series_div = "<select id='series{$row['issue_id']}' class='series'>";
 	foreach($series as $serie){
 		$selected = (intval($serie['series_id']) === intval($row['series_id']) ? ' selected' : '');
-		$series_div .= "<option value='{$serie['series_id']}' {$selected}>{$serie['series_name']} vol.{$serie['volume']} ({$serie['year']})</option>";
+		$series_div .= "<option value='{$serie['series_id']}' {$selected}>".Series::getDisplayTextStatic($serie['series_name'], $serie['volume'], $serie['year'])."</option>";
 	}
 	$series_div .= "</select>";
 	$issue_div = "<input type='text' class='issue' id='issue{$row['issue_id']}' value='".Func::trimFloat($row['issue'])."'/>";
@@ -176,6 +176,6 @@ logDebug('rows in filtered dataset: '.$output['iTotalDisplayRecords']);
 logDebug('rows in displayed subset: '.count($datatablerows));
 
 $json_return = json_encode($output, JSON_UNESCAPED_SLASHES);
-logDebug('json return: '.$json_return);
+//logDebug('json return: '.$json_return);
 echo $json_return;
 exit;

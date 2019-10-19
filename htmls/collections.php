@@ -7,7 +7,7 @@
 </div>
 
 <table id='collectionsTable' class="display">
-	<thead><tr><th>id</th><th>collection</th><th>edit name</th><th>usage</th><th></th></tr></thead>
+	<thead><tr><th>id</th><th>collection</th><th>edit name</th><th>usage</th><th>description</th><th></th></tr></thead>
 	<tbody>
 <?php foreach($collections as $collection){ ?>
 		<tr>
@@ -15,11 +15,12 @@
 			<td><?=$collection->getName()?></td>
 			<td><input type="text" class='collection_name' id='collection<?=$collection->getId()?>' value='<?=$collection->getName()?>'></td>
 			<td><?=$collection->getIssueCount()?></td>
+			<td><input type="text" class='description' id='collection<?=$collection->getId()?>' value='<?=$collection->getDescription()?>'></td>
 			<td><span class='delete' id='delete<?=$collection->getId()?>' data-collection-text='<?=$collection->getName()?>' data-collection-issues='<?=$collection->getIssueCount()?>'><i class='fa fa-times'></i></span></td>
 		</tr>
 <?php } ?>
 	</tbody>
-	<tfoot><tr><th>id</th><th>collection</th><th>edit name</th><th>usage</th><th></th></tr></tfoot>
+	<tfoot><tr><th>id</th><th>collection</th><th>edit name</th><th>usage</th><th>description</th><th></th></tr></tfoot>
 </table>
 
 <script>
@@ -29,10 +30,10 @@ $(document).ready(function(){
 		"order": [[ 1, 'asc' ]],
 		"pageLength": <?=$pageLength?>,
 		"columnDefs": [ 
-			{ "searchable": false, "targets": [ 2, 4 ] },
-			{ "orderable": false, "targets": [ 2, 4 ] },
-			{ "width": '1em', "targets": [ 4 ] },
-			{ "className": "dt-center", "targets": [ 0, 1, 2, 3, 4 ] }// Center align both header and body content of columns
+			{ "searchable": false, "targets": [ 2, 5 ] },
+			{ "orderable": false, "targets": [ 2, 5 ] },
+			{ "width": '1em', "targets": [ 5 ] },
+			{ "className": "dt-center", "targets": [ 0, 1, 2, 3, 4, 5 ] }// Center align both header and body content of columns
 		]
 	});
 
@@ -48,6 +49,21 @@ $(document).ready(function(){
 			data: { collection_name_change: id, new_name: new_name } 
 		}).done(function(data){
 			console.warn('collection name changed');
+		});
+	});
+
+	$('#collectionsTable').on('change', '.description', function(){
+		console.warn('onChange', this);
+		var element_id = $(this).attr('id');
+		var id = element_id.slice(10);
+		console.warn('id', id);
+		var new_description = $(this).val();
+		$.ajax({
+			method: 'POST',
+			url: '/ajax/lookup.php',
+			data: { collection_description_change: id, new_description: new_description } 
+		}).done(function(data){
+			console.warn('collection description changed');
 		});
 	});
 

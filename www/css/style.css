@@ -2,6 +2,7 @@ body{
 	width: 100%;
 	height: 100%;
 }
+
 /* common functions */
 .full-height{
 	height: 100%;
@@ -41,6 +42,7 @@ body{
 	/*display: none;*/
 	visibility: hidden;
 }
+
 /* Sticky footer styles */
 html{
 	min-height: 100%;
@@ -57,6 +59,7 @@ body > .container-fluid{
 .admin-buttons{
 	float: right;
 }
+
 .footer{
 	/*background-color: #f8f8f8;*/
 	bottom: 0;
@@ -84,6 +87,7 @@ body > .container-fluid{
 nav.navbar .admin-buttons button.btn:hover{
 	background: white;
 }
+
 /* footer modal */
 #loginModal{
 	background-color: rgb(0,0,0); /* Fallback color */
@@ -134,6 +138,7 @@ nav.navbar .admin-buttons button.btn:hover{
 	cursor: pointer;
 	text-decoration: none;
 } 
+
 /* navbar hidden dropdown */
 #navbarCollapse .dropdown:hover > .dropdown-menu{
 	display: block;
@@ -147,15 +152,18 @@ nav.navbar .admin-buttons button.btn:hover{
 	border: none;
 	border-radius: 0;
 }
+
 #comiclist i.fa{
 	-webkit-text-stroke: 2px white;
 }
+
 .dataTables_wrapper{
 	padding-bottom: 1em;
 }
 #issuesTable_wrapper.dataTables_wrapper .dataTables_filter{
 	float: left;
 }
+
 .dataTable tbody tr,
 .dataTable tbody tr .img-responsive{
 	cursor: pointer;
@@ -194,20 +202,36 @@ nav.navbar .admin-buttons button.btn:hover{
 	width: auto; 
 }
 tbody tr input.issue,
-tbody tr input.chrono,
-tbody tr input.volume,
-tbody tr input.grade{
-	width: 100px;
+tbody tr input.volume{
+	width: 4em;
 }
-tbody tr select.grade,
+tbody tr input.chrono{
+	width: 5em;
+}
+tbody tr input.grade,
+tbody tr input.collection{
+	width: 6em;
+}
+tbody tr select.grade{
+	width: 8em;
+}
 tbody tr select.collection{
-	width: 150px;
+	width: 10em;
+}
+tbody tr input.series,
+tbody tr input.notes{
+	width: 18em;
 }
 tbody tr select.series,
 #issues-by-series,
-#seriesTable .series_name{
-	width: 300px;
+tbody tr input.series_name{
+	width: 20em;
 }
+tbody tr input.description{
+	width: 30em;
+}
+
+/* details */
 .details{
 	padding-bottom: 1em;
 	padding-top: 1em;
@@ -260,6 +284,7 @@ tbody tr select.series,
 .details .issue-title{
 	padding-top: 12px;
 }
+
 .inline-input{
 	display: inline-block;
 }
@@ -271,6 +296,8 @@ select{
 .add-header{
 	padding-top: 8px;
 }
+
+/* addIssues */
 #addIssuesTable td{
 	padding: 6px;
 }
@@ -283,6 +310,10 @@ select{
 	/*float: right;*/
 	margin-right: 1em;
 }
+#addCollectionsForm{
+	
+}
+
 .action-buttons{
 	margin-bottom: 4em;
 	margin-top: 1em;

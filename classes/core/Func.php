@@ -18,9 +18,9 @@ class Func{
 	
 	public static function makeDisplayDate($inputdatestr){
 		$inputdate = new DateTime($inputdatestr);
-		if(in_array($inputdate->format('j'), array('1', '28', '29', '30', '31'))){
+		if(in_array($inputdate->format('j'), array('1', '2', '28', '29', '30', '31'))){
 			return $inputdate->format('M Y');
-		}elseif($inputdate->format('d') > 14){
+		}elseif($inputdate->format('d') > 12){
 			return 'late '.$inputdate->format('M Y');
 		}else{
 			return $inputdate->format('M j, Y');

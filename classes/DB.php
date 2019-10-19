@@ -8,8 +8,8 @@ class DB extends DBcore{
 	
 	
 
-	public function addCollection($name){
-		$values = array('collection_name'=>$name, 'user_id'=>$_SESSION['user_id']);
+	public function addCollection($name, $description){
+		$values = array('collection_name'=>$name, 'description'=>$description, 'user_id'=>$_SESSION['user_id']);
 		$lastInsertId = $this->insert('collections', $values);
 		return $lastInsertId;
 	}
@@ -46,6 +46,12 @@ class DB extends DBcore{
 
 	public function changeCollectionName($collection_id, $new_name){
 		$values = array('collection_name'=>$new_name);
+		$rowsAffected = $this->update('collections', $values, 'collection_id='.intval($collection_id));
+		return $rowsAffected;
+	}
+
+	public function changeDescription($collection_id, $new_description){
+		$values = array('description'=>$new_description);
 		$rowsAffected = $this->update('collections', $values, 'collection_id='.intval($collection_id));
 		return $rowsAffected;
 	}
@@ -105,17 +111,20 @@ class DB extends DBcore{
 	}
 
 	public function getAllCollectionIds(){
-		$query = "SELECT c.collection_id FROM collections c {$this->whereUserid('c')}";
+		$query = "SELECT c.collection_id 
+					FROM collections c 
+					{$this->whereUserid('c')}";
 //		self::logQueryAndValues($query, array(), 'getAllCollectionIds');
 		$rows = $this->select($query);
 		return array_column($rows, 'collection_id');
 	}
 	
 	public function getAllCollections(){
-		$query = "SELECT c.collection_id, c.collection_name 
+		$query = "SELECT c.collection_id, c.collection_name, c.description
 					FROM collections c 
 					{$this->whereUserid('c')} 
 					ORDER BY c.collection_name ASC";
+		self::logQueryAndValues($query, array(), 'getAllCollections');
 		$rows = $this->select($query);
 		return $rows;
 	}
@@ -130,7 +139,9 @@ class DB extends DBcore{
 	}
 
 	public function getAllIssueIds(){
-		$query = "SELECT c.issue_id FROM comics c {$this->whereUserid('c')}";
+		$query = "SELECT c.issue_id 
+					FROM comics c 
+					{$this->whereUserid('c')}";
 //		self::logQueryAndValues($query, array(), 'getAllIssueIds');
 		$rows = $this->select($query);
 		return array_column($rows, 'issue_id');
@@ -186,14 +197,16 @@ class DB extends DBcore{
 	}
 
 	public function getAllSeriesIds(){
-		$query = "SELECT s.series_id FROM series s {$this->whereUserid('s')}";
+		$query = "SELECT s.series_id 
+					FROM series s 
+					{$this->whereUserid('s')}";
 		$rows = $this->select($query);
 //		self::logQueryAndValues($query, array(), 'getAllSeriesIds');
 		return array_column($rows, 'series_id');
 	}
 
 	public function getCollection($collection_id){
-		$query = "SELECT c.collection_id, c.collection_name, COUNT(i.issue_id) AS issue_count 
+		$query = "SELECT c.collection_id, c.collection_name, c.description, COUNT(i.issue_id) AS issue_count 
 					FROM collections c
 					LEFT JOIN comics i USING (collection_id)
 					{$this->whereUserid('c')}
@@ -204,7 +217,7 @@ class DB extends DBcore{
 	}
 
 	public function getCollectionByName($name){
-		$query = "SELECT c.collection_id, c.collection_name 
+		$query = "SELECT c.collection_id, c.collection_name, c.description 
 					FROM collections c
 					{$this->whereUserid('c')}
 						AND c.collection_name=:collection_name
@@ -259,7 +272,8 @@ class DB extends DBcore{
 		$query = "SELECT s.series_id, s.year, s.series_name, s.volume, s.comicvine_series_id, s.comicvine_series_full
 					FROM series s
 					{$this->whereUserid('s')}
-						AND s.series_name=:name AND s.volume=:volume";
+						AND s.series_name=:name 
+							AND s.volume=:volume";
 		$values = array('name'=>$seriesName, 'volume'=>$volume);
 //		$this->logQueryAndValues($query, $values, 'getSeriesByName');
 		$rows = $this->select($query, $values);
@@ -267,14 +281,18 @@ class DB extends DBcore{
 	}
 
 	public function getUserByNumber($user_id){
-		$query = "SELECT uid FROM users WHERE user_id=:user_id";
+		$query = "SELECT uid 
+					FROM users
+					WHERE user_id=:user_id";
 		$values = array('user_id'=>$user_id);
 		$rows = $this->select($query, $values);
 		return (isset($rows[0]['uid']) ? true : false);
 	}
 
 	public function getUserHeader($user_id){
-		$query = "SELECT header FROM users WHERE user_id=:user_id";
+		$query = "SELECT header 
+					FROM users 
+					WHERE user_id=:user_id";
 		$values = array('user_id'=>$user_id);
 //		$this->logQueryAndValues($query, $values, 'getUserHeader');
 		$rows = $this->select($query, $values);
@@ -294,7 +312,9 @@ class DB extends DBcore{
 
 	public function selectCountFromTable($indexColumn, $table){
 		if(' ' === substr($table, strlen($table)-2, 1)){ $table = substr($table, 0, strlen($table)-2); }//remove table abbr
-		$query = "SELECT COUNT({$indexColumn}) AS rowcount FROM {$table} {$this->whereUserid()}";
+		$query = "SELECT COUNT({$indexColumn}) AS rowcount 
+					FROM {$table} 
+					{$this->whereUserid()}";
 		$values = array();
 		$this->logQueryAndValues($query, $values, 'selectCountFromTable');
 		$resultTotal = $this->select($query, $values);

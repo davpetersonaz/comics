@@ -1,17 +1,13 @@
 <?php 
 
 
-//TOOD: #1 -- do server-side processing
-
-//TODO: GOTTA FIGURE OUT HOW TO SORT DATES, AND GRADES, MAY HAVE TO SWITCH TO DATATABLES-SSP AND ALLOW THE DB TO SORT THE RAW DATA
-
-//TODO: WHY DOESNT SEARCH WORK???
+//TODO: don't allow access to this page unless logged in!!
 
 //TODO: clicking on cover-image not only opens the link in a new tab, it also opens the link in the current tab.
 
 
 logDebug('issues GET: '.var_export($_GET, true));
-$pageLength = 100;//(isset($_SESSION['table_length']['home']) && $_SESSION['table_length']['home'] > 0 ? $_SESSION['table_length']['home'] : 25);
+$pageLength = 50;//(isset($_SESSION['table_length']['home']) && $_SESSION['table_length']['home'] > 0 ? $_SESSION['table_length']['home'] : 25);
 
 //TODO: i could add another option -- select by both collection and series, but i'd have to add a submit button though.
 $collectionChoice = (isset($_GET['coll']) ? "?coll={$_GET['coll']}" : '');
@@ -117,7 +113,7 @@ $(document).ready(function(){
 		"order": [[ 1, 'asc' ],[ 2, 'asc' ],[ 3, 'asc' ],[ 6, 'asc' ]],
 		"pageLength": <?=$pageLength?>,
 		"columnDefs": [ 
-			{ "visible": false, "targets": [  ] },
+//			{ "visible": false, "targets": [  ] },
 			{ "orderable": false, "targets": [ 0, 9 ] },
 			{ "searchable": false, "targets": [ 0, 9 ] },
 			{ "width": '1em', "targets": [ 9 ] },

@@ -1,15 +1,14 @@
 <?php
-
-
-//TODO: PROBABLY SHOULD ADD A 'DESCRIPTION' FIELD
-
-
-
 class Collection{
 
 	public function changeCollectionName($new_name){
 		$this->name = $new_name;
 		return $this->db->changeCollectionName($this->collection_id, $new_name);
+	}
+
+	public function changeDescription($new_description){
+		$this->description = $new_description;
+		return $this->db->changeDescription($this->collection_id, $new_description);
 	}
 
 	public static function createCollection(DB $db, $collection_name){
@@ -42,6 +41,7 @@ class Collection{
 		if($collection){
 			$this->collection_id = $collection['collection_id'];
 			$this->name = $collection['collection_name'];
+			$this->description = $collection['description'];
 			$this->issue_count = $collection['issue_count'];
 		}
 	}
@@ -52,6 +52,7 @@ class Collection{
 
 	public function getId(){ return $this->collection_id; }
 	public function getName(){ return $this->name; }
+	public function getDescription(){ return $this->description; }
 	public function getIssueCount(){ return $this->issue_count; }
 
 	public function __construct(DB $db, $collection_id=false){
@@ -65,5 +66,6 @@ class Collection{
 	protected $db = false;
 	protected $collection_id = false;//db collection id
 	protected $name = false;//my collection name
+	protected $description = false;
 	protected $issue_count = 0;//number of issues in collection
 }

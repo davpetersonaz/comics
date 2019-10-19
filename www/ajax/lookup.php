@@ -55,6 +55,21 @@ elseif(isset($_POST['collection_name_change'], $_POST['new_name'])){
 	}
 }
 
+elseif(isset($_POST['collection_description_change'], $_POST['new_description'])){
+	$collection = new Collection($db, $_POST['collection_description_change']);
+	if($collection->isCollection()){
+		$rowsAffected = $collection->changeDescription($_POST['new_description']);
+		logDebug('rowsAffected: '.$rowsAffected);
+		if($rowsAffected === 0){
+			echo 'no rows affected';
+		}else{
+			echo 'done';
+		}
+	}else{
+		echo 'no collection found';
+	}
+}
+
 //comes from addSeriesSelect, create a new series from the comicvine info
 //TODO: for some reason this doesn't work
 elseif(isset($_POST['comicvine']) && is_array($_POST['comicvine'])){

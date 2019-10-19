@@ -75,10 +75,10 @@ $inputFieldCells =
 		"</select>".
 	"</td>".
 	"<td>".
-		"<input type='text' name='issue[]' class='issue' placeholder='Issue Number'/>".
+		"<input type='text' name='issue[]' class='issue' placeholder='Issue'/>".
 	"</td>".
 	"<td>".
-		"<input type='text' name='chrono[]' class='chrono' placeholder='Chronological Index'/>".
+		"<input type='text' name='chrono[]' class='chrono' placeholder='Chrono'/>".
 	"</td>".
 	"<td>".
 		"<select name='grade[]' class='grade' placeholder='Grading'>".
