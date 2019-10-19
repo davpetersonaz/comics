@@ -53,7 +53,7 @@ body{
 	margin-bottom: 60px; /* Margin bottom by footer height */
 }
 body > .container-fluid{
-	margin-top: 30px; /* height of footer */
+	margin-top: 50px; /* height of footer *//* header! not footer */
 	height: 100%;
 }
 .admin-buttons{
@@ -161,7 +161,7 @@ nav.navbar .admin-buttons button.btn:hover{
 	padding-bottom: 1em;
 }
 #issuesTable_wrapper.dataTables_wrapper .dataTables_filter{
-	float: left;
+	/*float: left;*/
 }
 
 .dataTable tbody tr,
@@ -318,8 +318,12 @@ select{
 .btn-above-table{
 	float: right;
 	margin-bottom: 1em;
-	padding-top: 0.5em;
+	/*padding-top: 0.5em;*/
 }
 .btn-above-table .btn-primary{
 	margin-right: 1em;
+}
+dropdown-above-table{
+	float: left;
+	margin-right: 2em;
 }

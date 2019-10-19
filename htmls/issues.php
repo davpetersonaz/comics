@@ -1,11 +1,14 @@
+<?php if(!$alreadyLoggedIn){ ?><script>window.location.href = '/';</script><?php } ?>
+
+	
+	
 <?php 
-
-
-//TODO: don't allow access to this page unless logged in!!
-
 //TODO: clicking on cover-image not only opens the link in a new tab, it also opens the link in the current tab.
-
-
+?>
+	
+	
+	
+<?php	
 logDebug('issues GET: '.var_export($_GET, true));
 $pageLength = 50;//(isset($_SESSION['table_length']['home']) && $_SESSION['table_length']['home'] > 0 ? $_SESSION['table_length']['home'] : 25);
 
@@ -24,7 +27,7 @@ $series = Series::getAllSeries($db);
 	<button class='btn btn-primary bg-dark add-collection'>Add Collection</button>
 </div>
 
-<div class='btn-above-table' style='float:left;'>
+<div class='dropdown-above-table' style='float:left;'>
 	filter by collection:<br />
 	<select id='issues-by-collection'>
 		<option value=''></option>
@@ -35,7 +38,7 @@ $series = Series::getAllSeries($db);
 	</select>
 </div>
 
-<div class='btn-above-table' style='float:left;margin-left:2em;'>
+<div class='dropdown-above-table' style='float:left;margin-left:2em;'>
 	filter by series:<br />
 	<select id='issues-by-series'>
 		<option value=''></option>
@@ -107,6 +110,7 @@ $(document).ready(function(){
 	//by collection/coverdate/grade? by collection/chrono/grade? by collection/series/issue/grade?
 	$('#issuesTable').dataTable({
 		"processing": true,
+		"searchDelay": 1000,
 		"serverSide": true,
 		"ajax": "/ajax/issues.php<?=$collectionChoice?><?=$seriesChoice?>",
 		"dom": 'frtip',

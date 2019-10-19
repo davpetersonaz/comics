@@ -1,3 +1,5 @@
+<?php if(!$alreadyLoggedIn){ ?><script>window.location.href = '/';</script><?php } ?>
+
 <div class='btn-above-table'>
 	<button class='btn btn-primary bg-dark add-issues'>Add Issues</button>
 </div>

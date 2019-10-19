@@ -1,3 +1,5 @@
+<?php if(!$alreadyLoggedIn){ ?><script>window.location.href = '/';</script><?php } ?>
+
 <?php $pageLength = (isset($_SESSION['table_length']['home']) && $_SESSION['table_length']['home'] > 0 ? $_SESSION['table_length']['home'] : 100); ?>
 <?php $collections = Collection::getAllCollections($db); ?>
 <?php // logDebug('collections: '.var_export($collections, true)); ?>

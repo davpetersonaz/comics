@@ -1,3 +1,5 @@
+<?php if(!$alreadyLoggedIn){ ?><script>window.location.href = '/';</script><?php } ?>
+
 <?php
 include_once('../../config.php');
 //logDebug('ajax/issues REQUEST: '.var_export($_REQUEST, true)); //NOTE: this is very verbose
@@ -113,7 +115,7 @@ $datatablerows = array();
 
 //finally, format the actual results
 foreach($mainQueryResult as $row){
-	logDebug('row: '.var_export($row, true));
+//	logDebug('row: '.var_export($row, true));
 	$image_div = '';
 	if($row['image_thumb'] && $row['image_full']){
 		$image_div =	"<div id='picture{$row['issue_id']}' class='picture'>".
@@ -141,7 +143,7 @@ foreach($mainQueryResult as $row){
 	$coverdate_div = "<span title='{$row['cover_date']}'>".Func::makeDisplayDate($row['cover_date']).'</span>';
 	$grade_div = "<select id='grade{$row['issue_id']}' class='grade'>";
 	foreach($grades->getAllGrades() as $grade_array){
-		logDebug('grade_array: '.var_export($grade_array, true));
+//		logDebug('grade_array: '.var_export($grade_array, true));
 		$selected = (intval($grade_array['position']) === intval($row['grade']) ? ' selected' : '');
 		$grade_div .= "<option value='{$grade_array['position']}' title='{$grade_array['short_desc']}' {$selected}>{$grade_array['grade_name']}</option>";
 	}

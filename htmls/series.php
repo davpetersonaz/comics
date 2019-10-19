@@ -1,3 +1,5 @@
+<?php if(!$alreadyLoggedIn){ ?><script>window.location.href = '/';</script><?php } ?>
+
 <?php 
 
 
