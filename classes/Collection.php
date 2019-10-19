@@ -11,8 +11,8 @@ class Collection{
 		return $this->db->changeDescription($this->collection_id, $new_description);
 	}
 
-	public static function createCollection(DB $db, $collection_name){
-		return $db->addCollection($collection_name);
+	public static function createCollection(DB $db, $collection_name, $description){
+		return $db->addCollection($collection_name, $description);
 	}
 
 	public function delete(){
