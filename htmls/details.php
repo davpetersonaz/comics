@@ -43,7 +43,7 @@ $notes = $issue->getNotes();
 
 		<h5 class='collection'><span class='smaller'>collection:</span> <?=$issue->getCollectionName()?> <?=$issue->getChronoIndex()?></h5>
 		<h1><?=$issue->getSeriesName()?><span class='smaller'> (vol. <?=$issue->getVolume()?>)</span></h1>
-		<h4>Issue <?=($issue->getIssue() == 'infinity' ? '<i class="fa fa-infinity"></i>' : $issue->getIssue())?></h4>
+		<h4>Issue <?=Issue::formatIssueNumber($issue->getIssue())?></h4>
 		<h5><?=$cover_date?></h5>
 		<h5 title='<?=$grade['long_desc']?>'>condition: <?=$grade['grade_name']?></h5>
 		Comicvine link: <a href='<?=$comicvine_link?>'><?=$comicvine_link?></a>

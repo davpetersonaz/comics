@@ -21,8 +21,8 @@ class DB extends DBcore{
 		return $lastInsertId;
 	}
 
-	public function addSeries($name, $volume, $year, $first_issue, $last_issue, $comicvine_series_id, $comicvine_series_full, $image_thumb, $image_full){
-		$values = array('series_name'=>$name, 'year'=>$year, 'first_issue'=>$first_issue, 'last_issue'=>$last_issue,
+	public function addSeries($name, $volume, $year, $publisher, $first_issue, $last_issue, $comicvine_series_id, $comicvine_series_full, $image_thumb, $image_full){
+		$values = array('series_name'=>$name, 'year'=>$year, 'publisher'=>$publisher, 'first_issue'=>$first_issue, 'last_issue'=>$last_issue,
 						'comicvine_series_id'=>$comicvine_series_id, 'comicvine_series_full'=>$comicvine_series_full, 
 						'image_thumb'=>$image_thumb, 'image_full'=>$image_full, 'user_id'=>$_SESSION['user_id']);
 		if($volume){
@@ -186,7 +186,7 @@ class DB extends DBcore{
 	}
 
 	public function getAllSeries(){
-		$query = "SELECT s.series_id, s.year, s.series_name, s.volume, s.comicvine_series_id, s.comicvine_series_full
+		$query = "SELECT s.series_id, s.series_name, s.volume, s.year, s.publisher, s.comicvine_series_id, s.comicvine_series_full
 					FROM series s
 					{$this->whereUserid('s')}
 					ORDER BY series_name ASC, volume ASC";
@@ -231,7 +231,7 @@ class DB extends DBcore{
 		$query = "SELECT c.issue_id, c.series_id, c.collection_id, c.issue, c.chrono_index, 
 						c.cover_date, c.grade, c.notes, c.comicvine_issue_id, c.comicvine_url, 
 						c.issue_title, c.creators, c.characters, c.synopsis, c.image_full, c.image_thumb,
-						s.year, s.series_name, s.volume, s.comicvine_series_id, s.comicvine_series_full, 
+						s.series_name, s.volume, s.year, s.publisher, s.comicvine_series_id, s.comicvine_series_full, 
 						l.collection_name
 					FROM comics c
 					LEFT JOIN series s USING (series_id)
@@ -245,7 +245,7 @@ class DB extends DBcore{
 	}	
 
 	public function getSeries($series_id){
-		$query = "SELECT s.series_id, s.year, s.series_name, s.volume, s.first_issue, s.last_issue,
+		$query = "SELECT s.series_id, s.series_name, s.volume, s.year, s.publisher, s.first_issue, s.last_issue,
 						s.comicvine_series_id, s.comicvine_series_full, s.image_thumb, s.image_full,
 						COUNT(i.issue_id) AS issue_count
 					FROM series s
@@ -269,7 +269,7 @@ class DB extends DBcore{
 	}
 
 	public function getSeriesByName($seriesName, $volume){
-		$query = "SELECT s.series_id, s.year, s.series_name, s.volume, s.comicvine_series_id, s.comicvine_series_full
+		$query = "SELECT s.series_id, s.series_name, s.volume, s.year, s.publisher, s.comicvine_series_id, s.comicvine_series_full
 					FROM series s
 					{$this->whereUserid('s')}
 						AND s.series_name=:name 
@@ -278,6 +278,15 @@ class DB extends DBcore{
 //		$this->logQueryAndValues($query, $values, 'getSeriesByName');
 		$rows = $this->select($query, $values);
 		return (isset($rows[0]) ? $rows[0] : false);
+	}
+	
+	public function getIssueCountForSeries($series_id){
+		$query = "SELECT COUNT(issue_id) AS issue_count 
+					FROM comics 
+					WHERE series_id=:series_id";
+		$values = array('series_id'=>$series_id);
+		$rows = $this->select($query, $values);
+		return (isset($rows[0]['issue_count']) ? $rows[0]['issue_count'] : 0);
 	}
 
 	public function getUserByNumber($user_id){
@@ -299,8 +308,8 @@ class DB extends DBcore{
 		return (isset($rows[0]['header']) ? $rows[0]['header'] : false);
 	}
 
-	public function saveComicvineSeriesInfo($year, $name, $volume, $comicvine_series_id, $comicvine_series_full){
-		$values = array('year'=>$year, 'series_name'=>$name, 'volume'=>$volume, 'comicvine_series_id'=>$comicvine_series_id, 
+	public function saveComicvineSeriesInfo($name, $volume, $year, $publisher, $comicvine_series_id, $comicvine_series_full){
+		$values = array('series_name'=>$name, 'volume'=>$volume, 'year'=>$year, 'publisher'=>$publisher, 'comicvine_series_id'=>$comicvine_series_id, 
 						'comicvine_series_full'=>$comicvine_series_full, 'user_id'=>$_SESSION['user_id']);
 //		logDebug('saveComicvineSeriesInfo: '.var_export($values, true));
 		if($this->verifyColumns('series', $values)){

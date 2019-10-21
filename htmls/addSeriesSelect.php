@@ -1,5 +1,4 @@
-<?php if(!$alreadyLoggedIn){ ?><script>window.location.href = '/';</script><?php } ?>
-
+<?php /* if(!$alreadyLoggedIn){ ?><script>window.location.href = '/';</script><?php } */ ?>
 <?php
 
 
@@ -29,7 +28,7 @@ foreach($results as $result){
 	$newArray[] = "<div class='picture'>".
 						"<a class='small' href='#nogo' title='small image'>".
 							"<img src='{$result['image']['thumb_url']}' class='img-responsive'>".
-							"<img class='large popup-on-hover' src='{$result['image']['super_url']}'>".
+							"<img src='{$result['image']['super_url']}' class='large popup-on-hover'>".
 						"</a>".
 					"</div>";
 	$newArray[] = $result['name'];

@@ -3,12 +3,11 @@
 <?php
 
 
-//TODO: WHEN ISSUES ARE ADDED, SHOW THE COVERS ACROSS THE TOP, THAT WAY USER CAN VERIFY THE CORRECT ISSUES WERE CREATED
 
 //TODO: IF ISSUE CANNOT BE FOUND ON COMICVINE, IT CREATES A PARTIAL ISSUE RECORD, 
 //IT SHOULD NOT CREATE ANYTHING AND IT SHOULD DISPLAY A FRIENDLY ERROR MESSAGE,
 
-//MAYBE INCLUDE A LINK TO THE SERIES ON COMICVINE, also include link to api-rul used??
+//MAYBE INCLUDE A LINK TO THE SERIES ON COMICVINE, also include link to api-url used??
 
 //TODO: INCLUDE A CHECKBOX FOR 'AUTOGRAPHED'
 
@@ -18,8 +17,6 @@
 //maybe include a link to comicvine-search with the given comicvine-series-id and issue-number...
 
 //TODO: default the 'collection' option to the previous choice, even if nothing was selected (store as session-var)
-
-//TODO: make notes field wider
 
 //TODO: disable the return key so it doesn't submit the form prematurely (require clicking the submit button
 
@@ -33,6 +30,7 @@ if(isset($_POST['submit'])){
 	$chrono = $_POST['chrono'];
 	$gradepos = $_POST['grade'];
 	$notes = $_POST['notes'];
+	$thumbs = $images = array();
 
 	for($i=0; $i<count($series); $i++){
 		if(!$series[$i]){ break; }
@@ -42,6 +40,19 @@ if(isset($_POST['submit'])){
 		$issue->addSeriesToIssue($series[$i]);
 		logDebug('issue is currently: '.var_export($issue, true));
 		$issue->updateIssueDetails();
+		$images[] = $issue->getImageFull();
+		$thumbs[] = $issue->getImageThumb();
+	}
+	
+	for($i=0; $i<count($images); $i++){
+		?>
+		<div class='success-cover'>
+			<a href='/details?id=<?=$issue->getId()?>' class='small' title=""<?=$issue->getDisplayText()?>">
+				<img src='<?=$thumbs[$i]?>' class='img-responsive'>
+				<img src='<?=$images[$i]?>' class='large popup-on-hover'>
+			</a>
+		</div>
+		<?php
 	}
 	?>
 		<p class='red-text'>Issues have been added, create some more...</p>
@@ -124,11 +135,25 @@ $inputFieldCells .=
 
 <script>
 $(document).ready(function(){
+
 	//focus on first input
 	$('form:first *:input[type!=hidden]:first').focus();		
+	
+	$("form :input").change(function(){
+		$("#addIssuesForm").data("changed", true);
+	});
 
 	$('.add-series').on('click', function(){
-		window.location.href = '/addSeries';
+		var changed = $("#addIssuesForm").data("changed");
+		if(!changed || (changed && confirm('Are you sure you want to add a new series? All form data will be lost.'))){
+			window.location.href = '/addSeries';
+		}
 	});
+	
+	$(".popup-on-hover").hover(function(){
+		console.warn('hover', this);
+		$(this).find('.large').show();
+	});
+
 });
 </script>

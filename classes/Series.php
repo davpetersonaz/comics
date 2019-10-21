@@ -19,6 +19,7 @@ class Series{
 		logDebug('comicvine: '.var_export($comicvine_info, true));
 		$this->series_name = $name;
 		$this->volume = intval($volume);
+		$this->publisher = $comicvine_info[3];
 		$this->year = $comicvine_info[4];
 		$this->first_issue = $comicvine_info[6];
 		$this->last_issue = $comicvine_info[7];
@@ -26,7 +27,7 @@ class Series{
 		$this->comicvine_series_full = $comicvine_info[9];
 		$this->image_thumb = $comicvine_info[10];
 		$this->image_full = $comicvine_info[11];
-		$this->series_id =	$this->db->addSeries($this->series_name, $this->volume, $this->year, 
+		$this->series_id =	$this->db->addSeries($this->series_name, $this->volume, $this->year, $this->publisher,
 							$this->first_issue, $this->last_issue, $this->comicvine_series_id, 
 							$this->comicvine_series_full, $this->image_thumb, $this->image_full);
 		return $this->series_id;
@@ -59,6 +60,10 @@ class Series{
 	public static function getDisplayTextStatic($name, $volume, $year){
 		return "{$name}".($volume > 1 ? " vol.{$volume}" : "")." ({$year})";
 	}
+	
+	public static function getIssueCountStatic(DB $db, $series_id){
+		return $db->getIssueCountForSeries($series_id);
+	}
 
 	public static function getSeriesByName(DB $db, $name, $volume){
 		return $db->getSeriesByName($name, $volume);
@@ -73,6 +78,7 @@ class Series{
 			if($series['series_name']){ $this->series_name = $series['series_name']; }
 			if($series['volume']){ $this->volume = $series['volume']; }
 			if($series['year']){ $this->year = $series['year']; }
+			if($series['publisher']){ $this->publisher = $series['publisher']; }
 			if($series['first_issue']){ $this->first_issue = $series['first_issue']; }
 			if($series['last_issue']){ $this->last_issue = $series['last_issue']; }
 			if($series['comicvine_series_id']){ $this->comicvine_series_id = $series['comicvine_series_id']; }
@@ -91,6 +97,7 @@ class Series{
 	public function getName(){ return $this->series_name; }
 	public function getVolume(){ return $this->volume; }
 	public function getYear(){ return $this->year; }
+	public function getPublisher(){ return $this->publisher; }
 	public function getFirstIssue(){ return $this->first_issue; }
 	public function getLastIssue(){ return $this->last_issue; }
 	public function getComicvineId(){ return $this->comicvine_series_id; }
@@ -111,6 +118,7 @@ class Series{
 	protected $series_name = false;//my series name, not comicvine's name
 	protected $volume = false;//my series volume number, not comicvine's volume
 	protected $year = false;//copyright year
+	protected $publisher = false;//series publisher
 	protected $first_issue = false;//first issue of series
 	protected $last_issue = false;//last issue of series
 	protected $comicvine_series_id = false;//comicvine series id, ex) Avengers vol.1 is 2128

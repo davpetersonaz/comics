@@ -1,6 +1,6 @@
-<?php if(!$alreadyLoggedIn){ ?><script>window.location.href = '/';</script><?php } ?>
+<?php 
+if(!$alreadyLoggedIn){ ?><script>window.location.href = '/';</script><?php }
 
-<?php
 logDebug('addCollections: '.var_export($_POST, true));
 if(isset($_POST['submit'])){
 	$newCollections = $_POST['name'];

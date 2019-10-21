@@ -24,9 +24,8 @@ class Curl{
 
 	public function getIssuesBySeriesAndIssue($comicvine_series_id, $issue_number){
 		//https://comicvine.gamespot.com/api/issues/?filter=volume:2128,issue_number:1&api_key=5881a5da17876142d003f9bcf843d4db4ce9fce2&format=json
-		//massage the issue number for a couple corner cases
-		if($issue_number === '1/2'){ $issue_number = "½"; }
-		if($issue_number === 'infinity'){ $issue_number = "∞"; }
+		//massage the issue number for a couple corner cases (like "½" and "∞")
+		$issue_number = Issue::formatIssueNumber($issue_number);
 		return $this->getResults('issues', array(), 'filter=volume:'.intval($comicvine_series_id).urlencode(',issue_number:'.$issue_number));
 	}
 

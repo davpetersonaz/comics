@@ -33,7 +33,7 @@ class Issue{
 
 	public function changeIssueNumber($new_issue_number){
 		$this->issue = $new_issue_number;
-		$rowsAffected = $this->db->changeIssueNumber($this->issue_id, $new_issue_number);
+		$rowsAffected = $this->db->changeIssueNumber($this->issue_id, self::unformatIssueNumber($new_issue_number));
 		$this->updateIssueDetails();
 		return $rowsAffected;
 	}
@@ -56,7 +56,7 @@ class Issue{
 	}
 
 	public static function createIssue(DB $db, $collection_id, $series_id, $issue, $chrono='', $gradepos=8, $notes=''){
-		$lastInsertId = $db->addIssue($series_id, $collection_id, $issue, $chrono, $gradepos, $notes);
+		$lastInsertId = $db->addIssue($series_id, $collection_id, self::unformatIssueNumber($issue), $chrono, $gradepos, $notes);
 		return $lastInsertId;
 	}
 
@@ -160,6 +160,26 @@ class Issue{
 	public function getIssueDetails($issue_id){
 		$issue = $this->db->getIssueDetails($issue_id);
 		return $issue;
+	}
+	
+	public static function formatIssueNumber($issue_number){
+		if(intval($issue_number) === 88888 || $issue_number === 'infinity'){
+			return "∞";
+		}elseif(floatval($issue_number) === 0.5 || $issue_number === '1/2'){
+			return "½";
+		}else{
+			return Func::trimFloat($issue_number);
+		}
+	}
+	
+	public static function unformatIssueNumber($issue_number){
+		if($issue_number === "∞" || $issue_number === 'infinity'){
+			return 88888;
+		}elseif($issue_number === "½" || $issue_number === "1/2"){
+			return 0.5;
+		}else{
+			return Func::trimFloat($issue_number);
+		}
 	}
 
 	//TODO: this will go away

@@ -1,24 +1,17 @@
-<?php if(!$alreadyLoggedIn){ ?><script>window.location.href = '/';</script><?php } ?>
-
-	
-	
 <?php 
-//TODO: clicking on cover-image not only opens the link in a new tab, it also opens the link in the current tab.
-?>
-	
-	
-	
-<?php	
-logDebug('issues GET: '.var_export($_GET, true));
-$pageLength = 50;//(isset($_SESSION['table_length']['home']) && $_SESSION['table_length']['home'] > 0 ? $_SESSION['table_length']['home'] : 25);
+if(!$alreadyLoggedIn){ ?><script>window.location.href = '/';</script><?php }
 
-//TODO: i could add another option -- select by both collection and series, but i'd have to add a submit button though.
-$collectionChoice = (isset($_GET['coll']) ? "?coll={$_GET['coll']}" : '');
-$seriesChoice = (isset($_GET['ser']) ? ($collectionChoice?'&':'?')."ser={$_GET['ser']}" : '');
+logDebug('issues GET: '.var_export($_GET, true));
+$pageLength = 100;//(isset($_SESSION['table_length']['home']) && $_SESSION['table_length']['home'] > 0 ? $_SESSION['table_length']['home'] : 25);
+
+$collectionsChoice = (isset($_GET['coll']) ? $_GET['coll'] : false);
+$seriesChoice = (isset($_GET['ser']) ? $_GET['ser'] : false);
+$getParams = ($collectionsChoice ? "?coll={$collectionsChoice}" : '');
+$getParams .= ($seriesChoice ? ($getParams?'&':'?')."ser={$seriesChoice}" : '');
+logDebug("getParams: [{$getParams}]");
 
 $collections = Collection::getAllCollections($db);
 $series = Series::getAllSeries($db);
-//logDebug('grades->getAllGrades(): '.var_export($grades->getAllGrades(), true));
 ?>
 
 <div class='btn-above-table'>
@@ -32,7 +25,7 @@ $series = Series::getAllSeries($db);
 	<select id='issues-by-collection'>
 		<option value=''></option>
 <?php foreach($collections as $collection){ ?>
-	<?php $selected = ($collectionChoice && intval($collectionChoice) === intval($collection->getId()) ? 'selected' : ''); ?>
+	<?php $selected = ($collectionsChoice && intval($collectionsChoice) === intval($collection->getId()) ? 'selected' : ''); ?>
 		<option value='<?=$collection->getId()?>' <?=$selected?>><?=$collection->getName()?></option>
 <?php } ?>
 	</select>
@@ -53,6 +46,7 @@ $series = Series::getAllSeries($db);
 	<thead>
 		<tr>
 			<th> </th>
+			<th>id</th>
 			<th>collection</th>
 			<th>series</th>
 			<th>issue</th>
@@ -69,6 +63,7 @@ $series = Series::getAllSeries($db);
 	<tfoot>
 		<tr>
 			<th> </th>
+			<th>id</th>
 			<th>collection</th>
 			<th>series</th>
 			<th>issue</th>
@@ -85,58 +80,19 @@ $series = Series::getAllSeries($db);
 <script>
 $(document).ready(function(){
 
-	//this creates an array of values for string input boxes
-	$.fn.dataTable.ext.order['dom-text'] = function(settings, col){
-		return this.api().column( col, {order:'index'} ).nodes().map( function(td, i){
-			return $('input', td).val();
-		});
-	};
-
-	//this creates an array of values for numeric input boxes, parsed as numbers
-	$.fn.dataTable.ext.order['dom-text-numeric'] = function (settings, col){
-		return this.api().column( col, {order:'index'} ).nodes().map( function(td, i){
-			return $('input', td).val() * 1;
-		});
-	};
-
-	//this creates an array of values for select options
-	$.fn.dataTable.ext.order['dom-select'] = function(settings, col){
-		return this.api().column( col, {order:'index'} ).nodes().map( function(td, i){
-			return $('select', td).val();
-		});
-	};
-
-	//how shall i sort this? 
-	//by collection/coverdate/grade? by collection/chrono/grade? by collection/series/issue/grade?
 	$('#issuesTable').dataTable({
+		"ajax": "/ajax/issues.php<?=$getParams?>",
+		"dom": 'frtip',
+		"order": [[ 2, 'asc' ],[ 3, 'asc' ],[ 4, 'asc' ],[ 7, 'asc' ]],
+		"pageLength": <?=$pageLength?>,
 		"processing": true,
 		"searchDelay": 1000,
 		"serverSide": true,
-		"ajax": "/ajax/issues.php<?=$collectionChoice?><?=$seriesChoice?>",
-		"dom": 'frtip',
-		"order": [[ 1, 'asc' ],[ 2, 'asc' ],[ 3, 'asc' ],[ 6, 'asc' ]],
-		"pageLength": <?=$pageLength?>,
 		"columnDefs": [ 
-//			{ "visible": false, "targets": [  ] },
-			{ "orderable": false, "targets": [ 0, 9 ] },
-			{ "searchable": false, "targets": [ 0, 9 ] },
-			{ "width": '1em', "targets": [ 9 ] },
-			{ "width": '3em', "targets": [ 7 ] },
-			{ "className": "dt-center", "targets": [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 ] }//center align both header and body content
-		],
-		//and declare the input columns for the functions above
-		"columns": [
-			null,
-			{ "orderDataType": "dom-select" },
-			{ "orderDataType": "dom-select" },
-//			{ "orderDataType": "dom-text-numeric" },
-			{ "orderDataType": "dom-text", type: 'string' },
-			{ "orderDataType": "dom-text", type: 'string' },
-			null,
-			{ "orderDataType": "dom-select" },
-			null,
-			{ "orderDataType": "dom-text", type: 'string' },
-			null
+			{ "orderable": false, "targets": [ 0, 10 ] },
+			{ "searchable": false, "targets": [ 0, 6, 10 ] },
+			{ "width": '1em', "targets": [ 10 ] },
+			{ "className": "dt-center", "targets": [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ] }//center align both header and body content
 		]
 	});
 
@@ -144,19 +100,22 @@ $(document).ready(function(){
 		console.warn('issues-by-collection change', this);
 		var collection_id = $(this).find(":selected").val();
 		window.location.href = '/issues?coll='+collection_id;
+		//TODO:	ADD JS-FUNCTIONS TO MANIPULATE URL-PARAMS SO I CAN ADD THE SERIES (IF SELECTED)
+		//OR, USE JQUERY TO RETRIEVE THE CURRENT SERIES SELECTION
 	});
 
 	$('#issues-by-series').change(function(){
 		console.warn('issues-by-series change', this);
 		var series_id = $(this).find(":selected").val();
 		window.location.href = '/issues?ser='+series_id;
+		//TODO:	ADD JS-FUNCTIONS TO MANIPULATE URL-PARAMS SO I CAN ADD THE COLLECTION (IF SELECTED)
+		//OR, USE JQUERY TO RETRIEVE THE CURRENT COLLECTION SELECTION
 	});
 
 	$('#issuesTable').on('click', '.picture', function(){
 		var element_id = $(this).attr('id');
 		var issue_id = element_id.slice(7);
 		window.open('/details?id='+issue_id, '_blank');
-		window.location.href = '/details?id='+issue_id;
 	});
 
 	$('#issuesTable').on('change', '.collection', function(){
@@ -251,7 +210,11 @@ $(document).ready(function(){
 		});
 	});
 
+
+	//TODO: WHY DOESNT THIS WORK??
+
 	$('#issuesTable').on('change', '.comicvine-link', function(){
+		console.warn('comicvine onChange', this);
 		var id = $(this).attr('data-comicvine-issue-id');
 		$.ajax({
 			method: 'POST',
@@ -318,7 +281,6 @@ $(document).ready(function(){
 		$(this).show();
 	});
 
-	//this ain't workin
 	//https://stackoverflow.com/questions/21609257/jquery-datatables-scroll-to-top-when-pages-clicked-from-bottom
 	$('#issuesTable').on('page.dt', function() {
 		$('html, body').animate({ scrollTop: $(".dataTables_wrapper").offset().top }, 'slow');

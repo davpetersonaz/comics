@@ -120,7 +120,7 @@ foreach($mainQueryResult as $row){
 		($row['collection_name'] ? $row['collection_name'] : ''), 
 		($row['series_name'] ? $row['series_name'] : ''), 
 		$row['volume'], 
-		($row['issue'] ? ($row['issue'] === 'infinity' ? '<i class="fa fa-infinity"></i>' : (floatval($row['issue']) == intval($row['issue']) ? intval($row['issue']) : $row['issue']) ) : ''), 
+		Issue::formatIssueNumber($row['issue']),
 		$coverdate, //format using javascript
 		($row['grade'] ? $row['grade'] : ''), 
 		($row['issue_id'] ? $row['issue_id'] : ''), 

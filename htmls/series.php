@@ -1,17 +1,8 @@
-<?php if(!$alreadyLoggedIn){ ?><script>window.location.href = '/';</script><?php } ?>
-
 <?php 
-
-
-//TODO: MAYBE ... click on a row and it brings up /issues?serXX
-
-//TODO: add "publisher" column
-
-//TODO: click on 'usage' and it should go to a 'issues' listing filtered on the series
-
-
+if(!$alreadyLoggedIn){ ?><script>window.location.href = '/';</script><?php }
 $pageLength = (isset($_SESSION['table_length']['home']) && $_SESSION['table_length']['home'] > 0 ? $_SESSION['table_length']['home'] : 100);
-$series = Series::getAllSeries($db); 
+$seriesChoice = (isset($_GET['ser']) ? $_GET['ser'] : false);
+$getParams = ($seriesChoice ? "?ser={$seriesChoice}" : '');
 ?>
 
 <div class='btn-above-table'>
@@ -27,6 +18,7 @@ $series = Series::getAllSeries($db);
 			<th>title</th>
 			<th>volume</th>
 			<th>year</th>
+			<th>publisher</th>
 			<th>first</th>
 			<th>last</th>
 			<th>comicvine (short)</th>
@@ -36,28 +28,6 @@ $series = Series::getAllSeries($db);
 		</tr>
 	</thead>
 	<tbody>
-<?php foreach($series as $serie){ ?>
-		<tr>
-			<td>
-				<div id='picture<?=$serie->getId()?>' class='picture'>
-					<a href='#nogo' class='small' title='<?=$serie->getDisplayText()?>'>
-						<img class='img-responsive' src='<?=$serie->getImageThumb()?>'>
-						<img class='large popup-on-hover' src='<?=$serie->getImageFull()?>'>
-					</a>
-				</div>
-			</td>
-			<td><?=$serie->getId()?></td>
-			<td><input type="text" class='series_name' id='series<?=$serie->getId()?>' value="<?=$serie->getName()?>"></td>
-			<td><input type="text" class='volume' id='volume<?=$serie->getId()?>' value="<?=$serie->getVolume()?>"></td>
-			<td><?=$serie->getYear()?></td>
-			<td><?=$serie->getFirstIssue()?></td>
-			<td><?=$serie->getLastIssue()?></td>
-			<td><?=$serie->getComicvineId()?></td>
-			<td id='comicvine<?=$serie->getComicvineIdFull()?>' class='comicvine-link'><?=$serie->getComicvineIdFull()?></td><?php /* TODO: MAKE THIS A LINK TO COMICVINE-API */ ?>
-			<td><?=$serie->getIssueCount()?></td>
-			<td><span class='delete' id='delete<?=$serie->getId()?>' data-series-text='<?=$serie->getDisplayText()?>' data-series-issues='<?=$serie->getIssueCount()?>'><i class='fa fa-times'></i></span></td>
-		</tr>
-<?php } ?>
 	</tbody>
 	<tfoot>
 		<tr>
@@ -66,6 +36,7 @@ $series = Series::getAllSeries($db);
 			<th>title</th>
 			<th>volume</th>
 			<th>year</th>
+			<th>publisher</th>
 			<th>first</th>
 			<th>last</th>
 			<th>comicvine (short)</th>
@@ -93,28 +64,41 @@ $(document).ready(function(){
 		});
 	};
 
+	//this creates an array of values for select options
+	$.fn.dataTable.ext.order['dom-select'] = function(settings, col){
+		return this.api().column( col, {order:'index'} ).nodes().map( function(td, i){
+			return $('select', td).val();
+		});
+	};
+
 	$('#seriesTable').dataTable({
+		"ajax": "/ajax/series.php<?=$getParams?>",
+		"dom": 'frtip',
 		"order": [[ 2, 'asc' ],[ 3, 'asc' ],[ 4, 'asc' ]],//i could just go title/year instead of title/vol/year
 		"pageLength": <?=$pageLength?>,
+		"processing": true,
+		"searchDelay": 1000,
+		"serverSide": true,
 		"columnDefs": [ 
-			{ "orderable": false, "targets": [ 10 ] },
-			{ "searchable": false, "targets": [ 10 ] },
-			{ "width": '1em', "targets": [ 10 ] },
-			{ "className": "dt-center", "targets": [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ] }// Center align both header and body content of columns
-		],
-		//and declare the input columns for the functions above
-		"columns": [
-			null,
-			null,
-			{ "orderDataType": "dom-text", type: 'string' },
-			{ "orderDataType": "dom-text-numeric" },
-			null,
-			null,
-			null,
-			null,
-			null,
-			null,
-			null
+			{ "orderable": false, "targets": [ 0, 11 ] },
+			{ "searchable": false, "targets": [ 0, 10, 11 ] },
+			{ "width": '1em', "targets": [ 11 ] },
+			{ "className": "dt-center", "targets": [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 ] }// Center align both header and body content of columns
+//		],
+//		//and declare the input columns for the functions above
+//		"columns": [
+//			null,
+//			null,
+//			{ "orderDataType": "dom-text", type: 'string' },
+//			{ "orderDataType": "dom-text", type: 'string' },
+//			null,
+//			null,
+//			null,
+//			null,
+//			null,
+//			null,
+//			null,
+//			null
 		]
 	});
 

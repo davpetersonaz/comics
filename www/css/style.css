@@ -1,6 +1,10 @@
 body{
-	width: 100%;
+	color: black;
 	height: 100%;
+	width: 100%;
+}
+a{
+	color: black;
 }
 
 /* common functions */
@@ -41,6 +45,9 @@ body{
 .hidden{
 	/*display: none;*/
 	visibility: hidden;
+}
+.popup-on-hover{
+	display: none;
 }
 
 /* Sticky footer styles */
@@ -168,9 +175,6 @@ nav.navbar .admin-buttons button.btn:hover{
 .dataTable tbody tr .img-responsive{
 	cursor: pointer;
 	height: 60px;
-}
-.dataTable tbody .popup-on-hover{
-	display: none;
 }
 .dataTable .picture a.small, 
 .dataTable .picture a.small:visited{ 
@@ -309,6 +313,23 @@ select{
 #addIssuesForm .btn{
 	/*float: right;*/
 	margin-right: 1em;
+}
+.success-cover{
+	display: inline-block;
+	margin-right: 3px;
+}
+.success-cover .large{
+	/*display: block;*/ 
+}
+.success-cover .small:hover .large{
+	border: 2px solid black;
+	display: block; 
+	height: auto; 
+	left: 5%; 
+	max-height: 80%;
+	position: fixed; 
+	top: 105px; 
+	width: auto; 
 }
 
 .action-buttons{

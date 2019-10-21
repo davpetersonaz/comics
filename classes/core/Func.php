@@ -4,6 +4,15 @@ class Func{
 	public static function compareByObjectName($a, $b){
 		return strcmp($a->getName(), $b->getName());
 	}
+	
+	public static function escapeForHtml($input){
+		$input = str_replace("'", "\'", $input);
+//		$input = str_replace("'", '&#39;', $input);
+//		$input = str_replace('"', '&quot;', $input);
+//		$input = str_replace("&", '&amp;', $input);
+//		$input = str_replace("<", '&lt;', $input);
+		return $input;
+	}
 
 	public static function logQueryAndValues($query, $values=array(), $callingFunction=false){
 //		logDebug('logQueryAndValues: '.var_export($values, true));

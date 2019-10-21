@@ -1,5 +1,4 @@
-<?php if(!$alreadyLoggedIn){ ?><script>window.location.href = '/';</script><?php } ?>
-
+<?php /* if(!$alreadyLoggedIn){ ?><script>window.location.href = '/';</script><?php } */ ?>
 <?php
 
 
@@ -148,7 +147,7 @@ elseif(isset($_POST['delete_series'])){
 
 elseif(isset($_POST['grade_change'], $_POST['new_grade_id'])){
 	$issue = new Issue($db, $curl, $_POST['grade_change']);
-	logDebug('issue: '.var_export($issue, true));
+//	logDebug('issue: '.var_export($issue, true));
 	if($issue->isIssue()){
 		$rowsAffected = $issue->changeGrade($_POST['new_grade_id']);
 		logDebug('rowsAffected: '.$rowsAffected);
@@ -179,7 +178,7 @@ elseif(isset($_POST['issue_number_change'], $_POST['new_issue_number'])){
 
 elseif(isset($_POST['notes_change'], $_POST['new_notes'])){
 	$issue = new Issue($db, $curl, $_POST['notes_change']);
-	logDebug('issue: '.var_export($issue, true));
+//	logDebug('issue: '.var_export($issue, true));
 	if($issue->isIssue()){
 		$rowsAffected = $issue->changeNotes($_POST['new_notes']);
 		logDebug('rowsAffected: '.$rowsAffected);
@@ -195,7 +194,7 @@ elseif(isset($_POST['notes_change'], $_POST['new_notes'])){
 
 elseif(isset($_POST['series_change'], $_POST['new_series_id'])){
 	$issue = new Issue($db, $curl, $_POST['series_change']);
-	logDebug('issue: '.var_export($issue, true));
+//	logDebug('issue: '.var_export($issue, true));
 	if($issue->isIssue()){
 		$rowsAffected = $issue->changeSeries($_POST['new_series_id']);
 		logDebug('rowsAffected: '.$rowsAffected);

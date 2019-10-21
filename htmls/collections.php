@@ -29,6 +29,7 @@
 $(document).ready(function(){
 
 	$('#collectionsTable').DataTable({
+		"dom": 'frtip',
 		"order": [[ 1, 'asc' ]],
 		"pageLength": <?=$pageLength?>,
 		"columnDefs": [ 
