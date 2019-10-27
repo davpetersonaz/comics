@@ -1,4 +1,10 @@
 <?php
+
+
+//TODO:	WHEN NO ISSUE FOUND ON COMICVINE, DO A BETTER ERROR MESSAGE, 
+//TODO: MAKE SURE THE SUBMISSIONS AFTER THE FAILURE SUCCEDED (MAYBE SHOW SUCCEEDED COVERS LIKE IT DOES WHEN NO ERRORS OCCUR)
+
+
 class Issue{
 
 	private function accentMainCharacters($characters){
@@ -33,7 +39,7 @@ class Issue{
 
 	public function changeIssueNumber($new_issue_number){
 		$this->issue = $new_issue_number;
-		$rowsAffected = $this->db->changeIssueNumber($this->issue_id, self::unformatIssueNumber($new_issue_number));
+		$rowsAffected = $this->db->changeIssueNumber($this->issue_id, $new_issue_number);
 		$this->updateIssueDetails();
 		return $rowsAffected;
 	}
@@ -56,7 +62,7 @@ class Issue{
 	}
 
 	public static function createIssue(DB $db, $collection_id, $series_id, $issue, $chrono='', $gradepos=8, $notes=''){
-		$lastInsertId = $db->addIssue($series_id, $collection_id, self::unformatIssueNumber($issue), $chrono, $gradepos, $notes);
+		$lastInsertId = $db->addIssue($series_id, $collection_id, $issue, $chrono, $gradepos, $notes);
 		return $lastInsertId;
 	}
 
@@ -130,7 +136,11 @@ class Issue{
 
 	//can be used for dropdown options, title tooltips
 	public function getDisplayText(){
-		return "{$this->name} vol.{$this->volume} #{$this->issue}";
+		return "{$this->name} ".($this->volume > 1 ? "vol.".$this->volume : '')." ({$this->year}) #{$this->issue}";
+	}
+
+	public function getDisplayTextStatic($name, $volume, $year, $issue){
+		return "{$name} ".($volume > 1 ? "vol.".$volume : '')." ({$year}) #{$issue}";
 	}
 
 	public function getFirstAppearanceCharactersArray(){
@@ -161,32 +171,6 @@ class Issue{
 		$issue = $this->db->getIssueDetails($issue_id);
 		return $issue;
 	}
-	
-	public static function formatIssueNumber($issue_number){
-		if(intval($issue_number) === 88888 || $issue_number === 'infinity'){
-			return "∞";
-		}elseif(floatval($issue_number) === 0.5 || $issue_number === '1/2'){
-			return "½";
-		}else{
-			return Func::trimFloat($issue_number);
-		}
-	}
-	
-	public static function unformatIssueNumber($issue_number){
-		if($issue_number === "∞" || $issue_number === 'infinity'){
-			return 88888;
-		}elseif($issue_number === "½" || $issue_number === "1/2"){
-			return 0.5;
-		}else{
-			return Func::trimFloat($issue_number);
-		}
-	}
-
-	//TODO: this will go away
-//	public function getIssuesThatMatch($comicvine){
-//		$issues = $this->db->getIssuesThatMatch($this->name, $comicvine[4], $comicvine[6], $comicvine[7]);
-//		return $issues;
-//	}
 
 	private function sortCreatorsByJob($creators=array()){
 		$remainingCreators = $creators;
@@ -275,7 +259,7 @@ class Issue{
 						$values['character_died_in'] = $this->character_died_in = implode('|', $character_died_in);
 					}
 				}else{
-					logDebug("COULD NOT FIND [$this->comicvine_issue_id{}]");
+					logDebug("COULD NOT FIND [{$this->comicvine_issue_id}]");
 				}
 			}
 
@@ -286,6 +270,9 @@ class Issue{
 			logDebug("no results found on comicvine");
 			logDebug("for series: ".var_export($this->comicvine_series_full, true));
 			logDebug('with response: '.var_export($response, true));
+
+			//TODO: flesh out this error message, add issue display-text
+
 			$errormsg = "no results found on comicvine for series [{$this->comicvine_series_full}], issue [{$this->issue}]: ".var_export($response, true);
 			echo "<p>{$errormsg}</p>";
 			logDebug($errormsg);
@@ -304,7 +291,11 @@ class Issue{
 		if($details){
 			foreach($details as $k=>$v){
 				if(!is_null($v)){
-					$this->$k = $v;
+					if($k === 'issue'){
+						$this->$k = Func::normalizeIssueNumber($v);
+					}else{
+						$this->$k = $v;
+					}
 				}
 			}
 		}
@@ -382,47 +373,221 @@ class Issue{
 	public $first_appearance_teams = '';
 
 	public $mainCharacters = array(
+		'Adam Strange',
 		'Adam Warlock',
+		'Angel',
+		'Animal Man',
+		'Ant-Man (Lang)',
+		'Apocalypse',
+		'Aquaman',
+		'Aspen Matthews',
+		'Aurora',
+		'Banshee',
+		'Barry Allen',
 		'Batman',
+		'Batwoman',
 		'Beast',
+		'Beast Boy',
+		'Billy Batson',
+		'Bishop',
 		'Black Bolt',
+		'Black Canary',
+		'Black Knight',
 		'Black Panther',
 		'Black Widow',
 		'Bucky Barnes',
+		'Bullseye',
+		'Cable',
 		'Cannonball',
 		'Captain America',
+		'Captain Britain',
+		'Captain Carrot',
+		'Captain Marvel',
+		'Captain Universe',
 		'Carol Danvers',
+		'Catwoman',
+		'Century',
 		'Clea',
+		'Cloak',
+		'Colossus',
+		'Conan',
+		'Coyote',
+		'Cyborg',
+		'Cyclops',
+		'Dagger',
+		'Daken',
+		'Daredevil',
+		'Darkhawk',
+		'Dazzler',
+		'Deadpool',
+		'Deathbird',
+		'Deathlok',
 		'Dick Grayson',
+		'Doc Samson',
+		'Doctor Doom',
+		'Doctor Druid',
+		'Doctor Fate (Kent Nelson)',
+		'Doctor Octopus',
 		'Doctor Strange',
+		'Domino',
+		'Donna Troy',
+		'Dormammu',
+		'Drax the Destroyer',
+		'Dreadstar',
 		'Dream of the Endless (Morpheus)',
+		'Elektra',
+		'Elongated Man',
+		'Emma Frost',
 		'Falcon',
+		'Firestar',
+		'Firestorm',
+		'Franklin Richards',
+		'Galactus',
+		'Gambit',
+		'Genis-Vell',
+		'Ghost Rider (Blaze)',
+		'Ghost Rider (Ketch)',
+		'Green Arrow',
 		'Hal Jordan',
 		'Hank Pym',
+		'Havok',
 		'Hawkeye',
+		'Hawkgirl',
+		'Hawkman',
+		'Hellcat',
+		'Hellstorm',
+		'Hercules',
 		'Human Torch',
 		'Hulk',
+		'Hyperion',
+		'Iceman',
 		'Invisible Woman',
 		'Iron Fist',
 		'Iron Man',
+		'Jack of Hearts',
+		'Jean Grey',
+		'Jimmy Olsen',
+		'Jimmy Woo',
+		'Jocasta',
 		'John Constantine',
+		'Joker',
+		'Jubilee',
+		'Juggernaut',
+		'Kamandi',
+		'Kate Bishop',
+		'Ka-Zar',
+		'Kingpin',
+		'Kitty Pryde',
+		'Kyle Rayner',
+		'Lady Death',
+		'Legion',
+		'Lex Luthor',
+		'Lobo',
+		'Lockheed',
+		'Lois Lane',
+		'Loki',
 		'Luke Cage',
+		'Machine Man',
+		'Madelyne Pryor',
+		'Madrox',
+		'Magik',
+		'Magneto',
+		'Mandarin',
+		'Man-Thing',
+		'Mantis',
+		'Martian Manhunter',
+		'Meggan',
+		'Mephisto',
 		'Mockingbird',
+		'Mole Man',
+		'Moondragon',
+		'Moon Knight',
+		'Moonstar',
+		'Moonstone',
+		'Morbius',
 		'Mr. Fantastic',
+		'Mr. Miracle',
+		'Mystique',
 		'Namor',
+		'Namora',
+		'Nick Fury',
+		'Nightcrawler',
+		'Nighthawk',
+		'Night Thrasher',
+		'Norman Osborn',
+		'Nova',
+		'Odin',
+		'Omega the Unknown',
+		'Penguin',
+		'Phantom Stranger',
+		'Plastic Man',
+		'Polaris',
+		'Power Girl',
+		'Professor X',
+		'Psylocke',
+		'Punisher',
+		'Purgatori',
 		'Quicksilver',
+		'Rachel Grey',
+		'Rage',
+		'Raven',
+		'Ray Palmer',
+		'Red Skull',
+		'Red Tornado',
+		'Rick Jones',
+		'Rictor',
+		'Riddler',
+		'Rogue',
+		'Sabretooth',
+		'Sasquatch',
 		'Scarlet Witch',
+		'Sentry',
+		'Sersi',
 		'Shang-Chi',
+		'Sharon Carter',
+		'She-Hulk',
+		'Shi',
+		'Silver Surfer',
+		'Snowbird',
+		'Speedball',
 		'Spider-Man',
 		'Spider-Woman',
+		'Starfire',
+		'Starfox',
+		'Starhawk',
+		'Storm',
+		'Strong Guy',
+		'Sunfire',
 		'Sunspot',
+		'Supergirl',
+		'Superman',
+		'Swamp Thing',
+		'Swordsman',
+		'Talisman',
+		'Thanos',
 		'Thing',
 		'Thor',
+		'Thunderstrike',
+		'Tigra',
 		'Tim Drake',
+		'Two-Face',
+		'Ultron',
+		'U.S.Agent',
+		'Valkyrie',
+		'Venom',
+		'Venus',
 		'Vision',
+		'Wally West',
+		'Warlock',
 		'War Machine',
 		'Wasp',
+		'Watcher',
+		'Witchblade',
+		'Wolfsbane',
 		'Wolverine',
-		'Wonder Man'
+		'Wonder Man',
+		'Wonder Woman',
+		'X-Man',
+		'Zatanna'
 	);
 }

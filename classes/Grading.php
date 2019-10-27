@@ -1,4 +1,9 @@
 <?php
+
+
+//TODO: maybe add VF/NM, and VG/F ???
+
+
 class Grading{
 
 	//https://comicspriceguide.com/comic-book-grading

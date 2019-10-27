@@ -1,9 +1,5 @@
-<?php /* if(!$alreadyLoggedIn){ ?><script>window.location.href = '/';</script><?php } */ ?>
 <?php
 
-
-
-//TODO: IF NO SERIES' FOUND, THEN JUST GO BACK TO addSeries AND PUT A MESSAGE UP SAYING COULDN'T FIND
 
 //not sure if i can fix:
 //after clicking cancel, the sorting/ordering controls become useless, some datatable issue?
@@ -11,17 +7,18 @@
 
 //TODO: on the javascript seriesvolume prompt, parse the series volume from comicvine and use that as the default (instead of default=1)
 
-//TODO: ON-CLICK OF COMICVINE-ID, SEND TO COMICVINE WEBPAGE FOR THAT ID
-
-
 
 logDebug('addSeriesSelect: '.var_export($_POST, true));
 $seriesname = $_POST['series'];
 $series_data = array();
-$pageLength = (isset($_SESSION['table_length']['home']) && $_SESSION['table_length']['home'] > 0 ? $_SESSION['table_length']['home'] : 100);
+//$pageLength = (isset($_SESSION['table_length']['home']) && $_SESSION['table_length']['home'] > 0 ? $_SESSION['table_length']['home'] : 100);
+$pageLength = 100;
 
 $results = $curl->getSeriesByName($seriesname);
 logDebug('getSeriesByName results: '.count($results));
+if(!$results){
+	?> <script>window.location.href=addSeries?notfound=<?= urlencode($seriesname)?></script> <?php
+}
 foreach($results as $result){
 	$newArray = array();
 //	$newArray[] = "<a href='{$result['image']['super_url']}' class='preview' title='{$result['name']} {$result['start_year']}'><img src='{$result['image']['thumb_url']}' alt='gallery thumbnail' />";
@@ -39,7 +36,8 @@ foreach($results as $result){
 	$newArray[] = $result['first_issue']['issue_number'];
 	$newArray[] = $result['last_issue']['issue_number'];
 	$newArray[] = "{$result['id']}";//comicvine series short-id (xxxx)
-	$newArray[] = (preg_match('/^.*\/(\d+-\d+)\/$/', $result['site_detail_url'], $matches) === 1 && isset($matches[1]) ? "{$matches[1]}" : '');//comicvine series full-id (xxxx-xxxx)
+	$comicvineSeriesFull = (preg_match('/^.*\/(\d+-\d+)\/$/', $result['site_detail_url'], $matches) === 1 && isset($matches[1]) ? "{$matches[1]}" : '');//comicvine series full-id (xxxx-xxxx)
+	$newArray[] = "<a href='{$result['site_detail_url']}' target='_blank'>{$comicvineSeriesFull}</a>";
 	$newArray[] = $result['image']['thumb_url'];
 	$newArray[] = $result['image']['super_url'];
 //	logDebug('row: '.implode(', ', $newArray));
@@ -112,7 +110,7 @@ $(document).ready(function(){
 		$('body').css('pointer-events', 'none');
 		var currentRowData = seriesdatatable.row(this).data();
 		console.warn('currentRowData', currentRowData);
-		var seriesname = prompt("what is the series name?", "<?=$seriesname?>");
+		var seriesname = prompt("what is the series name?", currentRowData[1]);
 		if(seriesname === null){ return; }
 		var volume = prompt("what is the volume number?", 1);
 		if(volume === null){ return; }

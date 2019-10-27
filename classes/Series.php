@@ -27,8 +27,8 @@ class Series{
 		$this->comicvine_series_full = $comicvine_info[9];
 		$this->image_thumb = $comicvine_info[10];
 		$this->image_full = $comicvine_info[11];
-		$this->series_id =	$this->db->addSeries($this->series_name, $this->volume, $this->year, $this->publisher,
-							$this->first_issue, $this->last_issue, $this->comicvine_series_id, 
+		$this->series_id =	$this->db->addSeries($this->series_name, $this->volume, $this->year, 
+							$this->publisher, $this->first_issue, $this->last_issue, $this->comicvine_series_id, 
 							$this->comicvine_series_full, $this->image_thumb, $this->image_full);
 		return $this->series_id;
 	}	
@@ -60,13 +60,17 @@ class Series{
 	public static function getDisplayTextStatic($name, $volume, $year){
 		return "{$name}".($volume > 1 ? " vol.{$volume}" : "")." ({$year})";
 	}
-	
+
 	public static function getIssueCountStatic(DB $db, $series_id){
 		return $db->getIssueCountForSeries($series_id);
 	}
 
 	public static function getSeriesByName(DB $db, $name, $volume){
 		return $db->getSeriesByName($name, $volume);
+	}
+
+	public static function getSeriesIdName(DB $db){
+		return $db->getSeriesIdName();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -104,7 +108,7 @@ class Series{
 	public function getComicvineIdFull(){ return $this->comicvine_series_full; }
 	public function getImageThumb(){ return $this->image_thumb; }
 	public function getImageFull(){ return $this->image_full; }
-	public function getIssueCount(){ return $this->issue_count; }
+	public function getIssueCount(){ return intval($this->issue_count); }
 
 	public function __construct(DB $db, $series_id=false){
 		$this->db = $db;

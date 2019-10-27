@@ -1,5 +1,11 @@
 <?php if(!$alreadyLoggedIn){ ?><script>window.location.href = '/';</script><?php } ?>
 
+<?php if(isset($_GET['notfound']) && $_GET['notfound']){ ?>
+<p class='red-text'>
+	Comicvine returned no results: <a href='https://comicvine.gamespot.com/search/?header=1&i=volume&q=<?=$_GET['notfound']?>' target='_blank'>Check Comicvine</a>
+</p>
+<?php } ?>
+
 <div class='btn-above-table'>
 	<button class='btn btn-primary bg-dark add-issues'>Add Issues</button>
 </div>
@@ -46,13 +52,13 @@ $(document).ready(function(){
 //		alert('submitting form');
 		form.submit();//to addSeriesSelect
 	});
-	
+
 	//focus on first input
 	$('form:first *:input[type!=hidden]:first').focus();		
 
 	$('.add-issues').on('click', function(){
 		window.location.href = '/addIssues';
 	});
-	
+
 });
 </script>

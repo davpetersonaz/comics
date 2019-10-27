@@ -15,8 +15,8 @@ $seriesChoice = (isset($_GET['ser']) ? intval($_GET['ser']) : false);
 
 // Array of database columns which should be read and sent back to DataTables.
 // Use a space where you want to insert a non-database field (for example a counter or static image)
-$columns = array('c.image_thumb', 'c.issue_id', 'l.collection_name', 's.series_name', 'c.issue', 
-					'c.chrono_index', 'c.cover_date', 'c.grade', 'c.comicvine_issue_id', 'c.notes', '', 
+$columns = array('c.image_thumb', 'l.collection_name', 's.series_name', 'c.issue', 'c.chrono_index', 
+					'c.cover_date', 'c.grade', 'c.comicvine_issue_id', 'c.notes', 'c.issue_id', '', 
 					'c.image_full', 'l.collection_id', 'c.series_id', 'c.issue_id', 'c.user_id', 
 					's.comicvine_series_id', 's.comicvine_series_full', 's.volume', 's.year');
 $table = 'comics c';
@@ -31,7 +31,7 @@ if(!empty($_REQUEST['search']['value'])){
 //	logDebug('REQUEST[search][value]: '.$_REQUEST['search']['value']);
 	$where = "WHERE (";
 	for ($i=0; $i<count($columns); $i++){
-		if(!empty(trim($columns[$i])) && strpos($columns[$i], 'MAX(') === false){
+		if(!empty(trim($columns[$i])) && isset($_REQUEST['columns'][$i]) && $_REQUEST['columns'][$i]['searchable'] === 'true' && strpos($columns[$i], 'MAX(') === false){
 			$asPos = strpos($columns[$i], ' AS ');
 			$column = ($asPos !== false ? substr($columns[$i], 0, $asPos) : $columns[$i]);
 			$bindParam = substr($column, 2);//remove the table-label and the dot
@@ -123,7 +123,6 @@ foreach($mainQueryResult as $row){
 							"</a>".
 						"</div>";
 	}
-	$id_div = $row['issue_id'];
 	$collection_div = "<select id='collection{$row['issue_id']}' class='collection'>";
 	foreach($collections as $collection){
 		$selected = (intval($collection['collection_id']) === intval($row['collection_id']) ? ' selected' : '');
@@ -136,7 +135,7 @@ foreach($mainQueryResult as $row){
 		$series_div .= "<option value='{$serie['series_id']}' {$selected}>".Series::getDisplayTextStatic($serie['series_name'], $serie['volume'], $serie['year'])."</option>";
 	}
 	$series_div .= "</select>";
-	$issue_div = "<input type='text' class='issue' id='issue{$row['issue_id']}' value='".Issue::formatIssueNumber($row['issue'])."'/>";
+	$issue_div = "<input type='text' class='issue' id='issue{$row['issue_id']}' value='".Func::fancifyIssueNumber($row['issue'])."'/>";
 	$chrono = Func::trimFloat($row['chrono_index']);
 	$chrono_div = "<input type='text' class='chrono' id='chrono{$row['issue_id']}' value='".($chrono ? $chrono : '')."'/>";
 	$coverdate_div = "<span title='{$row['cover_date']}'>".Func::makeDisplayDate($row['cover_date']).'</span>';
@@ -147,15 +146,14 @@ foreach($mainQueryResult as $row){
 		$grade_div .= "<option value='{$grade_array['position']}' title='{$grade_array['short_desc']}' {$selected}>{$grade_array['grade_name']}</option>";
 	}
 	$grade_div .= "</select>";
-	$comicvine_issue_id_div = "<span id='comicvine{$row['issue_id']}' class='comicvine-link' data-comicvine-issue-id='{$row['comicvine_issue_id']}'>{$row['comicvine_issue_id']}</span>";
-	$notes_div = "<input type='text' class='notes' id='notes{$row['issue_id']}' value='{$row['notes']}'/>";
-	$issueDisplayText = "{$row['series_name']} ".($row['volume'] > 1 ? "vol.{$row['volume']}" : '')." ({$row['year']}) #".Issue::formatIssueNumber($row['issue']);
-	//TODO: THIS DONT FREAKIN WORK, IT CUTS IT OFF AT THE '\', USING "\'" FOR "'" IS SUPPOSED TO WORK: https://stackoverflow.com/questions/19271527/single-quote-escape-in-javascript-alert-function
-	$delete_div = "<span class='delete' id='delete{$row['issue_id']}' data-issue-text='".Func::escapeForHtml($issueDisplayText)."'><i class='fa fa-times'></i></span>";
+	$comicvine_issue_id_div = "<span id='comicvine{$row['comicvine_issue_id']}' class='comicvine-link' data-comicvine-issue-id='{$row['comicvine_issue_id']}'>{$row['comicvine_issue_id']}</span>";
+	$notes_div = "<input type='text' class='notes' id='notes{$row['issue_id']}' value=\"{$row['notes']}\"/>";
+	$issueDisplayText = "{$row['series_name']} ".($row['volume'] > 1 ? "vol.{$row['volume']}" : '')." ({$row['year']}) #".Func::fancifyIssueNumber($row['issue']);
+	$id_div = $row['issue_id'];
+	$delete_div = "<span class='delete' id='delete{$row['issue_id']}' data-issue-text=\"{$issueDisplayText}\"><i class='fa fa-times'></i></span>";
 
 	$datatablerows[] = array(
 		$image_div,
-		$id_div,
 		$collection_div,
 		$series_div,
 		$issue_div, 
@@ -164,6 +162,7 @@ foreach($mainQueryResult as $row){
 		$grade_div, 
 		$comicvine_issue_id_div,
 		$notes_div,
+		$id_div,
 		$delete_div
 	);
 }	

@@ -4,7 +4,7 @@ class Func{
 	public static function compareByObjectName($a, $b){
 		return strcmp($a->getName(), $b->getName());
 	}
-	
+
 	public static function escapeForHtml($input){
 		$input = str_replace("'", "\'", $input);
 //		$input = str_replace("'", '&#39;', $input);
@@ -12,6 +12,51 @@ class Func{
 //		$input = str_replace("&", '&amp;', $input);
 //		$input = str_replace("<", '&lt;', $input);
 		return $input;
+	}
+
+	/**
+	 * transforms an issue number into its 'fancy' form (∞, ½), for comicvine/curl or displaying in html
+	 * @param type an issue number
+	 * @return string fancy issue number
+	 */
+	public static function fancifyIssueNumber($issue_number){
+		if(intval($issue_number) === 88888 || $issue_number === 'infinity'){
+			return "∞";
+		}elseif(floatval($issue_number) === 0.5 || $issue_number === '1/2'){
+			return "½";
+		}else{
+			return Func::trimFloat($issue_number);
+		}
+	}
+
+	/**
+	 * transforms an issue number into a db-friendly version (88888 / 0.5).
+	 * @param type issue number
+	 * @return string db-friendly issue number
+	 */
+	public static function dbFriendlyIssueNumber($issue_number){
+		if($issue_number === "∞" || $issue_number === 'infinity'){
+			return 88888;
+		}elseif($issue_number === "½" || $issue_number === "1/2"){
+			return 0.5;
+		}else{
+			return Func::trimFloat($issue_number);
+		}
+	}
+
+	/**
+	 * transforms an issue number into its normal/working form (infinity / 1/2)
+	 * @param type an issue number
+	 * @return string working-form of issue number
+	 */
+	public static function normalizeIssueNumber($issue_number){
+		if(intval($issue_number) === 88888 || $issue_number === "∞"){
+			return 'infinity';
+		}elseif(floatval($issue_number) === 0.5 || $issue_number === "½"){
+			return '1/2';
+		}else{
+			return Func::trimFloat($issue_number);
+		}
 	}
 
 	public static function logQueryAndValues($query, $values=array(), $callingFunction=false){
@@ -24,7 +69,7 @@ class Func{
 		}
 		logDebug(($callingFunction ? $callingFunction.': ' : '').$query);
 	}
-	
+
 	public static function makeDisplayDate($inputdatestr){
 		$inputdate = new DateTime($inputdatestr);
 		if(in_array($inputdate->format('j'), array('1', '2', '28', '29', '30', '31'))){

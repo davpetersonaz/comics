@@ -23,7 +23,7 @@ if(!empty($_REQUEST['search']['value'])){
 //	logDebug('REQUEST[search][value]: '.$_REQUEST['search']['value']);
 	$where = "WHERE (";
 	for ($i=0; $i<count($columns); $i++){
-		if(!empty(trim($columns[$i])) && strpos($columns[$i], 'MAX(') === false){
+		if(!empty(trim($columns[$i])) && isset($_REQUEST['columns'][$i]) && $_REQUEST['columns'][$i]['searchable'] === 'true' && strpos($columns[$i], 'MAX(') === false){
 			$asPos = strpos($columns[$i], ' AS ');
 			$column = ($asPos !== false ? substr($columns[$i], 0, $asPos) : $columns[$i]);
 			$bindParam = substr($column, 2);//remove the table-label and the dot
@@ -120,7 +120,7 @@ foreach($mainQueryResult as $row){
 		($row['collection_name'] ? $row['collection_name'] : ''), 
 		($row['series_name'] ? $row['series_name'] : ''), 
 		$row['volume'], 
-		Issue::formatIssueNumber($row['issue']),
+		Func::fancifyIssueNumber($row['issue']),
 		$coverdate, //format using javascript
 		($row['grade'] ? $row['grade'] : ''), 
 		($row['issue_id'] ? $row['issue_id'] : ''), 

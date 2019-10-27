@@ -1,12 +1,7 @@
-<?php 
-//TODO: ADD LOGOUT BUTTON
-?>
-
-
 		<footer class="footer bg-dark">
 			<div class="container">
 				<div class="left-justify">
-					<span>All content, <a href='mailto:me@davpeterson.com'>Dave Peterson</a></span>
+					<span>All content, &nbsp; <a href='mailto:me@davpeterson.com'>Dave Peterson</a></span>
 				</div>
 <?php if(!$alreadyLoggedIn){ ?>
 				<div class='right-justify'>
@@ -33,7 +28,7 @@
 
 <script>
 $(document).ready(function(){
-	
+
 	//accept modal input
 	$('#submit').on('click', function(){
 		var username = $('#username').val();
@@ -47,7 +42,7 @@ $(document).ready(function(){
 			window.location.reload();
 		});
 	});
-	
+
 	//show modal
 	$('#login').on('click', function(){
 		$('#loginModal').css('display', 'block');

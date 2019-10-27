@@ -1,25 +1,12 @@
 <?php if(!$alreadyLoggedIn){ ?><script>window.location.href = '/';</script><?php } ?>
-
 <?php
 
 
+//TODO: default the 'collection' option to the previous choice (not sure i can do, the collection options are determined when the page loads)
+//i guess i can call ajax onchange, set the session var, create the collection options again and pass them back, 
+//but then i'd have to figure out which are the remaining rows and only change the collection options for them (its possible)
 
-//TODO: IF ISSUE CANNOT BE FOUND ON COMICVINE, IT CREATES A PARTIAL ISSUE RECORD, 
-//IT SHOULD NOT CREATE ANYTHING AND IT SHOULD DISPLAY A FRIENDLY ERROR MESSAGE,
-
-//MAYBE INCLUDE A LINK TO THE SERIES ON COMICVINE, also include link to api-url used??
-
-//TODO: INCLUDE A CHECKBOX FOR 'AUTOGRAPHED'
-
-//TODO: if no issue is found (on submit), it just displays: 
-//			no results found on comicvine for series [4050-4200], issue [0]: array ( )
-//probably should add the series-display-text/first/last and clean the text up, and include a button to go back to addIssues
-//maybe include a link to comicvine-search with the given comicvine-series-id and issue-number...
-
-//TODO: default the 'collection' option to the previous choice, even if nothing was selected (store as session-var)
-
-//TODO: disable the return key so it doesn't submit the form prematurely (require clicking the submit button
-
+//TODO: INCLUDE A CHECKBOX FOR 'AUTOGRAPHED' (low priority)
 
 
 logDebug('addIssues: '.var_export($_POST, true));
@@ -30,31 +17,46 @@ if(isset($_POST['submit'])){
 	$chrono = $_POST['chrono'];
 	$gradepos = $_POST['grade'];
 	$notes = $_POST['notes'];
-	$thumbs = $images = array();
+	$thumbs = $images = $failures = array();
+	//for error info...
+	$collectionNames = Collection::getCollectionsIdName($db);
+	$seriesNames = Series::getSeriesIdName($db);
 
 	for($i=0; $i<count($series); $i++){
 		if(!$series[$i]){ break; }
 		$issue_id = Issue::createIssue($db, $collections[$i], $series[$i], $issues[$i], $chrono[$i], $gradepos[$i], $notes[$i]);
-		logDebug('created issue: '.$issue_id);
-		$issue = new Issue($db, $curl, $issue_id);
-		$issue->addSeriesToIssue($series[$i]);
-		logDebug('issue is currently: '.var_export($issue, true));
-		$issue->updateIssueDetails();
-		$images[] = $issue->getImageFull();
-		$thumbs[] = $issue->getImageThumb();
+		logDebug('created issue: '.var_export($issue_id, true));
+		if($issue_id){
+			$issue = new Issue($db, $curl, $issue_id);
+			$issue->addSeriesToIssue($series[$i]);
+			logDebug('issue is currently: '.var_export($issue, true));
+			$issue->updateIssueDetails();
+			$images[] = $issue->getImageFull();
+			$thumbs[] = $issue->getImageThumb();
+		}else{
+			$failures[] = "Error creating issue: {$seriesNames[$series[$i]]} #{$issues[$i]}<br />" .
+						"comicvine link: https://comicvine.gamespot.com/search/?header=1&q=".urlencode($seriesNames[$series[$i]])."%20%23".urlencode($issues[$i]).'<br />';
+		}
 	}
-	
+
 	for($i=0; $i<count($images); $i++){
 		?>
 		<div class='success-cover'>
-			<a href='/details?id=<?=$issue->getId()?>' class='small' title=""<?=$issue->getDisplayText()?>">
+			<a href='/details?id=<?=$issue->getId()?>' class='small' title="<?=$issue->getDisplayText()?>" target='_blank'>
 				<img src='<?=$thumbs[$i]?>' class='img-responsive'>
 				<img src='<?=$images[$i]?>' class='large popup-on-hover'>
 			</a>
 		</div>
-		<?php
-	}
-	?>
+	<?php } ?>
+
+	<?php if($failures){ ?>
+		<p class='red-text'>
+			<b>There was a problem or two...</b><br />
+		<?php foreach($failures as $failure){ ?>
+			<?=$failure?>
+		<?php } ?>
+		</p>
+	<?php } ?>
 		<p class='red-text'>Issues have been added, create some more...</p>
 	<?php
 }
@@ -63,12 +65,12 @@ $fields = 10;
 $collections = Collection::getAllCollections($db);
 $collection_options = '';
 foreach($collections as $collection){
-	$collection_options .= "<option value='{$collection->getId()}'>{$collection->getName()}</option>";
+	$collection_options .= "<option value='{$collection->getId()}'>{$collection->getName()} ({$collection->getIssueCount()})</option>";
 }
 $series = Series::getAllSeries($db);
 $series_options = '';
 foreach($series as $serie){
-	$series_options .= "<option value='{$serie->getId()}'>{$serie->getDisplayText()}</option>";
+	$series_options .= "<option value='{$serie->getId()}'>{$serie->getDisplayText()} ({$serie->getIssueCount()} issue".($serie->getIssueCount()===1?'':'s').")</option>";
 }
 $grading = $grades->getAllGrades();
 $gradingOptions = array();
@@ -137,8 +139,18 @@ $inputFieldCells .=
 $(document).ready(function(){
 
 	//focus on first input
-	$('form:first *:input[type!=hidden]:first').focus();		
-	
+	$('form:first *:input[type!=hidden]:first').focus();	
+
+	//prevent enter button in form text fields
+	window.addEventListener('keydown', function(e){
+		if(e.keyIdentifier === 'U+000A' || e.keyIdentifier === 'Enter' || e.keyCode === 13){
+			if(e.target.nodeName === 'INPUT' && e.target.type === 'text'){
+				e.preventDefault();
+				return false;
+			}
+		}
+	}, true);
+
 	$("form :input").change(function(){
 		$("#addIssuesForm").data("changed", true);
 	});
@@ -149,7 +161,7 @@ $(document).ready(function(){
 			window.location.href = '/addSeries';
 		}
 	});
-	
+
 	$(".popup-on-hover").hover(function(){
 		console.warn('hover', this);
 		$(this).find('.large').show();

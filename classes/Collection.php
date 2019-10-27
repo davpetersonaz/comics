@@ -34,6 +34,10 @@ class Collection{
 		return $collections;
 	}
 
+	public static function getCollectionsIdName(DB $db){
+		return $db->getCollectionsIdName();
+	}
+
 	////////////////////////////////////////////////////////////////
 
 	public function get($collection_id){

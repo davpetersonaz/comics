@@ -1,12 +1,12 @@
 <?php
 class DB extends DBcore{
-	
-	
+
+
 	//TODO: ON ALL QUERIES THAT ALTER THE DATABASE ... 
 	//UPDATE A NEW TABLE THAT CONTAINS ONE ROW WHICH IS THE LAST UPDATE TIME,
 	//and then in router we can load a cache of all issues/series/collections only if the current time is after the last-update-time
-	
-	
+
+
 
 	public function addCollection($name, $description){
 		$values = array('collection_name'=>$name, 'description'=>$description, 'user_id'=>$_SESSION['user_id']);
@@ -15,14 +15,15 @@ class DB extends DBcore{
 	}
 
 	public function addIssue($series_id, $collection_id, $issue, $chrono='', $grade=8, $notes=''){
-		$values = array('series_id'=>$series_id, 'collection_id'=>$collection_id, 'issue'=>$issue, 
+		$values = array('series_id'=>$series_id, 'collection_id'=>$collection_id, 'issue'=>Func::dbFriendlyIssueNumber($issue), 
 						'chrono_index'=>$chrono, 'grade'=>$grade, 'notes'=>$notes, 'user_id'=>$_SESSION['user_id']);
 		$lastInsertId = $this->insert('comics', $values);
 		return $lastInsertId;
 	}
 
 	public function addSeries($name, $volume, $year, $publisher, $first_issue, $last_issue, $comicvine_series_id, $comicvine_series_full, $image_thumb, $image_full){
-		$values = array('series_name'=>$name, 'year'=>$year, 'publisher'=>$publisher, 'first_issue'=>$first_issue, 'last_issue'=>$last_issue,
+		$values = array('series_name'=>$name, 'year'=>$year, 'publisher'=>$publisher, 
+						'first_issue'=>Func::dbFriendlyIssueNumber($first_issue), 'last_issue'=>Func::dbFriendlyIssueNumber($last_issue),
 						'comicvine_series_id'=>$comicvine_series_id, 'comicvine_series_full'=>$comicvine_series_full, 
 						'image_thumb'=>$image_thumb, 'image_full'=>$image_full, 'user_id'=>$_SESSION['user_id']);
 		if($volume){
@@ -69,7 +70,7 @@ class DB extends DBcore{
 	}
 
 	public function  changeIssueNumber($issue_id, $new_issue_number){
-		$values = array('issue'=>$new_issue_number);
+		$values = array('issue'=>Func::dbFriendlyIssueNumber($new_issue_number));
 		$rowsAffected = $this->update('comics', $values, 'issue_id='.intval($issue_id));
 		return $rowsAffected;
 	}
@@ -118,7 +119,7 @@ class DB extends DBcore{
 		$rows = $this->select($query);
 		return array_column($rows, 'collection_id');
 	}
-	
+
 	public function getAllCollections(){
 		$query = "SELECT c.collection_id, c.collection_name, c.description
 					FROM collections c 
@@ -226,7 +227,24 @@ class DB extends DBcore{
 		$rows = $this->select($query, $values);
 		return (isset($rows[0]) ? $rows[0] : false);
 	}
-	
+
+	public function getCollectionsIdName(){
+		$query = "SELECT collection_id, collection_name 
+					FROM collections 
+					ORDER BY collection_id";
+		$rows = $this->select($query, array(), PDO::FETCH_KEY_PAIR);
+		return $rows;
+	}
+
+	public function getIssueCountForSeries($series_id){
+		$query = "SELECT COUNT(issue_id) AS issue_count 
+					FROM comics 
+					WHERE series_id=:series_id";
+		$values = array('series_id'=>$series_id);
+		$rows = $this->select($query, $values);
+		return (isset($rows[0]['issue_count']) ? $rows[0]['issue_count'] : 0);
+	}
+
 	public function getIssueDetails($issue_id){
 		$query = "SELECT c.issue_id, c.series_id, c.collection_id, c.issue, c.chrono_index, 
 						c.cover_date, c.grade, c.notes, c.comicvine_issue_id, c.comicvine_url, 
@@ -279,14 +297,13 @@ class DB extends DBcore{
 		$rows = $this->select($query, $values);
 		return (isset($rows[0]) ? $rows[0] : false);
 	}
-	
-	public function getIssueCountForSeries($series_id){
-		$query = "SELECT COUNT(issue_id) AS issue_count 
-					FROM comics 
-					WHERE series_id=:series_id";
-		$values = array('series_id'=>$series_id);
-		$rows = $this->select($query, $values);
-		return (isset($rows[0]['issue_count']) ? $rows[0]['issue_count'] : 0);
+
+	public function getSeriesIdName(){
+		$query = "SELECT series_id, series_name 
+					FROM series 
+					ORDER BY series_id";
+		$rows = $this->select($query, array(), PDO::FETCH_KEY_PAIR);
+		return $rows;
 	}
 
 	public function getUserByNumber($user_id){

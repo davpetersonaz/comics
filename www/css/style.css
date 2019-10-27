@@ -67,6 +67,7 @@ body > .container-fluid{
 	float: right;
 }
 
+.footer a,
 .footer{
 	/*background-color: #f8f8f8;*/
 	bottom: 0;

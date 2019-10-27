@@ -3,6 +3,8 @@ function doDefine($name, $value){
 	if(!defined($name)){ define($name, $value); }
 }
 
+//_SESSION vars: loggedin, siteUser, table_length (not used), 
+
 error_reporting(E_ALL);
 ini_set('display_errors', 'On');
 session_start();

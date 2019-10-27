@@ -1,4 +1,3 @@
-<?php /* if(!$alreadyLoggedIn){ ?><script>window.location.href = '/';</script><?php } */ ?>
 <?php
 
 
@@ -72,7 +71,6 @@ elseif(isset($_POST['collection_description_change'], $_POST['new_description'])
 }
 
 //comes from addSeriesSelect, create a new series from the comicvine info
-//TODO: for some reason this doesn't work
 elseif(isset($_POST['comicvine']) && is_array($_POST['comicvine'])){
 	$comicvine = $_POST['comicvine'];
 	$series = new Series($db);

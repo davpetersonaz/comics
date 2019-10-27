@@ -26,7 +26,7 @@ $series = Series::getAllSeries($db);
 		<option value=''></option>
 <?php foreach($collections as $collection){ ?>
 	<?php $selected = ($collectionsChoice && intval($collectionsChoice) === intval($collection->getId()) ? 'selected' : ''); ?>
-		<option value='<?=$collection->getId()?>' <?=$selected?>><?=$collection->getName()?></option>
+		<option value='<?=$collection->getId()?>' <?=$selected?>><?=$collection->getName()?> (<?=$collection->getIssueCount()?> issue<?=($collection->getIssueCount()!==1?'s':'')?>)</option>
 <?php } ?>
 	</select>
 </div>
@@ -37,7 +37,7 @@ $series = Series::getAllSeries($db);
 		<option value=''></option>
 <?php foreach($series as $serie){ ?>
 	<?php $selected = ($seriesChoice && intval($seriesChoice) === intval($serie->getId()) ? 'selected' : ''); ?>
-		<option value='<?=$serie->getId()?>' <?=$selected?>><?=$serie->getDisplayText()?></option>
+		<option value='<?=$serie->getId()?>' <?=$selected?>><?=$serie->getDisplayText()?> (<?=$serie->getIssueCount()?> issue<?=($serie->getIssueCount()!==1?'s':'')?>)</option>
 <?php } ?>
 	</select>
 </div>
@@ -46,7 +46,6 @@ $series = Series::getAllSeries($db);
 	<thead>
 		<tr>
 			<th> </th>
-			<th>id</th>
 			<th>collection</th>
 			<th>series</th>
 			<th>issue</th>
@@ -55,6 +54,7 @@ $series = Series::getAllSeries($db);
 			<th>grade</th>
 			<th>comicvine (full)</th>
 			<th>notes</th>
+			<th>id</th>
 			<th> </th>
 		</tr>
 	</thead>
@@ -63,7 +63,6 @@ $series = Series::getAllSeries($db);
 	<tfoot>
 		<tr>
 			<th> </th>
-			<th>id</th>
 			<th>collection</th>
 			<th>series</th>
 			<th>issue</th>
@@ -72,6 +71,7 @@ $series = Series::getAllSeries($db);
 			<th>grade</th>
 			<th>comicvine (full)</th>
 			<th>notes</th>
+			<th>id</th>
 			<th> </th>
 		</tr>
 	</tfoot>
@@ -83,17 +83,24 @@ $(document).ready(function(){
 	$('#issuesTable').dataTable({
 		"ajax": "/ajax/issues.php<?=$getParams?>",
 		"dom": 'frtip',
-		"order": [[ 2, 'asc' ],[ 3, 'asc' ],[ 4, 'asc' ],[ 7, 'asc' ]],
+		"order": [[ 1, 'asc' ],[ 2, 'asc' ],[ 3, 'asc' ],[ 6, 'asc' ]],
 		"pageLength": <?=$pageLength?>,
 		"processing": true,
 		"searchDelay": 1000,
 		"serverSide": true,
 		"columnDefs": [ 
 			{ "orderable": false, "targets": [ 0, 10 ] },
-			{ "searchable": false, "targets": [ 0, 6, 10 ] },
+			{ "searchable": false, "targets": [ 0, 5, 10 ] },
 			{ "width": '1em', "targets": [ 10 ] },
 			{ "className": "dt-center", "targets": [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ] }//center align both header and body content
 		]
+	});
+
+	$('#issuesTable').on('click', '.comicvine-link', function(){
+		var element_id = $(this).attr('id');
+		var id = element_id.slice(9);
+		console.warn('id', id);
+		window.open('https://comicvine.gamespot.com/issue/'+id, '_blank');
 	});
 
 	$('#issues-by-collection').change(function(){

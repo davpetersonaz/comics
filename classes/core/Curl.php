@@ -25,13 +25,13 @@ class Curl{
 	public function getIssuesBySeriesAndIssue($comicvine_series_id, $issue_number){
 		//https://comicvine.gamespot.com/api/issues/?filter=volume:2128,issue_number:1&api_key=5881a5da17876142d003f9bcf843d4db4ce9fce2&format=json
 		//massage the issue number for a couple corner cases (like "½" and "∞")
-		$issue_number = Issue::formatIssueNumber($issue_number);
-		return $this->getResults('issues', array(), 'filter=volume:'.intval($comicvine_series_id).urlencode(',issue_number:'.$issue_number));
+		$issue_number = Func::fancifyIssueNumber($issue_number);
+		return $this->getResults('issues', array(), 'filter=volume:'.intval($comicvine_series_id).',issue_number:'.urlencode($issue_number));
 	}
 
 	public function getSeriesByName($name){
 		$filters['name'] = urlencode(preg_replace("/[".CHARS_TO_REMOVE_FOR_SEARCH."]/", '', $name));
-		logDebug('call curl: '.var_export($filters, true));
+		logDebug('ADD THIS URL AS A COMMENT ... call curl: '.var_export($filters, true));
 		$decodedResponse = $this->getResults('volumes', $filters);
 		return $decodedResponse;
 	}
@@ -40,10 +40,12 @@ class Curl{
 		$filters['name'] = urlencode(preg_replace("/[".CHARS_TO_REMOVE_FOR_SEARCH."]/", '', $name));
 		$filters['issue'] = urlencode(preg_replace("/[".CHARS_TO_REMOVE_FOR_SEARCH."]/", '', $issue));
 //		$filters['start_year'] = urlencode(preg_replace("/[".CHARS_TO_REMOVE_FOR_SEARCH."]/", '', $year));
-		logDebug('call curl: '.var_export($filters, true));
+		logDebug('ADD THIS URL AS A COMMENT ... call curl: '.var_export($filters, true));
 		$decodedResponse = $this->getResults('volumes', $filters);
 		return $decodedResponse;
 	}
+
+	////////////////////////////////////////////////////////////////////////
 
 	public function getResults($resouce, $param, $suffix=false){
 		$page_results = $total_results = $offset = $sanity_check = 0;
@@ -125,3 +127,40 @@ class Curl{
 	protected static $baseUrl = 'https://comicvine.gamespot.com/api/';
 	protected static $apikey = '5881a5da17876142d003f9bcf843d4db4ce9fce2';
 }
+
+/*
+
+basic syntax:
+http://www.comicvine.com/api/<resource>/?filter=field1:value1,field2:value2&sort=cover_date:asc&api_key=5881a5da17876142d003f9bcf843d4db4ce9fce2&format=json
+
+series details by comicvine series id:
+https://comicvine.gamespot.com/api/volume/4050-2133/?api_key=5881a5da17876142d003f9bcf843d4db4ce9fce2&format=json&offset=0
+
+all volumes filtered by title sorted by cover date: 
+https://comicvine.gamespot.com/api/volumes/?filter=name:avengers&sort=cover_date:asc&api_key=5881a5da17876142d003f9bcf843d4db4ce9fce2&format=json
+
+to find list of series by name:
+https://comicvine.gamespot.com/api/volumes/?filter=name:avengers&api_key=5881a5da17876142d003f9bcf843d4db4ce9fce2&format=json
+
+details on a single issue (by comicvine issue id)
+https://comicvine.gamespot.com/api/issue/4000-6686/?api_key=5881a5da17876142d003f9bcf843d4db4ce9fce2&format=json
+
+get a specific issue using comicvine-series and issue-number !!
+https://comicvine.gamespot.com/api/issues/?filter=volume:2128,issue_number:1&api_key=5881a5da17876142d003f9bcf843d4db4ce9fce2&format=json
+
+get all issues in a series-id (all issues in avengers vol.1) sorted by issue number:
+https://comicvine.gamespot.com/api/issues/?filter=volume:2128&sort=issue_number:asc&api_key=5881a5da17876142d003f9bcf843d4db4ce9fce2&format=json
+
+all issues filtered by title sorted by cover date:
+https://comicvine.gamespot.com/api/issues/?filter=name:avengers&sort=cover_date:asc&api_key=5881a5da17876142d003f9bcf843d4db4ce9fce2&format=json
+
+sorting:
+&sort=cover_date:asc
+&issue_number:asc
+
+biblio:
+https://comicvine.gamespot.com/api/documentation
+https://comicvine.gamespot.com/forums/api-developers-2334/simple-example-s-for-using-the-apis-1885345/
+https://josephephillips.com/blog/how-to-use-comic-vine-api-part1
+
+*/

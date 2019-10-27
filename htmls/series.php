@@ -1,5 +1,13 @@
 <?php 
 if(!$alreadyLoggedIn){ ?><script>window.location.href = '/';</script><?php }
+
+
+//TODO: want to figure out a way to re-retrieve comicvine info on series that are missing any data piece (like firstIssue, lastIssue, publisher, etc)
+//maybe just add a button that executes the task using ajax
+
+//TODO: maybe create a series page that gives full details on a certain series (including the re-retrieve button)
+
+
 $pageLength = (isset($_SESSION['table_length']['home']) && $_SESSION['table_length']['home'] > 0 ? $_SESSION['table_length']['home'] : 100);
 $seriesChoice = (isset($_GET['ser']) ? $_GET['ser'] : false);
 $getParams = ($seriesChoice ? "?ser={$seriesChoice}" : '');
@@ -25,6 +33,7 @@ $getParams = ($seriesChoice ? "?ser={$seriesChoice}" : '');
 			<th>comicvine (full)</th>
 			<th>usage</th>
 			<th> </th>
+			<th> </th>
 		</tr>
 	</thead>
 	<tbody>
@@ -43,33 +52,13 @@ $getParams = ($seriesChoice ? "?ser={$seriesChoice}" : '');
 			<th>comicvine (full)</th>
 			<th>usage</th>
 			<th> </th>
+			<th> </th>
 		</tr>
 	</tfoot>
 </table>
 
 <script>
 $(document).ready(function(){
-
-	//this creates an array of values for string input boxes
-	$.fn.dataTable.ext.order['dom-text'] = function(settings, col){
-		return this.api().column( col, {order:'index'} ).nodes().map( function(td, i){
-			return $('input', td).val();
-		});
-	};
-
-	//this creates an array of values for numeric input boxes, parsed as numbers
-	$.fn.dataTable.ext.order['dom-text-numeric'] = function (settings, col){
-		return this.api().column( col, {order:'index'} ).nodes().map( function(td, i){
-			return $('input', td).val() * 1;
-		});
-	};
-
-	//this creates an array of values for select options
-	$.fn.dataTable.ext.order['dom-select'] = function(settings, col){
-		return this.api().column( col, {order:'index'} ).nodes().map( function(td, i){
-			return $('select', td).val();
-		});
-	};
 
 	$('#seriesTable').dataTable({
 		"ajax": "/ajax/series.php<?=$getParams?>",
@@ -80,26 +69,19 @@ $(document).ready(function(){
 		"searchDelay": 1000,
 		"serverSide": true,
 		"columnDefs": [ 
-			{ "orderable": false, "targets": [ 0, 11 ] },
-			{ "searchable": false, "targets": [ 0, 10, 11 ] },
+			{ "orderable": false, "targets": [ 0, 11, 12 ] },
+			{ "searchable": false, "targets": [ 0, 10, 11, 12 ] },
+			{ "visible": false, "targets": [ 12 ] },
 			{ "width": '1em', "targets": [ 11 ] },
-			{ "className": "dt-center", "targets": [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 ] }// Center align both header and body content of columns
-//		],
-//		//and declare the input columns for the functions above
-//		"columns": [
-//			null,
-//			null,
-//			{ "orderDataType": "dom-text", type: 'string' },
-//			{ "orderDataType": "dom-text", type: 'string' },
-//			null,
-//			null,
-//			null,
-//			null,
-//			null,
-//			null,
-//			null,
-//			null
+			{ "className": "dt-center", "targets": [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 ] }// Center align both header and body content of columns
 		]
+	});
+
+	$('#seriesTable').on('click', '.picture', function(){
+		var element_id = $(this).attr('id');
+		var id = element_id.slice(7);
+		console.warn('id', id);
+		window.open('/issues?ser='+id);
 	});
 
 	$('#seriesTable').on('change', '.series_name', function(){
@@ -136,13 +118,7 @@ $(document).ready(function(){
 		var element_id = $(this).attr('id');
 		var id = element_id.slice(9);
 		console.warn('id', id);
-		$.ajax({
-			method: 'POST',
-			url: '/ajax/lookup.php',
-			data: { comicvine_series_id: id } 
-		}).done(function(data){
-			window.open(data, '_blank');
-		});
+		window.open('https://comicvine.gamespot.com/volume/'+id+'/', '_blank');
 	});
 
 	$('#seriesTable').on('click', '.delete', function(){
@@ -175,7 +151,7 @@ $(document).ready(function(){
 	$('.add-issues').on('click', function(){
 		window.location.href = '/addIssues';
 	});
-	
+
 	$('.add-series').on('click', function(){
 		window.location.href = '/addSeries';
 	});
