@@ -32,7 +32,8 @@ a{
 .invisible{
 	visibility: hidden;
 }
-.red-text{
+.red-text, 
+.red-text a{
 	color: red;
 }
 .bg-dark.btn-primary,

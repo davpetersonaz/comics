@@ -16,6 +16,7 @@ $getParams = ($seriesChoice ? "?ser={$seriesChoice}" : '');
 <div class='btn-above-table'>
 	<button class='btn btn-primary bg-dark add-series'>Add Series</button>
 	<button class='btn btn-primary bg-dark add-issues'>Add Issues</button>
+	<button class='btn btn-primary bg-dark comicvine-regen'><span style="font-size:smaller;">Regen Comicvine</span></button>
 </div>
 
 <table id='seriesTable' class="display">
@@ -75,13 +76,6 @@ $(document).ready(function(){
 			{ "width": '1em', "targets": [ 11 ] },
 			{ "className": "dt-center", "targets": [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 ] }// Center align both header and body content of columns
 		]
-	});
-
-	$('#seriesTable').on('click', '.picture', function(){
-		var element_id = $(this).attr('id');
-		var id = element_id.slice(7);
-		console.warn('id', id);
-		window.open('/issues?ser='+id);
 	});
 
 	$('#seriesTable').on('change', '.series_name', function(){
@@ -154,6 +148,21 @@ $(document).ready(function(){
 
 	$('.add-series').on('click', function(){
 		window.location.href = '/addSeries';
+	});
+	
+	$('.comicvine-regen').on('click', function(){
+		$.ajax({
+			method: 'POST',
+			url: '/ajax/lookup.php',
+			data: { comicvine_regen: true } 
+		}).done(function(data){
+			if(data === 'done'){
+				alert('regen completed');
+				window.location.href = '/series';
+			}else{
+				alert(data);
+			}
+		});
 	});
 
 	$(".popup-on-hover").hover(function(){

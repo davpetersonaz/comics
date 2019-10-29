@@ -1,10 +1,7 @@
 <?php
 
 
-
-//TODO: ADD A PRINT BUTTON
 //TODO: ADD DROPDOWN FOR SORTING coll/series/vol/issue/grade, series/vol/issue/grade, and ??? -- remember the value in SESSION 
-
 
 
 ?>
@@ -61,6 +58,7 @@ $(document).ready(function(){
 //	var userIsAdmin = <?=($alreadyLoggedIn?'true':'false')?>;
 
 	var comiclistdatatable = $('#comiclist').DataTable({
+        "dom": 'Bfrtip',
 		"processing": true,
 		"serverSide": true,
 		"ajax": "/ajax/listing.php",
@@ -70,6 +68,7 @@ $(document).ready(function(){
 <?php }else{ ?>
 		"order": [[ 1, 'asc' ],[ 2, 'asc' ],[ 3, 'asc' ],[ 5, 'asc' ],[ 4, 'asc' ]],
 <?php } ?>
+		"buttons": [ 'print' ],
 		"columnDefs": [ 
 			{ "orderable": false, "targets": [ 0, 7, 8, 9, 10, 11, 12, 13 ] },
 			{ "searchable": false, "targets": [ 0, 7, 8, 9, 10, 11, 12, 13 ] },

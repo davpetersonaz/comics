@@ -6,7 +6,7 @@ class DBcore{
 		$return = 0;
 		try{
 			$query = 'DELETE FROM '.$table.($where?' WHERE '.$where:'');
-//			$this->logQueryAndValues($query, $values, 'DBcore->delete');
+			$this->logQueryAndValues($query, $values, 'DBcore->delete');
 			$stmt = $this->connection->prepare($query);
 			foreach($values as $column=>$value){
 				$stmt->bindValue(':'.$column, $value);

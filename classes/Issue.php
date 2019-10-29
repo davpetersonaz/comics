@@ -1,10 +1,4 @@
 <?php
-
-
-//TODO:	WHEN NO ISSUE FOUND ON COMICVINE, DO A BETTER ERROR MESSAGE, 
-//TODO: MAKE SURE THE SUBMISSIONS AFTER THE FAILURE SUCCEDED (MAYBE SHOW SUCCEEDED COVERS LIKE IT DOES WHEN NO ERRORS OCCUR)
-
-
 class Issue{
 
 	private function accentMainCharacters($characters){
@@ -53,7 +47,7 @@ class Issue{
 		$this->series_id = $new_series_id;
 		$rowsAffected = $this->db->changeSeriesId($this->issue_id, $new_series_id);
 		//reset series-related member vars before calling updateIssueDetails
-		$series = new Series($this->db, $new_series_id);
+		$series = new Series($this->db, $this->curl, $new_series_id);
 		$this->comicvine_series_id = $series->getComicvineId();
 		$this->comicvine_series_full = $series->getComicvineIdFull();
 		$this->series_name = $series->getName();
@@ -68,6 +62,11 @@ class Issue{
 
 	public function delete(){
 		$rowsAffected = $this->db->deleteIssue($this->issue_id);
+		return $rowsAffected;
+	}
+
+	public static function deleteIssue($db, $issue_id){
+		$rowsAffected = $db->deleteIssue($issue_id);
 		return $rowsAffected;
 	}
 
@@ -136,10 +135,10 @@ class Issue{
 
 	//can be used for dropdown options, title tooltips
 	public function getDisplayText(){
-		return "{$this->name} ".($this->volume > 1 ? "vol.".$this->volume : '')." ({$this->year}) #{$this->issue}";
+		return "{$this->series_name} ".($this->volume > 1 ? "vol.".$this->volume : '')." ({$this->year}) #{$this->issue}";
 	}
 
-	public function getDisplayTextStatic($name, $volume, $year, $issue){
+	public static function getDisplayTextStatic($name, $volume, $year, $issue){
 		return "{$name} ".($volume > 1 ? "vol.".$volume : '')." ({$year}) #{$issue}";
 	}
 
@@ -220,64 +219,66 @@ class Issue{
 			$values['image_thumb'] = $this->image_thumb = $comicvine_info['image']['thumb_url'];
 
 			//get further details
-			if($this->comicvine_issue_id){
-				logDebug('get further details');
-				$comicvine_info = $this->curl->getIssueByComicvineId($this->comicvine_issue_id);
-				if($comicvine_info){
-					//characters
-					if($comicvine_info['character_credits']){
-						$characters = array_column($comicvine_info['character_credits'], 'name');
-						$values['characters'] = $this->characters = implode('|', $characters);
-					}
-					//creators
-					$creators = array();
-					if($comicvine_info['person_credits']){
-						foreach($comicvine_info['person_credits'] as $creator){
-							$creator_entry = "{$creator['name']}:{$creator['role']}";
-							$creators[] = $creator_entry;
-						}
-					}
-					$values['creators'] = $this->creators = implode('|', $creators);
-					//first appearances of characters
-					if($comicvine_info['first_appearance_characters']){
-						$first_appearance_characters = array_column($comicvine_info['first_appearance_characters'], 'name');
-						$values['first_appearance_characters'] = $this->first_appearance_characters = implode('|', $first_appearance_characters);
-					}
-					//first appearances of objects
-					if($comicvine_info['first_appearance_objects']){
-						$first_appearance_objects = array_column($comicvine_info['first_appearance_objects'], 'name');
-						$values['first_appearance_objects'] = $this->first_appearance_objects = implode('|', $first_appearance_objects);
-					}
-					//first appearances of teams
-					if($comicvine_info['first_appearance_teams']){
-						$first_appearance_teams = array_column($comicvine_info['first_appearance_teams'], 'name');
-						$values['first_appearance_teams'] = $this->first_appearance_teams = implode('|', $first_appearance_teams);
-					}
-					//character died
-					if($comicvine_info['character_died_in']){
-						$character_died_in = array_column($comicvine_info['character_died_in'], 'name');
-						$values['character_died_in'] = $this->character_died_in = implode('|', $character_died_in);
-					}
-				}else{
-					logDebug("COULD NOT FIND [{$this->comicvine_issue_id}]");
+			logDebug('get further details');
+			$comicvine_info = $this->curl->getIssueByComicvineId($this->comicvine_issue_id);
+			if($comicvine_info){
+				//characters
+				if($comicvine_info['character_credits']){
+					$characters = array_column($comicvine_info['character_credits'], 'name');
+					$values['characters'] = $this->characters = implode('|', $characters);
 				}
+				//creators
+				$creators = array();
+				if($comicvine_info['person_credits']){
+					foreach($comicvine_info['person_credits'] as $creator){
+						$creator_entry = "{$creator['name']}:{$creator['role']}";
+						$creators[] = $creator_entry;
+					}
+				}
+				$values['creators'] = $this->creators = implode('|', $creators);
+				//first appearances of characters
+				if($comicvine_info['first_appearance_characters']){
+					$first_appearance_characters = array_column($comicvine_info['first_appearance_characters'], 'name');
+					$values['first_appearance_characters'] = $this->first_appearance_characters = implode('|', $first_appearance_characters);
+				}
+				//first appearances of objects
+				if($comicvine_info['first_appearance_objects']){
+					$first_appearance_objects = array_column($comicvine_info['first_appearance_objects'], 'name');
+					$values['first_appearance_objects'] = $this->first_appearance_objects = implode('|', $first_appearance_objects);
+				}
+				//first appearances of teams
+				if($comicvine_info['first_appearance_teams']){
+					$first_appearance_teams = array_column($comicvine_info['first_appearance_teams'], 'name');
+					$values['first_appearance_teams'] = $this->first_appearance_teams = implode('|', $first_appearance_teams);
+				}
+				//character died
+				if($comicvine_info['character_died_in']){
+					$character_died_in = array_column($comicvine_info['character_died_in'], 'name');
+					$values['character_died_in'] = $this->character_died_in = implode('|', $character_died_in);
+				}
+				
+				//save comicvine issue
+				$this->update($this->issue_id, $values);
+				$this->get($this->issue_id);
+			}else{
+				//cannot find issue details on comicvine?? (shouldn't really happen)
+				logDebug("issue not found on comicvine");
+				logDebug("for series: ".var_export($this->comicvine_series_full, true));
+				logDebug('with response: '.var_export($response, true));
+				$errormsg = "issue not found on comicvine for series [{$this->comicvine_series_full}], issue [{$this->issue}]: ".var_export($response, true);
+				logDebug($errormsg);
+				$this->issue_id = false;
 			}
-
-			//save comicvine issue
-			$this->update($this->issue_id, $values);
 		}else{
-			//cannot find on comicvine??
+			//cannot find the issue on comicvine?? (occurs when the issue isn't found in the comicvine series)
 			logDebug("no results found on comicvine");
 			logDebug("for series: ".var_export($this->comicvine_series_full, true));
 			logDebug('with response: '.var_export($response, true));
-
-			//TODO: flesh out this error message, add issue display-text
-
 			$errormsg = "no results found on comicvine for series [{$this->comicvine_series_full}], issue [{$this->issue}]: ".var_export($response, true);
-			echo "<p>{$errormsg}</p>";
 			logDebug($errormsg);
-			exit;
+			$this->issue_id = false;
 		}
+		return $this->issue_id;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -306,7 +307,6 @@ class Issue{
 	}
 
 	public function getId(){ return $this->issue_id; }
-	public function getName(){ return $this->name; }
 	public function getSeriesId(){ return $this->series_id; }
 	public function getCollectionId(){ return $this->collection_id; }
 	public function getIssue(){ return $this->issue; }
@@ -346,7 +346,6 @@ class Issue{
 	public $issue_id = false;//db issue id
 	public $series_id = false;//db series id
 	public $collection_id = false;//db colelction id
-	public $name = false;//my series name, not comicvine's
 	public $issue = false;//issue number
 	public $chrono_index = false;//my issue index of the collection
 	public $collection_name = false;//from collections table, the collection's name in my physical collection's ordering
@@ -355,7 +354,7 @@ class Issue{
 	public $comicvine_series_full = false;//from series table, long version of comicvine series id
 	public $comicvine_url = false;//full url to this issue's page on comicvine
 	public $cover_date = false;//issue cover date
-	public $grade = 8;//grading for the physical copy of the issue //TODO: maybe split this out into separate table and keep issue as a "generic" version of the specific physical copy?
+	public $grade = 8;//grading for the physical copy of the issue //TODO: maybe split this out into separate table and keep issue as a "generic" version of the specific physical copy? what?
 	public $notes = false;
 	public $image_full = false;//large cover image
 	public $image_thumb = false;//cover image thumbnail

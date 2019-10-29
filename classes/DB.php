@@ -2,10 +2,10 @@
 class DB extends DBcore{
 
 
+	//TODO: this is interesting, but not sure if a good thing to use caches, doesn't the db sorts quicker than php?
 	//TODO: ON ALL QUERIES THAT ALTER THE DATABASE ... 
 	//UPDATE A NEW TABLE THAT CONTAINS ONE ROW WHICH IS THE LAST UPDATE TIME,
 	//and then in router we can load a cache of all issues/series/collections only if the current time is after the last-update-time
-
 
 
 	public function addCollection($name, $description){
@@ -115,7 +115,7 @@ class DB extends DBcore{
 		$query = "SELECT c.collection_id 
 					FROM collections c 
 					{$this->whereUserid('c')}";
-//		self::logQueryAndValues($query, array(), 'getAllCollectionIds');
+		self::logQueryAndValues($query, array(), 'getAllCollectionIds');
 		$rows = $this->select($query);
 		return array_column($rows, 'collection_id');
 	}
@@ -190,7 +190,7 @@ class DB extends DBcore{
 		$query = "SELECT s.series_id, s.series_name, s.volume, s.year, s.publisher, s.comicvine_series_id, s.comicvine_series_full
 					FROM series s
 					{$this->whereUserid('s')}
-					ORDER BY series_name ASC, volume ASC";
+					ORDER BY series_name ASC, year ASC, volume ASC";
 //		self::logQueryAndValues($query, array(), 'getAllSeries');
 		$rows = $this->select($query);
 //		logDebug('result: '. var_export($rows, true));
@@ -200,7 +200,8 @@ class DB extends DBcore{
 	public function getAllSeriesIds(){
 		$query = "SELECT s.series_id 
 					FROM series s 
-					{$this->whereUserid('s')}";
+					{$this->whereUserid('s')}
+					ORDER BY s.series_name ASC, s.year ASC, s.volume ASC";
 		$rows = $this->select($query);
 //		self::logQueryAndValues($query, array(), 'getAllSeriesIds');
 		return array_column($rows, 'series_id');
@@ -212,7 +213,7 @@ class DB extends DBcore{
 					LEFT JOIN comics i USING (collection_id)
 					{$this->whereUserid('c')}
 						AND collection_id=".intval($collection_id);
-//		self::logQueryAndValues($query, array(), 'getCollection');
+		self::logQueryAndValues($query, array(), 'getCollection');
 		$rows = $this->select($query);
 		return (isset($rows[0]) ? $rows[0] : false);
 	}
@@ -264,8 +265,8 @@ class DB extends DBcore{
 
 	public function getSeries($series_id){
 		$query = "SELECT s.series_id, s.series_name, s.volume, s.year, s.publisher, s.first_issue, s.last_issue,
-						s.comicvine_series_id, s.comicvine_series_full, s.image_thumb, s.image_full,
-						COUNT(i.issue_id) AS issue_count
+						s.series_issue_count, s.comicvine_series_id, s.comicvine_series_full, 
+						s.image_thumb, s.image_full, COUNT(i.issue_id) AS issue_count
 					FROM series s
 					LEFT JOIN comics i USING (series_id)
 					{$this->whereUserid('s')}
@@ -355,8 +356,16 @@ class DB extends DBcore{
 
 	public function updateIssue($issueid, $values){
 		if($this->verifyColumns('comics', $values)){
-			$lastInsertId = $this->update('comics', $values, 'issue_id='.intval($issueid));
-			return $lastInsertId;
+			$rowsAffected = $this->update('comics', $values, 'issue_id='.intval($issueid));
+			return $rowsAffected;
+		}
+		return 0;
+	}
+
+	public function updateSeries($seriesid, $values){
+		if($this->verifyColumns('series', $values)){
+			$rowsAffected = $this->update('series', $values, 'series_id='.intval($seriesid));
+			return $rowsAffected;
 		}
 		return 0;
 	}

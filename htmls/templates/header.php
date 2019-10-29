@@ -7,6 +7,9 @@
 		<!-- css -->
 		<link href="/css/bootstrap4/bootstrap.min.css?v<?=filemtime($_SERVER['DOCUMENT_ROOT'].'/css/bootstrap4/bootstrap.min.css')?>" rel="stylesheet" type="text/css"/>
 		<link href="/css/datatables-1.10.18/jquery.dataTables.min.css?v<?=filemtime($_SERVER['DOCUMENT_ROOT'].'/css/datatables-1.10.18/jquery.dataTables.min.css')?>" rel="stylesheet" type="text/css"/>
+<?php if($page === 'home'){ ?>
+		<link href="/css/Buttons-1.6.1/buttons.dataTables.min.css?v<?=filemtime($_SERVER['DOCUMENT_ROOT'].'/css/Buttons-1.6.1/buttons.dataTables.min.css')?>" rel="stylesheet" type="text/css"/>
+<?php } ?>
 <?php if($page === 'addIssues'){ ?>
 		<link href="/css/tempusdominus-bootstrap-4.min.css?v<?=filemtime($_SERVER['DOCUMENT_ROOT'].'/css/tempusdominus-bootstrap-4.min.css')?>" rel="stylesheet" type="text/css"/>
 <?php } ?>
@@ -17,6 +20,10 @@
 		<script src="/js/jquery/jquery-3.3.1.min.js" type="text/javascript"></script>
 		<script src="/js/bootstrap4/bootstrap.min.js" type="text/javascript"></script>
 		<script src="/js/datatables-1.10.18/jquery.dataTables.min.js" type="text/javascript"></script>
+<?php if($page === 'home'){ ?>
+		<script src="/js/Buttons-1.6.1/dataTables.buttons.min.js" type="text/javascript"></script>
+		<script src="/js/Buttons-1.6.1/buttons.print.min.js" type="text/javascript"></script>
+<?php } ?>
 <?php if($page === 'addIssues'){ ?>
 		<script src="/js/moment.js" type="text/javascript"></script>
 		<script src="/js/tempusdominus-bootstrap-4.min.js" type="text/javascript"></script>

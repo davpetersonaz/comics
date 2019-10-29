@@ -111,7 +111,7 @@ foreach($mainQueryResult as $row){
 	$image_div = '';
 	if($row['image_thumb'] && $row['image_full']){
 		$image_div =	"<div id='picture{$row['series_id']}' class='picture'>".
-							"<a class='small' href='#nogo' title='small image'>".
+							"<a href='/series_details?id={$row['series_id']}' class='small' title='small image'>".
 								"<img src='{$row['image_thumb']}' class='img-responsive'>".
 								"<img src='{$row['image_full']}' class='large popup-on-hover'>".
 							"</a>".

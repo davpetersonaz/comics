@@ -17,7 +17,7 @@ if(isset($_POST['submit'])){
 	$chrono = $_POST['chrono'];
 	$gradepos = $_POST['grade'];
 	$notes = $_POST['notes'];
-	$thumbs = $images = $failures = array();
+	$failures = array();
 	//for error info...
 	$collectionNames = Collection::getCollectionsIdName($db);
 	$seriesNames = Series::getSeriesIdName($db);
@@ -26,39 +26,43 @@ if(isset($_POST['submit'])){
 		if(!$series[$i]){ break; }
 		$issue_id = Issue::createIssue($db, $collections[$i], $series[$i], $issues[$i], $chrono[$i], $gradepos[$i], $notes[$i]);
 		logDebug('created issue: '.var_export($issue_id, true));
+		$link = "https://comicvine.gamespot.com/search/?header=1&q=".urlencode($seriesNames[$series[$i]])."%20%23".urlencode($issues[$i]);
 		if($issue_id){
 			$issue = new Issue($db, $curl, $issue_id);
 			$issue->addSeriesToIssue($series[$i]);
-			logDebug('issue is currently: '.var_export($issue, true));
-			$issue->updateIssueDetails();
-			$images[] = $issue->getImageFull();
-			$thumbs[] = $issue->getImageThumb();
+			$result = $issue->updateIssueDetails();
+			logDebug('issue details updated: '.var_export($result, true));
+			if($result){
+			?>
+				<div class='success-cover'>
+					<a href='/details?id=<?=$issue->getId()?>' class='small' title="<?=$issue->getDisplayText()?>" target='_blank'>
+						<img src='<?=$issue->getImageThumb()?>' class='img-responsive'>
+						<img src='<?=$issue->getImageFull()?>' class='large popup-on-hover'>
+					</a>
+				</div>
+			<?php
+			}else{
+				$failures[] = "Issue not found on ComicVine: {$seriesNames[$series[$i]]} #{$issues[$i]}, <a href='{$link}' target='_blank'>comicvine link</a><br />";
+				$rowsAffected = Issue::deleteIssue($db, $issue_id);
+				logDebug("issue [{$issue_id}] deleted: ".$rowsAffected);
+			}
 		}else{
-			$failures[] = "Error creating issue: {$seriesNames[$series[$i]]} #{$issues[$i]}<br />" .
-						"comicvine link: https://comicvine.gamespot.com/search/?header=1&q=".urlencode($seriesNames[$series[$i]])."%20%23".urlencode($issues[$i]).'<br />';
+			$failures[] = "Error creating issue in db: {$seriesNames[$series[$i]]} #{$issues[$i]}, <a href='{$link}' target='_blank'>comicvine link</a><br />";
 		}
 	}
+	?>
 
-	for($i=0; $i<count($images); $i++){
-		?>
-		<div class='success-cover'>
-			<a href='/details?id=<?=$issue->getId()?>' class='small' title="<?=$issue->getDisplayText()?>" target='_blank'>
-				<img src='<?=$thumbs[$i]?>' class='img-responsive'>
-				<img src='<?=$images[$i]?>' class='large popup-on-hover'>
-			</a>
-		</div>
+	<?php if(count(array_filter($series)) - count($failures) > 0){ //array_filter removes empty elements ?>
+		<p class='red-text'>Issues have been added<?php if(count($failures) === 0){ ?>, create some more..<?php } ?>.</p>
 	<?php } ?>
-
-	<?php if($failures){ ?>
+	<?php if(count($failures) > 0){ ?>
 		<p class='red-text'>
-			<b>There was a problem or two...</b><br />
+			<b>There was a problem<?php if(count($failures) > 1){ ?> or two<?php } ?>...</b><br />
 		<?php foreach($failures as $failure){ ?>
-			<?=$failure?>
+			<?=$failure?><br />
 		<?php } ?>
 		</p>
-	<?php } ?>
-		<p class='red-text'>Issues have been added, create some more...</p>
-	<?php
+	<?php }
 }
 
 $fields = 10;
@@ -67,7 +71,7 @@ $collection_options = '';
 foreach($collections as $collection){
 	$collection_options .= "<option value='{$collection->getId()}'>{$collection->getName()} ({$collection->getIssueCount()})</option>";
 }
-$series = Series::getAllSeries($db);
+$series = Series::getAllSeries($db, $curl);
 $series_options = '';
 foreach($series as $serie){
 	$series_options .= "<option value='{$serie->getId()}'>{$serie->getDisplayText()} ({$serie->getIssueCount()} issue".($serie->getIssueCount()===1?'':'s').")</option>";

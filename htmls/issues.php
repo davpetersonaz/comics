@@ -11,7 +11,7 @@ $getParams .= ($seriesChoice ? ($getParams?'&':'?')."ser={$seriesChoice}" : '');
 logDebug("getParams: [{$getParams}]");
 
 $collections = Collection::getAllCollections($db);
-$series = Series::getAllSeries($db);
+$series = Series::getAllSeries($db, $curl);
 ?>
 
 <div class='btn-above-table'>
@@ -216,9 +216,6 @@ $(document).ready(function(){
 			}
 		});
 	});
-
-
-	//TODO: WHY DOESNT THIS WORK??
 
 	$('#issuesTable').on('change', '.comicvine-link', function(){
 		console.warn('comicvine onChange', this);

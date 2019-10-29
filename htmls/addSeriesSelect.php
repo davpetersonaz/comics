@@ -1,10 +1,6 @@
 <?php
 
 
-//not sure if i can fix:
-//after clicking cancel, the sorting/ordering controls become useless, some datatable issue?
-//MAYBE JUST RELOAD THE PAGE ON CANCEL???!!
-
 //TODO: on the javascript seriesvolume prompt, parse the series volume from comicvine and use that as the default (instead of default=1)
 
 
@@ -22,7 +18,7 @@ if(!$results){
 foreach($results as $result){
 	$newArray = array();
 //	$newArray[] = "<a href='{$result['image']['super_url']}' class='preview' title='{$result['name']} {$result['start_year']}'><img src='{$result['image']['thumb_url']}' alt='gallery thumbnail' />";
-	$newArray[] = "<div class='picture'>".
+	$newArray[] =	"<div class='picture'>".
 						"<a class='small' href='#nogo' title='small image'>".
 							"<img src='{$result['image']['thumb_url']}' class='img-responsive'>".
 							"<img src='{$result['image']['super_url']}' class='large popup-on-hover'>".
@@ -99,7 +95,6 @@ $(document).ready(function(){
 			{ "searchable": false, "targets": [ 0, 8, 9, 10, 11 ] },
 			{ "orderable": false, "targets": [ 0, 8, 9, 10, 11 ] },
 			{ "visible": false, "targets": [ 8, 9, 10, 11 ] },
-//			{ "width": "4em", "targets": [ 2 ] },
 			{ "width": "2em", "targets": [ 0, 4, 5, 6, 7, 8, 9 ] }
 		]
 	});
@@ -111,9 +106,9 @@ $(document).ready(function(){
 		var currentRowData = seriesdatatable.row(this).data();
 		console.warn('currentRowData', currentRowData);
 		var seriesname = prompt("what is the series name?", currentRowData[1]);
-		if(seriesname === null){ return; }
+		if(seriesname === null){ window.location.href = '/addSeries'; return false; }
 		var volume = prompt("what is the volume number?", 1);
-		if(volume === null){ return; }
+		if(volume === null){ window.location.href = '/addSeries'; return false; }
 //		alert('posting to lookup');
 		$.ajax({
 			method: 'POST',
@@ -125,7 +120,7 @@ $(document).ready(function(){
 				alert(data);
 			}else{
 //				alert('addSelectSeries: redirecting to addSeries');
-				location.href = '/addSeries';
+				window.location.href = '/addSeries'; return false;
 			}
 		});
 	});

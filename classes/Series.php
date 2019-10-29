@@ -21,6 +21,7 @@ class Series{
 		$this->volume = intval($volume);
 		$this->publisher = $comicvine_info[3];
 		$this->year = $comicvine_info[4];
+		$this->series_issue_count = $comicvine_info[5];
 		$this->first_issue = $comicvine_info[6];
 		$this->last_issue = $comicvine_info[7];
 		$this->comicvine_series_id = $comicvine_info[8];
@@ -43,14 +44,22 @@ class Series{
 		return (isset($rows[0]['series_id']) ? true : false);
 	}
 
-	public static function getAllSeries(DB $db){
+	public static function getAllSeries(DB $db, Curl $curl){
 		$series = array();
 		$dbseries = $db->getAllSeriesIds();
 		foreach($dbseries as $dbseriesid){
-			$series[] = new Series($db, $dbseriesid);
+			$series[] = new Series($db, $curl, $dbseriesid);
 		}
 		usort($series, 'Func::compareByObjectName');
 		return $series;
+	}
+	
+	public function getComicvineApiUrl(){
+		return $this->curl::getComivineSeriesUrl($this->getComicvineIdFull());
+	}
+
+	public function getComicvineUrl(){
+		return 'https://comicvine.gamespot.com/volume/'.$this->getComicvineIdFull();
 	}
 
 	//can be used for dropdown options, title tooltips
@@ -64,13 +73,17 @@ class Series{
 	public static function getIssueCountStatic(DB $db, $series_id){
 		return $db->getIssueCountForSeries($series_id);
 	}
-
+	
 	public static function getSeriesByName(DB $db, $name, $volume){
 		return $db->getSeriesByName($name, $volume);
 	}
 
 	public static function getSeriesIdName(DB $db){
 		return $db->getSeriesIdName();
+	}
+	
+	public function updateSeriesValues($values){
+		return $this->db->updateSeries($this->series_id, $values);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -85,6 +98,7 @@ class Series{
 			if($series['publisher']){ $this->publisher = $series['publisher']; }
 			if($series['first_issue']){ $this->first_issue = $series['first_issue']; }
 			if($series['last_issue']){ $this->last_issue = $series['last_issue']; }
+			if($series['series_issue_count']){ $this->series_issue_count = $series['series_issue_count']; }
 			if($series['comicvine_series_id']){ $this->comicvine_series_id = $series['comicvine_series_id']; }
 			if($series['comicvine_series_full']){ $this->comicvine_series_full = $series['comicvine_series_full']; }
 			if($series['image_thumb']){ $this->image_thumb = $series['image_thumb']; }
@@ -104,20 +118,23 @@ class Series{
 	public function getPublisher(){ return $this->publisher; }
 	public function getFirstIssue(){ return $this->first_issue; }
 	public function getLastIssue(){ return $this->last_issue; }
+	public function getSeriesIssueCount(){ return $this->series_issue_count; }
 	public function getComicvineId(){ return $this->comicvine_series_id; }
 	public function getComicvineIdFull(){ return $this->comicvine_series_full; }
 	public function getImageThumb(){ return $this->image_thumb; }
 	public function getImageFull(){ return $this->image_full; }
 	public function getIssueCount(){ return intval($this->issue_count); }
 
-	public function __construct(DB $db, $series_id=false){
+	public function __construct(DB $db, Curl $curl, $series_id=false){
 		$this->db = $db;
+		$this->curl = $curl;
 		if($series_id !== false){
 			$this->get($series_id);
 		}
 	}
 
 	protected $db = false;
+	protected $curl = false;
 	protected $series_id = false;//db series id
 	protected $series_name = false;//my series name, not comicvine's name
 	protected $volume = false;//my series volume number, not comicvine's volume
@@ -125,9 +142,10 @@ class Series{
 	protected $publisher = false;//series publisher
 	protected $first_issue = false;//first issue of series
 	protected $last_issue = false;//last issue of series
+	protected $series_issue_count = false;//number of issues in this series (not my physical count of issues)
 	protected $comicvine_series_id = false;//comicvine series id, ex) Avengers vol.1 is 2128
 	protected $comicvine_series_full = false;//comicvine series full id, ex) Avengers vol.1 is 4000-2128
 	protected $image_thumb = false;//thumbnail for first issue
 	protected $image_full = false;//full image for first issue
-	protected $issue_count = 0;
+	protected $issue_count = 0;//physical count of my issues in this series
 }

@@ -35,6 +35,11 @@ class Curl{
 		$decodedResponse = $this->getResults('volumes', $filters);
 		return $decodedResponse;
 	}
+	
+	public function getSeriesByComicvineId($comicvine_issue_id){
+		//https://comicvine.gamespot.com/api/volume/4050-2133/?api_key=5881a5da17876142d003f9bcf843d4db4ce9fce2&format=json&offset=0
+		return $this->getResults('volume', $comicvine_issue_id);
+	}
 
 	public function getSeriesByNameAndIssue($name, $issue){
 		$filters['name'] = urlencode(preg_replace("/[".CHARS_TO_REMOVE_FOR_SEARCH."]/", '', $name));

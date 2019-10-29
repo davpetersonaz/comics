@@ -73,7 +73,7 @@ elseif(isset($_POST['collection_description_change'], $_POST['new_description'])
 //comes from addSeriesSelect, create a new series from the comicvine info
 elseif(isset($_POST['comicvine']) && is_array($_POST['comicvine'])){
 	$comicvine = $_POST['comicvine'];
-	$series = new Series($db);
+	$series = new Series($db, $curl);
 	//see if the series already exists
 	$exists = $series->doesSeriesExist($comicvine[9]);
 	if($exists){
@@ -90,6 +90,43 @@ elseif(isset($_POST['comicvine_issue_id'])){
 	$issue_link = Curl::getComivineIssueUrl($_POST['comicvine_issue_id']);
 	logDebug('issue-link: '.$issue_link);
 	echo $issue_link;
+}
+
+elseif(isset($_POST['comicvine_regen'])){
+	if(isset($_POST['series_id']) && $_POST['series_id']){
+		$series = new Series($db, $curl, $_POST['series_id']);
+		$allseries = array(0=>$series);
+	}else{
+		$allseries = Series::getAllSeries($db, $curl);
+	}
+	logDebug('total series: '.count($allseries));
+	$rowsAffected = 0;
+	foreach($allseries as $series){
+		if(	!$series->getYear() ||
+			!$series->getPublisher() ||
+			!$series->getFirstIssue() ||
+			!$series->getLastIssue() ||
+			!$series->getSeriesIssueCount() ||
+			!$series->getImageThumb() ||
+			!$series->getImageFull()
+		){ 
+			$curl_series = $curl->getSeriesByComicvineId($series->getComicvineIdFull());
+//			logDebug('retrieved series: '.var_export($curl_series, true));
+			$values = array(
+						'year'=>$curl_series['start_year'], 
+						'publisher'=>$curl_series['publisher']['name'], 
+						'first_issue'=>$curl_series['first_issue']['issue_number'], 
+						'last_issue'=>$curl_series['last_issue']['issue_number'], 
+						'series_issue_count'=>$curl_series['count_of_issues'], 
+						'image_thumb'=>$curl_series['image']['thumb_url'], 
+						'image_full'=>$curl_series['image']['super_url']
+			);
+			$rowsAffected += $series->updateSeriesValues($values);
+		}
+		if($rowsAffected > 99){ break; }//dont wanna overload comicvine
+	}
+	logDebug('total series updated: '.$rowsAffected);
+	echo 'done';
 }
 
 elseif(isset($_POST['comicvine_series_id'])){
@@ -129,7 +166,7 @@ elseif(isset($_POST['delete_issue'])){
 }
 
 elseif(isset($_POST['delete_series'])){
-	$series = new Series($db, $_POST['delete_series']);
+	$series = new Series($db, $curl, $_POST['delete_series']);
 	if($series->isSeries()){
 		$rowsAffected = $series->delete();
 		logDebug('rowsAffected: '.$rowsAffected);
@@ -207,7 +244,7 @@ elseif(isset($_POST['series_change'], $_POST['new_series_id'])){
 }
 
 elseif(isset($_POST['series_name_change'], $_POST['new_name'])){
-	$series = new Series($db, $_POST['series_name_change']);
+	$series = new Series($db, $curl, $_POST['series_name_change']);
 	logDebug('series: '.var_export($series, true));
 	if($series->isSeries()){
 		$rowsAffected = $series->changeSeriesName($_POST['new_name']);
@@ -223,7 +260,7 @@ elseif(isset($_POST['series_name_change'], $_POST['new_name'])){
 }
 
 elseif(isset($_POST['volume_change'], $_POST['new_volume'])){
-	$series = new Series($db, $_POST['volume_change']);
+	$series = new Series($db, $curl, $_POST['volume_change']);
 	if($series->isSeries()){
 		$rowsAffected = $series->changeSeriesVolume($_POST['new_volume']);
 		logDebug('rowsAffected: '.$rowsAffected);

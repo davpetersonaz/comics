@@ -20,9 +20,9 @@ class Func{
 	 * @return string fancy issue number
 	 */
 	public static function fancifyIssueNumber($issue_number){
-		if(intval($issue_number) === 88888 || $issue_number === 'infinity'){
+		if(intval($issue_number) === 88888 || $issue_number === 'infinity' || $issue_number === "∞"){
 			return "∞";
-		}elseif(floatval($issue_number) === 0.5 || $issue_number === '1/2'){
+		}elseif(floatval($issue_number) === 0.5 || $issue_number === '1/2' || $issue_number === "½"){
 			return "½";
 		}else{
 			return Func::trimFloat($issue_number);
@@ -35,9 +35,9 @@ class Func{
 	 * @return string db-friendly issue number
 	 */
 	public static function dbFriendlyIssueNumber($issue_number){
-		if($issue_number === "∞" || $issue_number === 'infinity'){
+		if($issue_number === "∞" || $issue_number === 'infinity' || $issue_number === 88888){
 			return 88888;
-		}elseif($issue_number === "½" || $issue_number === "1/2"){
+		}elseif($issue_number === "½" || $issue_number === "1/2" || $issue_number === 0.5){
 			return 0.5;
 		}else{
 			return Func::trimFloat($issue_number);
@@ -50,9 +50,9 @@ class Func{
 	 * @return string working-form of issue number
 	 */
 	public static function normalizeIssueNumber($issue_number){
-		if(intval($issue_number) === 88888 || $issue_number === "∞"){
+		if(intval($issue_number) === 88888 || $issue_number === "∞" || $issue_number === 'infinity'){
 			return 'infinity';
-		}elseif(floatval($issue_number) === 0.5 || $issue_number === "½"){
+		}elseif(floatval($issue_number) === 0.5 || $issue_number === "½" || $issue_number === '1/2'){
 			return '1/2';
 		}else{
 			return Func::trimFloat($issue_number);
