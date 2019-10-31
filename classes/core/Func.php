@@ -5,6 +5,10 @@ class Func{
 		return strcmp($a->getName(), $b->getName());
 	}
 
+	public static function compareBySeriesName($a, $b){
+		return strcmp($a->getSeriesName(), $b->getSeriesName());
+	}
+
 	public static function escapeForHtml($input){
 		$input = str_replace("'", "\'", $input);
 //		$input = str_replace("'", '&#39;', $input);

@@ -1,9 +1,5 @@
 <?php
-
-
-//TODO: ADD DROPDOWN FOR SORTING coll/series/vol/issue/grade, series/vol/issue/grade, and ??? -- remember the value in SESSION 
-
-
+//maybe: ADD DROPDOWN FOR SORTING coll/series/vol/issue/grade, series/vol/issue/grade, and ??? -- remember the value in SESSION 
 ?>
 <?php $pageLength = (isset($_SESSION['table_length']['home']) && $_SESSION['table_length']['home'] > 0 ? $_SESSION['table_length']['home'] : 100); ?>
 

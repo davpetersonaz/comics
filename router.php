@@ -1,10 +1,7 @@
 <?php
 
-
 //TODO: load a cache of all issues/series/collections only if the current time is after the last-update-time (new db table w/ 1 row)
 //PROBABLY DO THAT AFTER A CHECKIN, SO I CAN REVERT IF ITS NOT RIGHT
-
-
 
 include_once('config.php');
 

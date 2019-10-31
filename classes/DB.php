@@ -1,12 +1,10 @@
 <?php
 class DB extends DBcore{
 
-
 	//TODO: this is interesting, but not sure if a good thing to use caches, doesn't the db sorts quicker than php?
 	//TODO: ON ALL QUERIES THAT ALTER THE DATABASE ... 
 	//UPDATE A NEW TABLE THAT CONTAINS ONE ROW WHICH IS THE LAST UPDATE TIME,
 	//and then in router we can load a cache of all issues/series/collections only if the current time is after the last-update-time
-
 
 	public function addCollection($name, $description){
 		$values = array('collection_name'=>$name, 'description'=>$description, 'user_id'=>$_SESSION['user_id']);

@@ -1,13 +1,10 @@
 <?php 
+
+
+//TODO: i dont think REGEN is working
+
+
 if(!$alreadyLoggedIn){ ?><script>window.location.href = '/';</script><?php }
-
-
-//TODO: want to figure out a way to re-retrieve comicvine info on series that are missing any data piece (like firstIssue, lastIssue, publisher, etc)
-//maybe just add a button that executes the task using ajax
-
-//TODO: maybe create a series page that gives full details on a certain series (including the re-retrieve button)
-
-
 $pageLength = (isset($_SESSION['table_length']['home']) && $_SESSION['table_length']['home'] > 0 ? $_SESSION['table_length']['home'] : 100);
 $seriesChoice = (isset($_GET['ser']) ? $_GET['ser'] : false);
 $getParams = ($seriesChoice ? "?ser={$seriesChoice}" : '');
@@ -61,7 +58,7 @@ $getParams = ($seriesChoice ? "?ser={$seriesChoice}" : '');
 <script>
 $(document).ready(function(){
 
-	$('#seriesTable').dataTable({
+	var seriesTable = $('#seriesTable').dataTable({
 		"ajax": "/ajax/series.php<?=$getParams?>",
 		"dom": 'frtip',
 		"order": [[ 2, 'asc' ],[ 3, 'asc' ],[ 4, 'asc' ]],//i could just go title/year instead of title/vol/year
@@ -140,6 +137,10 @@ $(document).ready(function(){
 				}
 			});
 		}
+	});
+	
+	$('#seriesTable tbody').on('click', 'td', function(){
+		alert(seriesTable.cell(this).data());
 	});
 
 	$('.add-issues').on('click', function(){

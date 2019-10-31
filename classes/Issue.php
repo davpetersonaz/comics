@@ -77,7 +77,7 @@ class Issue{
 		foreach($dbissues as $dbissueid){
 			$issues[] = new Issue($db, $curl, $dbissueid);
 		}
-		usort($issues, 'Func::compareByObjectName');
+		usort($issues, 'Func::compareBySeriesName');
 		return $issues;
 	}
 
@@ -191,8 +191,8 @@ class Issue{
 		return $sortedCreators;
 	}
 
-	public function update($issue_id, $values){
-		$rowsAffected = $this->db->updateIssue($issue_id, $values);
+	public function update($values){
+		$rowsAffected = $this->db->updateIssue($this->issue_id, $values);
 		return $rowsAffected;
 	}
 
@@ -258,7 +258,7 @@ class Issue{
 				}
 				
 				//save comicvine issue
-				$this->update($this->issue_id, $values);
+				$this->update($values);
 				$this->get($this->issue_id);
 			}else{
 				//cannot find issue details on comicvine?? (shouldn't really happen)

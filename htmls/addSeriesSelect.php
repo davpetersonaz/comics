@@ -1,8 +1,6 @@
 <?php
 
-
 //TODO: on the javascript seriesvolume prompt, parse the series volume from comicvine and use that as the default (instead of default=1)
-
 
 logDebug('addSeriesSelect: '.var_export($_POST, true));
 $seriesname = $_POST['series'];
@@ -32,8 +30,9 @@ foreach($results as $result){
 	$newArray[] = $result['first_issue']['issue_number'];
 	$newArray[] = $result['last_issue']['issue_number'];
 	$newArray[] = "{$result['id']}";//comicvine series short-id (xxxx)
-	$comicvineSeriesFull = (preg_match('/^.*\/(\d+-\d+)\/$/', $result['site_detail_url'], $matches) === 1 && isset($matches[1]) ? "{$matches[1]}" : '');//comicvine series full-id (xxxx-xxxx)
-	$newArray[] = "<a href='{$result['site_detail_url']}' target='_blank'>{$comicvineSeriesFull}</a>";
+	$newArray[] = (preg_match('/^.*\/(\d+-\d+)\/$/', $result['site_detail_url'], $matches) === 1 && isset($matches[1]) ? "{$matches[1]}" : '');//comicvine series full-id (xxxx-xxxx)
+//	$comicvineSeriesFull = (preg_match('/^.*\/(\d+-\d+)\/$/', $result['site_detail_url'], $matches) === 1 && isset($matches[1]) ? "{$matches[1]}" : '');//comicvine series full-id (xxxx-xxxx)
+//	$newArray[] = "<a href='{$result['site_detail_url']}' target='_blank'>{$comicvineSeriesFull}</a>";
 	$newArray[] = $result['image']['thumb_url'];
 	$newArray[] = $result['image']['super_url'];
 //	logDebug('row: '.implode(', ', $newArray));

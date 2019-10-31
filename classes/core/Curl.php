@@ -52,12 +52,14 @@ class Curl{
 
 	////////////////////////////////////////////////////////////////////////
 
-	public function getResults($resouce, $param, $suffix=false){
+	public function getResults($resource, $param, $suffix=false){
+		logDebug('getResults: resource: '.$resource);
+		logDebug('param: '.var_export($param, true));
 		$page_results = $total_results = $offset = $sanity_check = 0;
 		$finalResults = array();
 		do{
 			logDebug('loop: '.$sanity_check);
-			$response = $this->post($resouce, $param, $suffix.($suffix?'&':'').'offset='.$offset);
+			$response = $this->post($resource, $param, $suffix.($suffix?'&':'').'offset='.$offset);
 			$decodedResponse = json_decode($response, true);
 			$tempResults = $decodedResponse['results'];
 //			logDebug('decoded'. var_export($decodedResponse, true));
@@ -74,7 +76,9 @@ class Curl{
 		return $finalResults;
 	}
 
-	public function post($resouce, $param, $suffix=false){
+	public function post($resource, $param, $suffix=false){
+		logDebug('Curl post resource ['.$resource.'], suffix ['.$suffix.']');
+		logDebug('param: '.var_export($param, true));
 		//prepare
 		$idparam = '';
 		if(is_array($param)){ 
@@ -82,7 +86,7 @@ class Curl{
 		}else{ 
 			$idparam = '/'.$param;
 		}
-		$apiUrl = self::$baseUrl."{$resouce}{$idparam}/?api_key=".self::$apikey."&format=json".($suffix ? '&'.$suffix : '');
+		$apiUrl = self::$baseUrl."{$resource}{$idparam}/?api_key=".self::$apikey."&format=json".($suffix ? '&'.$suffix : '');
 		if(!empty($filters)){
 			$apiUrl .=	"&filter=";
 			$i = 0;

@@ -1,14 +1,12 @@
 <?php if(!$alreadyLoggedIn){ ?><script>window.location.href = '/';</script><?php } ?>
 <?php
-
-
 //TODO: default the 'collection' option to the previous choice (not sure i can do, the collection options are determined when the page loads)
-//i guess i can call ajax onchange, set the session var, create the collection options again and pass them back, 
-//but then i'd have to figure out which are the remaining rows and only change the collection options for them (its possible)
+//  i guess i can call ajax onchange, set the session var, create the collection options again and pass them back, 
+//  but then i'd have to figure out which are the remaining rows and only change the collection options for them (its possible)
 
-//TODO: INCLUDE A CHECKBOX FOR 'AUTOGRAPHED' (low priority)
-
-
+//maybe: INCLUDE A CHECKBOX FOR 'AUTOGRAPHED' (low priority)
+?>
+<?php
 logDebug('addIssues: '.var_export($_POST, true));
 if(isset($_POST['submit'])){
 	$collections = $_POST['collection'];

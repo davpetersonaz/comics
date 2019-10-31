@@ -92,6 +92,10 @@ elseif(isset($_POST['comicvine_issue_id'])){
 	echo $issue_link;
 }
 
+
+//TODO: i dont think REGEN is working
+
+
 elseif(isset($_POST['comicvine_regen'])){
 	if(isset($_POST['series_id']) && $_POST['series_id']){
 		$series = new Series($db, $curl, $_POST['series_id']);
@@ -110,18 +114,21 @@ elseif(isset($_POST['comicvine_regen'])){
 			!$series->getImageThumb() ||
 			!$series->getImageFull()
 		){ 
+			logDebug('series->comicvinefull: '.$series->getComicvineIdFull());
 			$curl_series = $curl->getSeriesByComicvineId($series->getComicvineIdFull());
 //			logDebug('retrieved series: '.var_export($curl_series, true));
-			$values = array(
-						'year'=>$curl_series['start_year'], 
-						'publisher'=>$curl_series['publisher']['name'], 
-						'first_issue'=>$curl_series['first_issue']['issue_number'], 
-						'last_issue'=>$curl_series['last_issue']['issue_number'], 
-						'series_issue_count'=>$curl_series['count_of_issues'], 
-						'image_thumb'=>$curl_series['image']['thumb_url'], 
-						'image_full'=>$curl_series['image']['super_url']
-			);
-			$rowsAffected += $series->updateSeriesValues($values);
+			if($curl_series){
+				$values = array(
+							'year'=>$curl_series['start_year'], 
+							'publisher'=>$curl_series['publisher']['name'], 
+							'first_issue'=>$curl_series['first_issue']['issue_number'], 
+							'last_issue'=>$curl_series['last_issue']['issue_number'], 
+							'series_issue_count'=>$curl_series['count_of_issues'], 
+							'image_thumb'=>$curl_series['image']['thumb_url'], 
+							'image_full'=>$curl_series['image']['super_url']
+				);
+				$rowsAffected += $series->updateSeriesValues($values);
+			}
 		}
 		if($rowsAffected > 99){ break; }//dont wanna overload comicvine
 	}

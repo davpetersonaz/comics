@@ -18,8 +18,11 @@ if($issue && !$issue->getComicvineIssueId() && $issue->getComicvineSeriesId()){
 logDebug('formatting details: '.var_export($issue, true));
 $comicvine_issue_id = $issue->getComicvineIssueId();
 $comicvine_link = $issue->getComicvineUrl();//https://comicvine.gamespot.com/the-avengers-1-the-coming-of-the-avengers/4000-6686/
-$cover_date = new DateTime($issue->getCoverDate());
-$cover_date = (intval($cover_date->format('d')) === 1 ? $cover_date->format('F Y') : $cover_date->format('F d, Y'));
+$cover_date = '';
+if($issue->getCoverDate() > 0){
+	$cover_date = new DateTime($issue->getCoverDate());
+	$cover_date = (intval($cover_date->format('d')) === 1 ? $cover_date->format('F Y') : $cover_date->format('F d, Y'));
+}
 $characters = $issue->getCharactersArray();
 logDebug('characters: '.var_export($characters, true));
 $creators = $issue->getCreatorsArray();

@@ -113,8 +113,11 @@ foreach($mainQueryResult as $row){
 							"</a>".
 						"</div>";
 	}
-	$coverdate = new DateTime("{$row['cover_date']}");
-	$coverdate = ($coverdate->format('Y-m-d 00:00:00'));
+	$coverdate = '';
+	if($row['cover_date'] > 0){
+		$coverdate = new DateTime("{$row['cover_date']}");
+		$coverdate = ($coverdate->format('Y-m-d 00:00:00'));
+	}
 	$datatablerows[] = array(
 		$image_div,
 		($row['collection_name'] ? $row['collection_name'] : ''), 

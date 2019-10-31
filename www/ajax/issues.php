@@ -138,7 +138,7 @@ foreach($mainQueryResult as $row){
 	$issue_div = "<input type='text' class='issue' id='issue{$row['issue_id']}' value='".Func::fancifyIssueNumber($row['issue'])."'/>";
 	$chrono = Func::trimFloat($row['chrono_index']);
 	$chrono_div = "<input type='text' class='chrono' id='chrono{$row['issue_id']}' value='".($chrono ? $chrono : '')."'/>";
-	$coverdate_div = "<span title='{$row['cover_date']}'>".Func::makeDisplayDate($row['cover_date']).'</span>';
+	$coverdate_div = ($row['cover_date'] > 0 ? "<span title='{$row['cover_date']}'>".Func::makeDisplayDate($row['cover_date']).'</span>' : '');
 	$grade_div = "<select id='grade{$row['issue_id']}' class='grade'>";
 	foreach($grades->getAllGrades() as $grade_array){
 //		logDebug('grade_array: '.var_export($grade_array, true));

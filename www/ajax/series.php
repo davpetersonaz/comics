@@ -127,7 +127,6 @@ foreach($mainQueryResult as $row){
 	$comicvine_id_div = $row['comicvine_series_id'];
 	$comicvine_full_div = "<span id='comicvine{$row['comicvine_series_full']}' class='comicvine-link'>{$row['comicvine_series_full']}</span>";
 	$usage_div = "<a href='/issues?ser={$row['series_id']}'>{$row['issue_count']}</a>";
-//	$usage_div = "<a href='/issues?ser={$row['series_id']}'>".Series::getIssueCountStatic($db, $row['series_id']).'</a>';
 	$delete_div = "<span class='delete' id='delete{$row['series_id']}' data-series-text=\"".Series::getDisplayTextStatic($row['series_name'], $row['volume'], $row['year'])."\"><i class='fa fa-times'></i></span>";
 	$image_full_div = $row['image_full'];
 
