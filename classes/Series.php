@@ -41,7 +41,7 @@ class Series{
 
 	public function doesSeriesExist($comicvine_series_full){
 		$rows = $this->db->getSeriesByComicvineFull($comicvine_series_full);
-		return (isset($rows[0]['series_id']) ? true : false);
+		return ($rows !== false ? true : false);
 	}
 
 	public static function getAllSeries(DB $db, Curl $curl){

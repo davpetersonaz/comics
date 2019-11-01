@@ -117,11 +117,13 @@ $(document).ready(function(){
 			console.warn('response (series_id)', data);//series_id
 			if(data !== 'done'){
 				alert(data);
+				window.location.reload();
 			}else{
 //				alert('addSelectSeries: redirecting to addSeries');
-				window.location.href = '/addSeries'; return false;
+				window.location.href = '/addSeries';
 			}
 		});
+		return false;
 	});
 
 	$(".popup-on-hover").hover(function(){

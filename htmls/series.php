@@ -140,7 +140,7 @@ $(document).ready(function(){
 	});
 	
 	$('#seriesTable tbody').on('click', 'td', function(){
-		alert(seriesTable.cell(this).data());
+//		alert(seriesTable.cell(this).data());//this is invalid, cell() is not a function
 	});
 
 	$('.add-issues').on('click', function(){
