@@ -1,7 +1,4 @@
 <?php
-
-//TODO: on the javascript seriesvolume prompt, parse the series volume from comicvine and use that as the default (instead of default=1)
-
 logDebug('addSeriesSelect: '.var_export($_POST, true));
 $seriesname = $_POST['series'];
 $series_data = array();

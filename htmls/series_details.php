@@ -1,9 +1,4 @@
 <?php
-
-
-//TODO: i dont think REGEN is working
-
-
 if(!$alreadyLoggedIn){ ?><script>window.location.href = '/';</script><?php }
 logDebug('series_details GET: '. var_export($_GET, true));
 $series_id = $_GET['id'];//my db series id, not comicvine's

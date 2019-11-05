@@ -1,9 +1,4 @@
 <?php 
-
-
-//TODO: i dont think REGEN is working
-
-
 if(!$alreadyLoggedIn){ ?><script>window.location.href = '/';</script><?php }
 $pageLength = (isset($_SESSION['table_length']['home']) && $_SESSION['table_length']['home'] > 0 ? $_SESSION['table_length']['home'] : 100);
 $seriesChoice = (isset($_GET['ser']) ? $_GET['ser'] : false);

@@ -1,4 +1,4 @@
-body{
+fbody{
 	color: black;
 	height: 100%;
 	width: 100%;
@@ -68,7 +68,6 @@ body > .container-fluid{
 	float: right;
 }
 
-.footer a,
 .footer{
 	/*background-color: #f8f8f8;*/
 	bottom: 0;
@@ -77,6 +76,9 @@ body > .container-fluid{
 	line-height: 60px; /* Vertically center the text there */
 	position: absolute;
 	width: 100%;
+}
+.footer a{
+	color: white;
 }
 .footer > .container{
 	max-width: 100%;
@@ -204,7 +206,7 @@ nav.navbar .admin-buttons button.btn:hover{
 	left: 5%; 
 	max-height: 80%;
 	position: fixed; 
-	top: 90px; 
+	top: 100px; 
 	width: auto; 
 }
 tbody tr input.issue,

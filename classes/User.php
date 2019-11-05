@@ -1,8 +1,4 @@
 <?php
-
-//TODO: add user-roles, include a role that can only "view" the admin functionality, for promo purposes
-//TODO: exclude access to the "add" pages, only show/allow the list pages
-
 class User{
 	
 	public static function getUserHeader(DB $db, $user_id){

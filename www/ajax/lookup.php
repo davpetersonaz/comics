@@ -1,12 +1,4 @@
 <?php
-
-
-//TODO: isset(comicvine) doesnt properly prevent duplicates from being created?? may want to match by name/volume, or comicvine-full-id??!!?
-
-//TODO: create a change-log to log previous and new values of changed items, and the item name, user-id, time, maybe for every value changed?? naw, just include an array of the changed values
-
-
-
 include_once('../../config.php');
 logDebug('ajax/lookup POST: '.var_export($_POST, true));
 

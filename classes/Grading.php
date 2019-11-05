@@ -1,11 +1,4 @@
 <?php
-
-
-//TODO: maybe add VF/NM, and VG/F ???
-//best guide i've found for defining the grades (both classic and modern) and also defining how to examine a book
-//  https://artfulinvestments.com/comic-book-grading/
-
-
 class Grading{
 
 	//https://comicspriceguide.com/comic-book-grading
