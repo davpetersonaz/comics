@@ -1,59 +1,41 @@
-//////////////////////////////////////////////
-addIssues:
+////////////////////////////
+hi priority
+////////////////////////////
 
-TODO: default the 'collection' option to the previous choice (not sure i can do, the collection options are determined when the page loads)
-  i guess i can call ajax onchange, set the session var, create the collection options again and pass them back, 
-  but then i'd have to figure out which are the remaining rows and only change the collection options for them (its possible)
+Grading: add VF/NM, and VG/F ???
+best guide i've found for defining the grades (both classic and modern) and also defining how to examine a book
+https://artfulinvestments.com/comic-book-grading/
 
-maybe: INCLUDE A CHECKBOX FOR 'AUTOGRAPHED' (low priority)
+create a change-log to log previous and new values of changed items, and the item name, user-id, time, maybe for every value changed?? naw, just include an array of the changed values
 
-//////////////////////////////////////////////
-addSeriesSelect:
+////////////////////////////
+lo priority
+////////////////////////////
 
-TODO: on the javascript seriesvolume prompt, parse the series volume from comicvine and use that as the default (instead of default=1)
+series and series_details: i dont think REGEN is working
 
-//////////////////////////////////////////////
-home:
+addSeriesSelect: on the javascript seriesvolume prompt, parse the series volume from comicvine and use that as the default (instead of default=1)
 
-maybe: ADD DROPDOWN FOR SORTING coll/series/vol/issue/grade, series/vol/issue/grade, and ??? -- remember the value in SESSION 
+addIssues and issues: INCLUDE A CHECKBOX FOR 'AUTOGRAPHED' (low priority)
 
-//////////////////////////////////////////////
-series and series_details: 
+home: ADD DROPDOWN FOR SORTING coll/series/vol/issue/grade, series/vol/issue/grade, and ??? -- remember the value in SESSION 
 
-TODO: i dont think REGEN is working
+User: add user-roles, include a role that can only "view" the admin functionality, for promo purposes, exclude access to the "add" pages, only show/allow the list pages
 
-//////////////////////////////////////////////
-DB:
+////////////////////////////
+maybe not do
+////////////////////////////
 
-TODO: this is interesting, but not sure if a good thing to use caches, doesn't the db sorts quicker than php?
-TODO: ON ALL QUERIES THAT ALTER THE DATABASE ... 
+DB: this is interesting, but not sure if a good thing to use caches, doesn't the db sorts quicker than php?
+ON ALL QUERIES THAT ALTER THE DATABASE ... 
 UPDATE A NEW TABLE THAT CONTAINS ONE ROW WHICH IS THE LAST UPDATE TIME,
 and then in router we can load a cache of all issues/series/collections only if the current time is after the last-update-time
 
-//////////////////////////////////////////////
-Grading:
-
-TODO: maybe add VF/NM, and VG/F ???
-best guide i've found for defining the grades (both classic and modern) and also defining how to examine a book
-  https://artfulinvestments.com/comic-book-grading/
-
-//////////////////////////////////////////////
-User:
-
-TODO: add user-roles, include a role that can only "view" the admin functionality, for promo purposes
-TODO: exclude access to the "add" pages, only show/allow the list pages
-
-//////////////////////////////////////////////
-lookup:
-
-TODO: isset(comicvine) doesnt properly prevent duplicates from being created?? may want to match by name/volume, or comicvine-full-id??!!?
-
-TODO: create a change-log to log previous and new values of changed items, and the item name, user-id, time, maybe for every value changed?? naw, just include an array of the changed values
-
-//////////////////////////////////////////////
-router:
-
-TODO: load a cache of all issues/series/collections only if the current time is after the last-update-time (new db table w/ 1 row)
+router: load a cache of all issues/series/collections only if the current time is after the last-update-time (new db table w/ 1 row)
 PROBABLY DO THAT AFTER A CHECKIN, SO I CAN REVERT IF ITS NOT RIGHT
 
-//////////////////////////////////////////////
+addIssues: default the 'collection' option to the previous choice (not sure i can do, the collection options are determined when the page loads)
+i guess i can call ajax onchange, set the session var, create the collection options again and pass them back, 
+but then i'd have to figure out which are the remaining rows and only change the collection options for them (its possible)
+
+wanted to be able to select/display variant covers, but the comicvine api for issues doesn't give the url for them
