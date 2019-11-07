@@ -4,9 +4,11 @@ if(!$alreadyLoggedIn){ ?><script>window.location.href = '/';</script><?php }
 logDebug('issues GET: '.var_export($_GET, true));
 $pageLength = 100;//(isset($_SESSION['table_length']['home']) && $_SESSION['table_length']['home'] > 0 ? $_SESSION['table_length']['home'] : 25);
 
+$issueChoice = (isset($_GET['ish']) ? $_GET['ish'] : false);
 $collectionsChoice = (isset($_GET['coll']) ? $_GET['coll'] : false);
 $seriesChoice = (isset($_GET['ser']) ? $_GET['ser'] : false);
-$getParams = ($collectionsChoice ? "?coll={$collectionsChoice}" : '');
+$getParams = ($issueChoice ? "?ish={$issueChoice}" : '');
+$getParams .= ($collectionsChoice ? ($getParams?'&':'?')."coll={$collectionsChoice}" : '');
 $getParams .= ($seriesChoice ? ($getParams?'&':'?')."ser={$seriesChoice}" : '');
 logDebug("getParams: [{$getParams}]");
 

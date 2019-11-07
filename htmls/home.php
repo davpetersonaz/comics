@@ -73,7 +73,7 @@ $(document).ready(function(){
 //					console.warn('data:', data, 'type:', type, 'row:', row);
 //					console.warn('data 5', row[5]);
 					var dateString = row[5];
-					var returnDate = '&lt;unknown&gt;';
+					var returnDate = '';
 					if(dateString && dateString != 0){
 						console.warn('dateString', dateString);
 						var date = new Date(dateString);

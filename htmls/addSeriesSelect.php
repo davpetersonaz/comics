@@ -114,11 +114,8 @@ $(document).ready(function(){
 			console.warn('response (series_id)', data);//series_id
 			if(data !== 'done'){
 				alert(data);
-				window.location.reload();
-			}else{
-//				alert('addSelectSeries: redirecting to addSeries');
-				window.location.href = '/addSeries';
 			}
+			window.location.href = '/addSeries';
 		});
 		return false;
 	});

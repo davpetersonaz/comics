@@ -36,6 +36,10 @@ $grade = $grades->getGrade($issue->getGrade());
 $notes = $issue->getNotes();
 ?>
 
+<div class='btn-above-table'>
+	<button class='btn btn-primary bg-dark edit-issue'>Edit Issue</button>
+</div>
+
 <div class='details row'>
 	<div class='col-xs-12 col-sm-6'>
 		<div class="image-border">
@@ -125,3 +129,13 @@ $notes = $issue->getNotes();
 
 	</div>
 </div>
+
+<script>
+$(document).ready(function(){
+
+	$('.edit-issue').on('click', function(){
+		window.location.href = '/issues?ish=<?=$issue_id?>';
+	});
+
+});
+</script>

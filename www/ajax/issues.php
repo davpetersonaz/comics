@@ -10,6 +10,7 @@ include_once('../../config.php');
 $collections = $db->getAllCollections();
 $series = $db->getAllSeries();
 
+$issueChoice = (isset($_GET['ish']) ? intval($_GET['ish']) : false);
 $collectionChoice = (isset($_GET['coll']) ? intval($_GET['coll']) : false);
 $seriesChoice = (isset($_GET['ser']) ? intval($_GET['ser']) : false);
 
@@ -57,6 +58,7 @@ for($i=0; $i<count($columns); $i++){
 
 //logDebug('sWhere: '.$where);
 $where .= (empty($where) ? 'WHERE ' : ' AND ')."c.user_id=".$_SESSION['siteUser'];
+$where .= ($issueChoice ? " AND c.issue_id={$issueChoice}" : '');
 $where .= ($collectionChoice ? " AND c.collection_id={$collectionChoice}" : '');
 $where .= ($seriesChoice ? " AND c.series_id={$seriesChoice}" : '');
 
