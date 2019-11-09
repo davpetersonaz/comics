@@ -29,7 +29,7 @@
 		<script src="/js/tempusdominus-bootstrap-4.min.js" type="text/javascript"></script>
 <?php } ?>
 		<!-- title -->\
-		<title><?=User::getUserHeader($db, $_SESSION['siteUser'])?></title>
+		<title><?=User::getUserHeader($db, $_SESSION['siteuser'])?></title>
 	</head>
 	<body>
 		<header>

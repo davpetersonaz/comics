@@ -50,7 +50,6 @@ class Series{
 		foreach($dbseries as $dbseriesid){
 			$series[] = new Series($db, $curl, $dbseriesid);
 		}
-		usort($series, 'Func::compareByObjectName');
 		return $series;
 	}
 	
@@ -110,6 +109,21 @@ class Series{
 	public function isSeries(){
 		return ($this->series_id ? true : false);
 	}
+	
+	public function toArray(){
+		$return = array();
+		$return['series_id'] = $this->getId();
+		$return['year'] = $this->getYear();
+		$return['series_name'] = urlencode($this->getName());
+		$return['volume'] = $this->getVolume();
+		$return['publisher'] = urlencode($this->getPublisher());
+		$return['first_issue'] = $this->getFirstIssue();
+		$return['last_issue'] = $this->getLastIssue();
+		$return['series_issue_count'] = $this->getSeriesIssueCount();
+		$return['comicvine_series_full'] = $this->getComicvineIdFull();
+		$return['user_id'] = $this->getUserId();
+		return $return;
+	}
 
 	public function getId(){ return $this->series_id; }
 	public function getName(){ return $this->series_name; }
@@ -124,6 +138,7 @@ class Series{
 	public function getImageThumb(){ return $this->image_thumb; }
 	public function getImageFull(){ return $this->image_full; }
 	public function getIssueCount(){ return intval($this->issue_count); }
+	public function getUserId(){ return $this->user_id; }
 
 	public function __construct(DB $db, Curl $curl, $series_id=false){
 		$this->db = $db;
@@ -148,4 +163,5 @@ class Series{
 	protected $image_thumb = false;//thumbnail for first issue
 	protected $image_full = false;//full image for first issue
 	protected $issue_count = 0;//physical count of my issues in this series
+	protected $user_id = false;
 }

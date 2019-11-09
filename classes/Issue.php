@@ -301,6 +301,23 @@ class Issue{
 			}
 		}
 	}
+	
+	public function toArray(){
+		$return = array();
+		$return['issue_id'] = $this->getId();
+		$return['series_id'] = $this->getSeriesId();
+		$return['series_name'] = urlencode($this->getSeriesName());
+		$return['collection_id'] = $this->getCollectionId();
+		$return['collection_name'] = urlencode($this->getCollectionName());
+		$return['issue_number'] = $this->getIssue();
+		$return['chrono_index'] = $this->getChronoIndex();
+		$return['cover_date'] = $this->getCoverDate();
+		$return['grade'] = $this->getGrade();//position
+		$return['notes'] = urlencode($this->getNotes());
+		$return['comicvine_issue_id'] = $this->getComicvineIssueId();
+		$return['user_id'] = $this->getUserId();
+		return $return;
+	}
 
 	public function isIssue(){
 		return ($this->issue_id ? true : false);
@@ -317,7 +334,7 @@ class Issue{
 	public function getComicvineSeriesFull(){ return $this->comicvine_series_full; }
 	public function getComicvineUrl(){ return $this->comicvine_url; }
 	public function getCoverDate(){ return $this->cover_date; }
-	public function getGrade(){ return $this->grade; }
+	public function getGrade(){ return $this->grade; }//position
 	public function getNotes(){ return $this->notes; }
 	public function getImageFull(){ return $this->image_full; }
 	public function getImageThumb(){ return $this->image_thumb; }
@@ -332,10 +349,12 @@ class Issue{
 	public function getFirstAppearanceCharacters(){ return $this->first_appearance_characters; }
 	public function getFirstAppearanceObjects(){ return $this->first_appearance_objects; }
 	public function getFirstAppearanceTeams(){ return $this->first_appearance_teams; }
+	public function getUserId(){ return $this->user_id; }
 
 	public function __construct(DB $db, Curl $curl, $issue_id=false){
 		$this->db = $db;
 		$this->curl = $curl;
+		$this->grading = new Grading($this->db);
 		if($issue_id){
 			$this->get($issue_id);
 		}
@@ -343,6 +362,7 @@ class Issue{
 
 	protected $db = false;
 	protected $curl = false;
+	protected $grading = false;
 	public $issue_id = false;//db issue id
 	public $series_id = false;//db series id
 	public $collection_id = false;//db colelction id
@@ -370,6 +390,7 @@ class Issue{
 	public $first_appearance_characters = '';
 	public $first_appearance_objects = '';
 	public $first_appearance_teams = '';
+	public $user_id = false;
 
 	public $mainCharacters = array(
 		'Adam Strange',

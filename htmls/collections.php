@@ -16,7 +16,7 @@
 			<td><?=$collection->getId()?></td>
 			<td><?=$collection->getName()?></td>
 			<td><input type="text" class='collection_name' id='collection<?=$collection->getId()?>' value='<?=$collection->getName()?>'></td>
-			<td><?=$collection->getIssueCount()?></td>
+			<td><a href='/issues?coll=<?=$collection->getId()?>'><?=$collection->getIssueCount()?></a></td>
 			<td><input type="text" class='description' id='collection<?=$collection->getId()?>' value='<?=$collection->getDescription()?>'></td>
 			<td><span class='delete' id='delete<?=$collection->getId()?>' data-collection-text='<?=$collection->getName()?>' data-collection-issues='<?=$collection->getIssueCount()?>'><i class='fa fa-times'></i></span></td>
 		</tr>

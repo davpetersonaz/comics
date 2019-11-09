@@ -1,7 +1,8 @@
 <?php 
 if(!$alreadyLoggedIn){ ?><script>window.location.href = '/';</script><?php }
 
-logDebug('addIssues: '.var_export($_POST, true));
+//handle submit
+//logDebug('addIssues: '.var_export($_POST, true));
 if(isset($_POST['submit'])){
 	$collections = $_POST['collection'];
 	$series = $_POST['series'];
@@ -25,14 +26,16 @@ if(isset($_POST['submit'])){
 			$result = $issue->updateIssueDetails();
 			logDebug('issue details updated: '.var_export($result, true));
 			if($result){
-			?>
+				$values['issue'] = array('prev'=>'', 'now'=>$issue->toArray());
+				$changes->addChange(2, $issue->getId(), $values);
+				?>
 				<div class='success-cover'>
 					<a href='/details?id=<?=$issue->getId()?>' class='small' title="<?=$issue->getDisplayText()?>" target='_blank'>
 						<img src='<?=$issue->getImageThumb()?>' class='img-responsive'>
 						<img src='<?=$issue->getImageFull()?>' class='large popup-on-hover'>
 					</a>
 				</div>
-			<?php
+				<?php
 			}else{
 				$failures[] = "Issue not found on ComicVine: {$seriesNames[$series[$i]]} #{$issues[$i]}, <a href='{$link}' target='_blank'>comicvine link</a><br />";
 				$rowsAffected = Issue::deleteIssue($db, $issue_id);

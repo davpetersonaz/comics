@@ -14,14 +14,14 @@ class User{
 		logDebug('user->login');
 		$user_id = $this->db->verifyUser($username, $password);
 		logDebug('user_id: '.var_export($user_id, true));
-		if($user_id && intval($user_id) !== intval($_SESSION['siteUser'])){
+		if($user_id && intval($user_id) !== intval($_SESSION['siteuser'])){
 			logDebug('tried to login to incorrect domain');
 			return false;
 		}elseif($user_id){
 			logDebug('SESSION: '.var_export($_SESSION, true));
 			$_SESSION['loggedin'] = true;
 			$_SESSION['username'] = $username;
-			$_SESSION['user_id'] = $user_id;
+			$_SESSION['siteuser'] = $user_id;
 			return true;
 		}else{
 			error_log('login failed: '.var_export($username, true));

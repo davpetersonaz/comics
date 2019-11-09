@@ -57,7 +57,7 @@ for($i=0; $i<count($columns); $i++){
 }
 
 //logDebug('sWhere: '.$where);
-$where .= (empty($where) ? 'WHERE ' : ' AND ')."c.user_id=".$_SESSION['siteUser'];
+$where .= (empty($where) ? 'WHERE ' : ' AND ')."c.user_id=".$_SESSION['siteuser'];
 $where .= ($issueChoice ? " AND c.issue_id={$issueChoice}" : '');
 $where .= ($collectionChoice ? " AND c.collection_id={$collectionChoice}" : '');
 $where .= ($seriesChoice ? " AND c.series_id={$seriesChoice}" : '');

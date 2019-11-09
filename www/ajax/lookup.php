@@ -5,11 +5,14 @@ logDebug('ajax/lookup POST: '.var_export($_POST, true));
 if(isset($_POST['chrono_index_change'], $_POST['new_chrono_index'])){
 	$issue = new Issue($db, $curl, $_POST['chrono_index_change']);
 	if($issue->isIssue()){
+		$prev = $issue->getChronoIndex();
 		$rowsAffected = $issue->changeChronoIndex($_POST['new_chrono_index']);
 		logDebug('rowsAffected: '.$rowsAffected);
 		if($rowsAffected === 0){
 			echo 'no rows affected';
 		}else{
+			$values['chrono_index'] = array('prev'=>$prev, 'now'=>$issue->getChronoIndex());
+			$changes->addChange(2, $issue->getId(), $values);
 			echo 'done';
 		}
 	}else{
@@ -20,11 +23,16 @@ if(isset($_POST['chrono_index_change'], $_POST['new_chrono_index'])){
 elseif(isset($_POST['collection_change'], $_POST['new_collection_id'])){
 	$issue = new Issue($db, $curl, $_POST['collection_change']);
 	if($issue->isIssue()){
+		$previd = $issue->getCollectionId();
+		$prevname = $issue->getCollectionName();
 		$rowsAffected = $issue->changeCollection($_POST['new_collection_id']);
 		logDebug('rowsAffected: '.$rowsAffected);
 		if($rowsAffected === 0){
 			echo 'no rows affected';
 		}else{
+			$values['collection_id'] = array('prev'=>$previd, 'now'=>$issue->getCollectionId());
+			$values['collection_name'] = array('prev'=>$prevname, 'now'=>$issue->getCollectionName());
+			$changes->addChange(2, $issue->getId(), $values);
 			echo 'done';
 		}
 	}else{
@@ -35,11 +43,14 @@ elseif(isset($_POST['collection_change'], $_POST['new_collection_id'])){
 elseif(isset($_POST['collection_name_change'], $_POST['new_name'])){
 	$collection = new Collection($db, $_POST['collection_name_change']);
 	if($collection->isCollection()){
+		$prev = $collection->getName();
 		$rowsAffected = $collection->changeCollectionName($_POST['new_name']);
 		logDebug('rowsAffected: '.$rowsAffected);
 		if($rowsAffected === 0){
 			echo 'no rows affected';
 		}else{
+			$values['collection_name'] = array('prev'=>$prev, 'now'=>$issue->getCollectionName());
+			$changes->addChange(4, $collection->getId(), $values);
 			echo 'done';
 		}
 	}else{
@@ -50,11 +61,14 @@ elseif(isset($_POST['collection_name_change'], $_POST['new_name'])){
 elseif(isset($_POST['collection_description_change'], $_POST['new_description'])){
 	$collection = new Collection($db, $_POST['collection_description_change']);
 	if($collection->isCollection()){
+		$prev = $collection->getDescription();
 		$rowsAffected = $collection->changeDescription($_POST['new_description']);
 		logDebug('rowsAffected: '.$rowsAffected);
 		if($rowsAffected === 0){
 			echo 'no rows affected';
 		}else{
+			$values['description'] = array('prev'=>$prev, 'now'=>$collection->getDescription());
+			$changes->addChange(4, $collection->getId(), $values);
 			echo 'done';
 		}
 	}else{
@@ -74,6 +88,10 @@ elseif(isset($_POST['comicvine']) && is_array($_POST['comicvine'])){
 		//comicvine, seriesname, collectionid, volume
 		$series_id = $series->createSeries($_POST['seriesname'], $_POST['volume'], $comicvine);
 		logDebug('series created: '.var_export($series_id, true));
+		$values['series_name'] = array('prev'=>'', 'now'=>$series->getName());
+		$values['volume'] = array('prev'=>'', 'now'=>$series->getVolume());
+		$values['comicvine'] = array('prev'=>'', 'now'=>$comicvine);
+		$changes->addChange(3, $series->getId(), $values);
 		echo 'done';
 	}
 }
@@ -84,10 +102,7 @@ elseif(isset($_POST['comicvine_issue_id'])){
 	echo $issue_link;
 }
 
-
 //TODO: i dont think REGEN is working
-
-
 elseif(isset($_POST['comicvine_regen'])){
 	if(isset($_POST['series_id']) && $_POST['series_id']){
 		$series = new Series($db, $curl, $_POST['series_id']);
@@ -137,11 +152,14 @@ elseif(isset($_POST['comicvine_series_id'])){
 elseif(isset($_POST['delete_collection'])){
 	$collection = new Collection($db, $_POST['delete_collection']);
 	if($collection->isCollection()){
+		$prev = $collection->toArray();
 		$rowsAffected = $collection->delete();
 		logDebug('rowsAffected: '.$rowsAffected);
 		if($rowsAffected === 0){
 			echo 'no rows affected';
 		}else{
+			$values['collection'] = array('prev'=>$prev, 'now'=>'delete');
+			$changes->addChange(4, $collection->getId(), $values);
 			echo 'done';
 		}
 	}else{
@@ -152,11 +170,14 @@ elseif(isset($_POST['delete_collection'])){
 elseif(isset($_POST['delete_issue'])){
 	$issue = new Issue($db, $curl, $_POST['delete_issue']);
 	if($issue->isIssue()){
+		$prev = $issue->toArray();
 		$rowsAffected = $issue->delete();
 		logDebug('rowsAffected: '.$rowsAffected);
 		if($rowsAffected === 0){
 			echo 'no rows affected';
 		}else{
+			$values['issue'] = array('prev'=>$prev, 'now'=>'delete');
+			$changes->addChange(2, $issue->getId(), $values);
 			echo 'done';
 		}
 	}else{
@@ -167,11 +188,14 @@ elseif(isset($_POST['delete_issue'])){
 elseif(isset($_POST['delete_series'])){
 	$series = new Series($db, $curl, $_POST['delete_series']);
 	if($series->isSeries()){
+		$prev = $series->toArray();
 		$rowsAffected = $series->delete();
 		logDebug('rowsAffected: '.$rowsAffected);
 		if($rowsAffected === 0){
 			echo 'no rows affected';
 		}else{
+			$values['series'] = array('prev'=>$prev, 'now'=>'deleted');
+			$changes->addChange(3, $series->getId(), $values);
 			echo 'done';
 		}
 	}else{
@@ -183,11 +207,14 @@ elseif(isset($_POST['grade_change'], $_POST['new_grade_id'])){
 	$issue = new Issue($db, $curl, $_POST['grade_change']);
 //	logDebug('issue: '.var_export($issue, true));
 	if($issue->isIssue()){
+		$prev = $issue->getGrade();
 		$rowsAffected = $issue->changeGrade($_POST['new_grade_id']);
 		logDebug('rowsAffected: '.$rowsAffected);
 		if($rowsAffected === 0){
 			echo 'no rows affected';
 		}else{
+			$values['grade'] = array('prev'=>$prev, 'now'=>$issue->getGrade());
+			$changes->addChange(2, $issue->getId(), $values);
 			echo 'done';
 		}
 	}else{
@@ -198,11 +225,14 @@ elseif(isset($_POST['grade_change'], $_POST['new_grade_id'])){
 elseif(isset($_POST['issue_number_change'], $_POST['new_issue_number'])){
 	$issue = new Issue($db, $curl, $_POST['issue_number_change']);
 	if($issue->isIssue()){
+		$prev = $issue->getIssue();
 		$rowsAffected = $issue->changeIssueNumber($_POST['new_issue_number']);
 		logDebug('rowsAffected: '.$rowsAffected);
 		if($rowsAffected === 0){
 			echo 'no rows affected';
 		}else{
+			$values['issue_number'] = array('prev'=>$prev, 'now'=>$issue->getIssue());
+			$changes->addChange(2, $issue->getId(), $values);
 			echo 'done';
 		}
 	}else{
@@ -214,11 +244,14 @@ elseif(isset($_POST['notes_change'], $_POST['new_notes'])){
 	$issue = new Issue($db, $curl, $_POST['notes_change']);
 //	logDebug('issue: '.var_export($issue, true));
 	if($issue->isIssue()){
+		$prev = $issue->getNotes();
 		$rowsAffected = $issue->changeNotes($_POST['new_notes']);
 		logDebug('rowsAffected: '.$rowsAffected);
 		if($rowsAffected === 0){
 			echo 'no rows affected';
 		}else{
+			$values['notes'] = array('prev'=>$prev, 'now'=>$issue->getNotes());
+			$changes->addChange(2, $issue->getId(), $values);
 			echo 'done';
 		}
 	}else{
@@ -230,11 +263,16 @@ elseif(isset($_POST['series_change'], $_POST['new_series_id'])){
 	$issue = new Issue($db, $curl, $_POST['series_change']);
 //	logDebug('issue: '.var_export($issue, true));
 	if($issue->isIssue()){
+		$previd = $issue->getSeriesId();
+		$prevname = $issue->getSeriesName();
 		$rowsAffected = $issue->changeSeries($_POST['new_series_id']);
 		logDebug('rowsAffected: '.$rowsAffected);
 		if($rowsAffected === 0){
 			echo 'no rows affected';
 		}else{
+			$values['series_id'] = array('prev'=>$previd, 'now'=>$issue->getSeriesId());
+			$values['series_name'] = array('prev'=>$prevname, 'now'=>$issue->getSeriesName());
+			$changes->addChange(2, $issue->getId(), $values);
 			echo 'done';
 		}
 	}else{
@@ -246,11 +284,14 @@ elseif(isset($_POST['series_name_change'], $_POST['new_name'])){
 	$series = new Series($db, $curl, $_POST['series_name_change']);
 	logDebug('series: '.var_export($series, true));
 	if($series->isSeries()){
+		$prev = $series->getName();
 		$rowsAffected = $series->changeSeriesName($_POST['new_name']);
 		logDebug('rowsAffected: '.$rowsAffected);
 		if($rowsAffected === 0){
 			echo 'no rows affected';
 		}else{
+			$values['series_name'] = array('prev'=>$prev, 'now'=>$series->getName());
+			$changes->addChange(3, $series->getId(), $values);
 			echo 'done';
 		}
 	}else{
@@ -261,11 +302,14 @@ elseif(isset($_POST['series_name_change'], $_POST['new_name'])){
 elseif(isset($_POST['volume_change'], $_POST['new_volume'])){
 	$series = new Series($db, $curl, $_POST['volume_change']);
 	if($series->isSeries()){
+		$prev = $series->getVolume();
 		$rowsAffected = $series->changeSeriesVolume($_POST['new_volume']);
 		logDebug('rowsAffected: '.$rowsAffected);
 		if($rowsAffected === 0){
 			echo 'no rows affected';
 		}else{
+			$values['volume'] = array('prev'=>$prev, 'now'=>$series->getVolume());
+			$changes->addChange(3, $series->getId(), $values);
 			echo 'done';
 		}
 	}else{

@@ -1,15 +1,23 @@
 <?php
 class DB extends DBcore{
+	
+	public function addChange($item_type=2, $item_id=0, $changes=array()){
+		$change_date = Func::getDateTime();
+		logDebug('change_date: '.var_export($change_date, true));
+		$values = array('item_id'=>$item_id, 'item_type'=>$item_type, 'changes'=>json_encode($changes), 'change_date'=>$change_date, 'user_id'=>$_SESSION['siteuser']);
+		$lastInsertId = $this->insert('changes', $values);
+		return $lastInsertId;
+	}
 
 	public function addCollection($name, $description){
-		$values = array('collection_name'=>$name, 'description'=>$description, 'user_id'=>$_SESSION['user_id']);
+		$values = array('collection_name'=>$name, 'description'=>$description, 'user_id'=>$_SESSION['siteuser']);
 		$lastInsertId = $this->insert('collections', $values);
 		return $lastInsertId;
 	}
 
 	public function addIssue($series_id, $collection_id, $issue, $chrono='', $grade=8, $notes=''){
 		$values = array('series_id'=>$series_id, 'collection_id'=>$collection_id, 'issue'=>Func::dbFriendlyIssueNumber($issue), 
-						'chrono_index'=>$chrono, 'grade'=>$grade, 'notes'=>$notes, 'user_id'=>$_SESSION['user_id']);
+						'chrono_index'=>$chrono, 'grade'=>$grade, 'notes'=>$notes, 'user_id'=>$_SESSION['siteuser']);
 		$lastInsertId = $this->insert('comics', $values);
 		return $lastInsertId;
 	}
@@ -18,7 +26,7 @@ class DB extends DBcore{
 		$values = array('series_name'=>$name, 'year'=>$year, 'publisher'=>$publisher, 
 						'first_issue'=>Func::dbFriendlyIssueNumber($first_issue), 'last_issue'=>Func::dbFriendlyIssueNumber($last_issue),
 						'comicvine_series_id'=>$comicvine_series_id, 'comicvine_series_full'=>$comicvine_series_full, 
-						'image_thumb'=>$image_thumb, 'image_full'=>$image_full, 'user_id'=>$_SESSION['user_id']);
+						'image_thumb'=>$image_thumb, 'image_full'=>$image_full, 'user_id'=>$_SESSION['siteuser']);
 		if($volume){
 			$values['volume'] = $volume;
 		}
@@ -199,6 +207,21 @@ class DB extends DBcore{
 //		self::logQueryAndValues($query, array(), 'getAllSeriesIds');
 		return array_column($rows, 'series_id');
 	}
+	
+	public function getChanges($type=false){
+		$type = ($type && $type > 1 && $type < 5 ? $type : false);
+		$values = array();
+		$query = "SELECT item_id, item_type, change_date, changes 
+					FROM changes ";
+		if($type){
+			$query .= "WHERE item_type=:item_type ";
+			$values['item_type'] = $type;
+		}
+		$query .= "ORDER BY change_date DESC";
+		self::logQueryAndValues($query, $values, 'getChanges');
+		$rows = $this->select($query, $values);
+		return $rows;
+	}
 
 	public function getCollection($collection_id){
 		$query = "SELECT c.collection_id, c.collection_name, c.description, COUNT(i.issue_id) AS issue_count 
@@ -206,7 +229,7 @@ class DB extends DBcore{
 					LEFT JOIN comics i USING (collection_id)
 					{$this->whereUserid('c')}
 						AND collection_id=".intval($collection_id);
-		self::logQueryAndValues($query, array(), 'getCollection');
+//		self::logQueryAndValues($query, array(), 'getCollection');
 		$rows = $this->select($query);
 		return (isset($rows[0]) ? $rows[0] : false);
 	}
@@ -241,8 +264,8 @@ class DB extends DBcore{
 
 	public function getIssueDetails($issue_id){
 		$query = "SELECT c.issue_id, c.series_id, c.collection_id, c.issue, c.chrono_index, 
-						c.cover_date, c.grade, c.notes, c.comicvine_issue_id, c.comicvine_url, 
-						c.issue_title, c.creators, c.characters, c.synopsis, c.image_full, c.image_thumb,
+						c.cover_date, c.grade, c.notes, c.comicvine_issue_id, c.comicvine_url, c.issue_title, 
+						c.creators, c.characters, c.synopsis, c.image_full, c.image_thumb, c.user_id, 
 						s.series_name, s.volume, s.year, s.publisher, s.comicvine_series_id, s.comicvine_series_full, 
 						l.collection_name
 					FROM comics c
@@ -321,7 +344,7 @@ class DB extends DBcore{
 
 	public function saveComicvineSeriesInfo($name, $volume, $year, $publisher, $comicvine_series_id, $comicvine_series_full){
 		$values = array('series_name'=>$name, 'volume'=>$volume, 'year'=>$year, 'publisher'=>$publisher, 'comicvine_series_id'=>$comicvine_series_id, 
-						'comicvine_series_full'=>$comicvine_series_full, 'user_id'=>$_SESSION['user_id']);
+						'comicvine_series_full'=>$comicvine_series_full, 'user_id'=>$_SESSION['siteuser']);
 //		logDebug('saveComicvineSeriesInfo: '.var_export($values, true));
 		if($this->verifyColumns('series', $values)){
 			$lastInsertId = $this->insert('series', $values);
@@ -384,14 +407,14 @@ class DB extends DBcore{
 
 	private function whereUserid($prefix=''){
 		if($prefix){ $prefix = $prefix.'.'; }
-		return " WHERE {$prefix}user_id=".$_SESSION['siteUser'];
+		return " WHERE {$prefix}user_id=".$_SESSION['siteuser'];
 	}
 
 	public function __construct(){
 		parent::__construct(self::HOST, self::USER, self::PASS, self::DB_TABLES);
 	}
 
-	const DB_TABLES = array('collections', 'comics', 'series', 'grades', 'users');
+	const DB_TABLES = array('collections', 'comics', 'series', 'grades', 'users', 'changes');
 	const HOST = 'mysql:host=localhost;dbname=davpeter_comic';
 	const USER = 'davpeter_comic';
 	const PASS = 'c0micsRahhSUM';

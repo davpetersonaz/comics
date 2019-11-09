@@ -2,7 +2,7 @@
 logDebug('details GET: '. var_export($_GET, true));
 $issue_id = $_GET['id'];//my db issue id, not comicvine
 $issue = new Issue($db, $curl, $issue_id);
-logDebug('comic issue details: '.var_export($issue, true));
+//logDebug('comic issue details: '.var_export($issue, true));
 //if(!$issue->comicvine_series_id){
 //	//TODO: can't find, put up "unknown" page
 //	logDebug('unknown issue: '.var_export($issue, true));
@@ -15,7 +15,7 @@ if($issue && !$issue->getComicvineIssueId() && $issue->getComicvineSeriesId()){
 	$issue->updateIssueDetails();
 }
 
-logDebug('formatting details: '.var_export($issue, true));
+//logDebug('formatting details: '.var_export($issue, true));
 $comicvine_issue_id = $issue->getComicvineIssueId();
 $comicvine_link = $issue->getComicvineUrl();//https://comicvine.gamespot.com/the-avengers-1-the-coming-of-the-avengers/4000-6686/
 $cover_date = '';
@@ -34,6 +34,7 @@ $character_died = $issue->getCharactersDiedArray();
 $image_full = $issue->getImageFull();
 $grade = $grades->getGrade($issue->getGrade());
 $notes = $issue->getNotes();
+$chrono_index = ($issue->getChronoIndex() ? $issue->getChronoIndex() : '');
 ?>
 
 <div class='btn-above-table'>
@@ -48,13 +49,14 @@ $notes = $issue->getNotes();
 	</div>
 	<div class='col-xs-12 col-sm-6'>
 
-		<h5 class='collection'><span class='smaller'>collection:</span> <?=$issue->getCollectionName()?> <?=$issue->getChronoIndex()?></h5>
+		<h5 class='collection'><span class='smaller'>collection:</span> <?=$issue->getCollectionName()?> <?=$chrono_index?></h5>
 		<h1><?=$issue->getSeriesName()?><span class='smaller'> (vol. <?=$issue->getVolume()?>)</span></h1>
 		<h4>Issue <?=$issue->getIssue()?></h4>
 		<h5><?=$cover_date?></h5>
 		<h5 title='<?=$grade['long_desc']?>'>condition: <?=$grade['grade_name']?></h5>
-		Comicvine link: <a href='<?=$comicvine_link?>'><?=$comicvine_link?></a>
+		<div class='comicvine-link'>Comicvine link: <a href='<?=$comicvine_link?>'><?=$comicvine_link?></a></div>
 
+		<div>
 <?php if($creators){ ?>
 		<table class="creators">
 			<tr><td colspan=2 class="list-header">Creators:</td></tr>
@@ -90,6 +92,7 @@ $notes = $issue->getNotes();
 	<?php } ?>
 		</table>
 <?php } ?>
+		</div>
 
 		<h2 class='issue-title'><?=$issue->getIssueTitle()?></h2>
 		<p><?=$issue->getSynopsis()?></p>

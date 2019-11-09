@@ -53,12 +53,12 @@ class Curl{
 	////////////////////////////////////////////////////////////////////////
 
 	public function getResults($resource, $param, $suffix=false){
-		logDebug('getResults: resource: '.$resource);
-		logDebug('param: '.var_export($param, true));
+		logDebug('getResults resource: '.$resource);
+		if($param){ logDebug('param: '.var_export($param, true)); }
 		$page_results = $total_results = $offset = $sanity_check = 0;
 		$finalResults = array();
 		do{
-			logDebug('loop: '.$sanity_check);
+			if($sanity_check){ logDebug('loop: '.$sanity_check); }
 			$response = $this->post($resource, $param, $suffix.($suffix?'&':'').'offset='.$offset);
 			$decodedResponse = json_decode($response, true);
 			$tempResults = $decodedResponse['results'];

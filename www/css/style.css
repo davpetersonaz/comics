@@ -150,18 +150,38 @@ nav.navbar .admin-buttons button.btn:hover{
 	text-decoration: none;
 } 
 
-/* navbar hidden dropdown */
-#navbarCollapse .dropdown:hover > .dropdown-menu{
+/* navbar */
+.navbar.navbar-expand-md{
+	height: 56px;
+	/*overflow: hidden;*/
+}
+.admin-buttons{
+	display: inline-block;
+	padding-top: 4px;
+}
+.dropdown-on-hover{
+	display: inline-block;
+	overflow: hidden;
+	padding-top: 2px;
+}
+.dropdown-content{
+	border-radius: 3px;
+	color: white;
+	display: none;
+	padding: 10px 20px;
+}
+.dropdown-content a{
+	color: white;
 	display: block;
+	text-decoration: none;
 }
-#navbarCollapse .dropdown > .dropdown-toggle:active{
-	pointer-events: none; /* clicking will make it sticky without this */
+.dropdown-on-hover:hover .dropdown-content{
+	display: block;
+	position: absolute;
+	z-index: 1;
 }
-#navbarCollapse .btn,
-#navbarCollapse .btn-primary{
-	background-color: inherit;
-	border: none;
-	border-radius: 0;
+.dropdown-on-hover:hover .dropdown-content a{
+	/*z-index: 1;*/
 }
 
 #comiclist i.fa{
@@ -170,9 +190,6 @@ nav.navbar .admin-buttons button.btn:hover{
 
 .dataTables_wrapper{
 	padding-bottom: 1em;
-}
-#issuesTable_wrapper.dataTables_wrapper .dataTables_filter{
-	/*float: left;*/
 }
 
 .dataTable tbody tr,
@@ -267,6 +284,16 @@ tbody tr input.description{
 	color: #ABABAB;
 	font-size: medium;
 }
+.details .comicvine-link a{
+	color: #aaa;
+}
+.details .comicvine-link:hover{
+	color: black;
+}
+.details .comicvine-link a:hover{
+	color: black;
+	text-decoration: none;
+}
 .details table{
 	margin-top: 12px;
 }
@@ -334,6 +361,25 @@ select{
 	position: fixed; 
 	top: 105px; 
 	width: auto; 
+}
+
+#grading-page{
+	margin-left: auto;
+	margin-right: auto;
+	width: 80%;
+}
+#grading-page .img-container figcaption{
+	margin: 10px 0 0 10px;
+}
+#grading-page .img-container figure{
+	padding: 5px;
+}
+#grading-page .img-container{
+	width: 350px;
+    text-align: center;
+}
+#grading-page .img-container a, figure{
+    display: inline-block;
 }
 
 .action-buttons{

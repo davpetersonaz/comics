@@ -12,7 +12,8 @@ class Collection{
 	}
 
 	public static function createCollection(DB $db, $collection_name, $description){
-		return $db->addCollection($collection_name, $description);
+		$lastInsertId = $db->addCollection($collection_name, $description);
+		return new Collection($db, $lastInsertId);
 	}
 
 	public function delete(){
@@ -52,6 +53,15 @@ class Collection{
 
 	public function isCollection(){
 		return ($this->collection_id ? true : false);
+	}
+	
+	public function toArray(){
+		$return = array();
+		$return['collection_id'] = $this->getId();
+		$return['collection_name'] = $this->getName();
+		$return['description'] = $this->getDescription();
+		$return['issue_count'] = $this->getIssueCount();
+		return $return;
 	}
 
 	public function getId(){ return $this->collection_id; }

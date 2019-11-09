@@ -52,7 +52,7 @@ for($i=0; $i<count($columns); $i++){
 }
 
 //logDebug('sWhere: '.$where);
-$where .= (empty($where) ? 'WHERE ' : ' AND ')."s.user_id=".$_SESSION['siteUser'];
+$where .= (empty($where) ? 'WHERE ' : ' AND ')."s.user_id=".$_SESSION['siteuser'];
 $where .= ($seriesChoice ? " AND s.series_id={$seriesChoice}" : '');
 
 //ordering

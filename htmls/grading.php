@@ -256,24 +256,3 @@
 
 	<p><i> -- this description was originally found on ArtfulInvestments.com: <a href='https://artfulinvestments.com/comic-book-grading/'>https://artfulinvestments.com/comic-book-grading/</a></i></p>
 </div>
-
-<style>
-#grading-page{
-	margin-left: auto;
-	margin-right: auto;
-	width: 80%;
-}
-#grading-page .img-container figcaption{
-	margin: 10px 0 0 10px;
-}
-#grading-page .img-container figure{
-	padding: 5px;
-}
-#grading-page .img-container{
-	width: 350px;
-    text-align: center;
-}
-#grading-page .img-container a, figure{
-    display: inline-block;
-}
-</style>

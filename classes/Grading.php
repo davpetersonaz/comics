@@ -19,7 +19,7 @@ class Grading{
 		}
 		return $return;
 	}
-
+	
 	public function getShortDesc($abbr){
 		$return = array();
 		if($this->grades){

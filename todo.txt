@@ -6,8 +6,6 @@ Grading: add VF/NM, and VG/F ???
 best guide i've found for defining the grades (both classic and modern) and also defining how to examine a book
 https://artfulinvestments.com/comic-book-grading/
 
-create a change-log to log previous and new values of changed items, and the item name, user-id, time, maybe for every value changed?? naw, just include an array of the changed values
-
 ////////////////////////////
 lo priority
 ////////////////////////////

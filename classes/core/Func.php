@@ -92,5 +92,22 @@ class Func{
 		$floatval = rtrim($floatval, '.');
 		return $floatval;
 	}
+	
+	public static function getDate($input=false){
+		if($input){
+			$return = (new DateTime($input))->format('Y-m-d');
+		}else{
+			$return = (new DateTime())->format('Y-m-d');
+		}
+	}
+
+	public static function getDateTime($input=false){
+		if($input){
+			$return = (new DateTime($input))->format('Y-m-d H:i:s');
+		}else{
+			$return = (new DateTime())->format('Y-m-d H:i:s');
+		}
+		return $return;
+	}
 
 }

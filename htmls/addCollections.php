@@ -9,8 +9,10 @@ if(isset($_POST['submit'])){
 		if(!$newCollections[$i]){ break; }
 		$existingCollection = Collection::getCollectionByName($db, $newCollections[$i]);
 		if(!$existingCollection){
-			$collection_id = Collection::createCollection($db, $newCollections[$i], $newDescriptions[$i]);
-			logDebug('created collection: '.$collection_id);
+			$collection = Collection::createCollection($db, $newCollections[$i], $newDescriptions[$i]);
+			logDebug('created collection: '.$collection->getId());
+			$values['collection'] = array('prev'=>'', 'now'=>$collection->toArray());
+			$changes->addChange(4, $collection->getId(), $values);
 		}else{
 			logDebug('collection already exists: '.$existingCollection['collection_name']);
 		}

@@ -3,12 +3,8 @@ function doDefine($name, $value){
 	if(!defined($name)){ define($name, $value); }
 }
 
-//_SESSION vars: loggedin, siteUser, table_length (not used), 
-
 error_reporting(E_ALL);
 ini_set('display_errors', 'On');
-session_start();
-$alreadyLoggedIn = (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true);
 
 //'real' paths
 doDefine('REAL_PATH', realpath(dirname(__FILE__)).'/');
@@ -50,14 +46,20 @@ spl_autoload_register('ourautoload');
 //see if autoload works:
 //logDebug('new Artist: '.var_export(new Artist('testing'), true));
 
+//start session after loading all the classes
+//_SESSION vars: loggedin, siteUser, table_length (not used)
+session_start();
+$alreadyLoggedIn = (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true);
+
 $db = new DB();
 $curl = new Curl();
 $grades = new Grading($db);
+$changes = new Changes($db);
 
 logDebug('server host: '.$_SERVER['HTTP_HOST']);
 if($_SERVER['HTTP_HOST'] === 'sale.davpeterson.com'){
-	$_SESSION['siteUser'] = 4;//sale.davpeterson.com
+	$_SESSION['siteuser'] = 4;//sale.davpeterson.com
 }else{
-	$_SESSION['siteUser'] = 3;//comics.davpeterson.com
+	$_SESSION['siteuser'] = 3;//comics.davpeterson.com
 }
 //logDebug('config complete');
