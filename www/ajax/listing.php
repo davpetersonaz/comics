@@ -97,7 +97,7 @@ $total = $db->selectFoundRows();
 
 //total dataset length
 $resultTotal = $db->selectCountFromTable($indexColumn, $table);
-logDebug('aResultTotal: '.var_export($resultTotal, true));
+//logDebug('aResultTotal: '.var_export($resultTotal, true));
 $totalTableRows = $resultTotal[0]['rowcount'];
 $datatablerows = array();
 
@@ -147,6 +147,6 @@ $output = array(
 //logDebug('rows in displayed subset: '.count($datatablerows));
 
 $json_return = json_encode($output, JSON_UNESCAPED_SLASHES);
-logDebug('json return: '.$json_return);
+//logDebug('json return: '.$json_return);
 echo $json_return;
 exit;

@@ -24,9 +24,9 @@ if($issue->getCoverDate() > 0){
 	$cover_date = (intval($cover_date->format('d')) === 1 ? $cover_date->format('F Y') : $cover_date->format('F d, Y'));
 }
 $characters = $issue->getCharactersArray();
-logDebug('characters: '.var_export($characters, true));
+//logDebug('characters: '.var_export($characters, true));
 $creators = $issue->getCreatorsArray();
-logDebug('creators: '.var_export($creators, true));
+//logDebug('creators: '.var_export($creators, true));
 $character_firsts = $issue->getFirstAppearanceCharactersArray();
 $object_firsts = $issue->getFirstAppearanceObjectsArray();
 $team_firsts = $issue->getFirstAppearanceTeamsArray();

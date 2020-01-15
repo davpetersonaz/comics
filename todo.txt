@@ -2,9 +2,17 @@
 hi priority
 ////////////////////////////
 
+create printout(s)
+1. detailed (issue by issue, with grade and notes)
+2. compact - like my wantlist - include (all) designation if i have all issues between min & max, and the individual issues count is the same as comicvine's total issues.
+3. remainder - issues i'm missing from a run (probably have to download all issues from the volume and compare to what i have)
+
+start the configurations page
+
 Grading: add VF/NM, and VG/F ???
 best guide i've found for defining the grades (both classic and modern) and also defining how to examine a book
 https://artfulinvestments.com/comic-book-grading/
+include config toggle for which grade config to use (simple vs detailed)
 
 ////////////////////////////
 lo priority

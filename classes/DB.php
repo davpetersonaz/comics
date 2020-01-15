@@ -3,7 +3,7 @@ class DB extends DBcore{
 	
 	public function addChange($item_type=2, $item_id=0, $changes=array()){
 		$change_date = Func::getDateTime();
-		logDebug('change_date: '.var_export($change_date, true));
+//		logDebug('change_date: '.var_export($change_date, true));
 		$values = array('item_id'=>$item_id, 'item_type'=>$item_type, 'changes'=>json_encode($changes), 'change_date'=>$change_date, 'user_id'=>$_SESSION['siteuser']);
 		$lastInsertId = $this->insert('changes', $values);
 		return $lastInsertId;
@@ -116,7 +116,7 @@ class DB extends DBcore{
 		$query = "SELECT c.collection_id 
 					FROM collections c 
 					{$this->whereUserid('c')}";
-		self::logQueryAndValues($query, array(), 'getAllCollectionIds');
+		$this->logQueryAndValues($query, array(), 'getAllCollectionIds');
 		$rows = $this->select($query);
 		return array_column($rows, 'collection_id');
 	}
@@ -126,7 +126,7 @@ class DB extends DBcore{
 					FROM collections c 
 					{$this->whereUserid('c')} 
 					ORDER BY c.collection_name ASC";
-		self::logQueryAndValues($query, array(), 'getAllCollections');
+		$this->logQueryAndValues($query, array(), 'getAllCollections');
 		$rows = $this->select($query);
 		return $rows;
 	}
@@ -135,7 +135,7 @@ class DB extends DBcore{
 		$query = "SELECT position, abbr, grade_name, short_desc, long_desc 
 					FROM grades 
 					ORDER BY position ASC";
-//		self::logQueryAndValues($query, array(), 'getAllGrades');
+//		$this->logQueryAndValues($query, array(), 'getAllGrades');
 		$rows = $this->select($query);
 		return $rows;
 	}
@@ -144,7 +144,7 @@ class DB extends DBcore{
 		$query = "SELECT c.issue_id 
 					FROM comics c 
 					{$this->whereUserid('c')}";
-//		self::logQueryAndValues($query, array(), 'getAllIssueIds');
+//		$this->logQueryAndValues($query, array(), 'getAllIssueIds');
 		$rows = $this->select($query);
 		return array_column($rows, 'issue_id');
 	}
@@ -155,7 +155,7 @@ class DB extends DBcore{
 					{$this->whereUserid('c')}
 						AND c.collection_id=:collection_id";
 		$values = array('collection_id'=>$collection_id);
-//		self::logQueryAndValues($query, $values, 'getAllIssueIdsForCollection');
+//		$this->logQueryAndValues($query, $values, 'getAllIssueIdsForCollection');
 		$rows = $this->select($query, $values);
 		return array_column($rows, 'issue_id');
 	}
@@ -166,7 +166,7 @@ class DB extends DBcore{
 					{$this->whereUserid('c')}
 						AND c.series_id=:series_id";
 		$values = array('series_id'=>$series_id);
-//		self::logQueryAndValues($query, $values, 'getAllIssueIdsForSeries');
+//		$this->logQueryAndValues($query, $values, 'getAllIssueIdsForSeries');
 		$rows = $this->select($query, $values);
 		return array_column($rows, 'issue_id');
 	}
@@ -181,7 +181,7 @@ class DB extends DBcore{
 					LEFT JOIN grades g ON c.grade=g.position
 					{$this->whereUserid('c')}
 					ORDER BY s.series_name ASC, c.issue ASC, c.grade ASC";
-		self::logQueryAndValues($query, array(), 'getAllIssues');
+		$this->logQueryAndValues($query, array(), 'getAllIssues');
 		$rows = $this->select($query);
 //		logDebug('result: '. var_export($rows, true));
 		return $rows;
@@ -192,7 +192,7 @@ class DB extends DBcore{
 					FROM series s
 					{$this->whereUserid('s')}
 					ORDER BY series_name ASC, year ASC, volume ASC";
-//		self::logQueryAndValues($query, array(), 'getAllSeries');
+//		$this->logQueryAndValues($query, array(), 'getAllSeries');
 		$rows = $this->select($query);
 //		logDebug('result: '. var_export($rows, true));
 		return $rows;
@@ -204,7 +204,7 @@ class DB extends DBcore{
 					{$this->whereUserid('s')}
 					ORDER BY s.series_name ASC, s.year ASC, s.volume ASC";
 		$rows = $this->select($query);
-//		self::logQueryAndValues($query, array(), 'getAllSeriesIds');
+//		$this->logQueryAndValues($query, array(), 'getAllSeriesIds');
 		return array_column($rows, 'series_id');
 	}
 	
@@ -218,7 +218,7 @@ class DB extends DBcore{
 			$values['item_type'] = $type;
 		}
 		$query .= "ORDER BY change_date DESC";
-		self::logQueryAndValues($query, $values, 'getChanges');
+		$this->logQueryAndValues($query, $values, 'getChanges');
 		$rows = $this->select($query, $values);
 		return $rows;
 	}
@@ -229,7 +229,7 @@ class DB extends DBcore{
 					LEFT JOIN comics i USING (collection_id)
 					{$this->whereUserid('c')}
 						AND collection_id=".intval($collection_id);
-//		self::logQueryAndValues($query, array(), 'getCollection');
+//		$this->logQueryAndValues($query, array(), 'getCollection');
 		$rows = $this->select($query);
 		return (isset($rows[0]) ? $rows[0] : false);
 	}
@@ -359,7 +359,7 @@ class DB extends DBcore{
 					FROM {$table} 
 					{$this->whereUserid()}";
 		$values = array();
-		$this->logQueryAndValues($query, $values, 'selectCountFromTable');
+//		$this->logQueryAndValues($query, $values, 'selectCountFromTable');
 		$resultTotal = $this->select($query, $values);
 		return $resultTotal;
 	}
