@@ -180,7 +180,7 @@ class DB extends DBcore{
 					LEFT JOIN series s ON c.series_id=s.series_id
 					LEFT JOIN grades g ON c.grade=g.position
 					{$this->whereUserid('c')}
-					ORDER BY s.series_name ASC, c.issue ASC, c.grade ASC";
+					ORDER BY s.series_name ASC, s.volume ASC, c.issue ASC, c.grade ASC";
 		$this->logQueryAndValues($query, array(), 'getAllIssues');
 		$rows = $this->select($query);
 //		logDebug('result: '. var_export($rows, true));
