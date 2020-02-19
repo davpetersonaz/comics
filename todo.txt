@@ -2,6 +2,8 @@
 hi priority
 ////////////////////////////
 
+for the missing-printout, gotta add new column to series table for all-issue-numbers in series, comma-separated.
+
 create printout(s)
 1. detailed (issue by issue, with grade and notes)
 2. compact - like my wantlist - include (all) designation if i have all issues between min & max, and the individual issues count is the same as comicvine's total issues.

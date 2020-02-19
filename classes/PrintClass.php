@@ -13,6 +13,9 @@ class PrintClass{
 	}
 	
 	private function createSummaryReport(){
+		
+		//TODO: AFTER CREATING SERIES-TABLE ALL-ISSUE-NUMBERS COLUMN, THEN USE IT TO DETERMINE IF (ALL) SHOULD BE ADDED TO THE SERIES (IF I HAVE ALL ISSUES)
+		
 		$this->report = '';
 		$previousIssue = $previousSeries = false;
 		foreach($this->issues as $issue){
@@ -81,12 +84,61 @@ class PrintClass{
 	}
 	
 	private function createMissingReport(){
-		//this will be tricky
-		//if a new series, then retrieve all issues in that series from comicvine
-		//then keep track of each issue i have, and array_reverse against comicvine's all-issues
-		//and print out the remainder when a new series is encountered.
 		
-		//may want to organize by collection!!!! (or not? -- which series' would be relevant? not Defenders crossovers in the Avengers collection, for example)
+		//TODO: THIS AINT GONNA WORK, GOTTA ADD NEW COLUMN TO SERIES TABLE FOR COMMA-SEPARATED LIST OF ALL ISSUE NUMBERS IN THE SERIES
+		
+//		$this->report = '';
+//		$previousIssue = false;
+//		$have_issues = array();
+//		foreach($this->issues as $issue){
+//			$issue_series_id = intval($issue['series_id']);
+//			$issue_number = intval($issue['issue']);
+//			logDebug("processing series [{$issue['series_name']}][{$issue_series_id}] issue [{$issue_number}]");
+//			//new series,  process the previous series
+//			if($previousIssue !== false && $issue_series_id !== intval($previousIssue['series_id'])){
+//				$this->processPreviousSeriesForMissingReport($have_issues, $previousIssue);
+//				//and now start the new series
+//				$have_issues = array();
+//			}
+//			$have_issues[] = $issue_number;
+//			$previousIssue = $issue;
+//		}
+//		//finish off the last series
+//		$this->processPreviousSeriesForMissingReport($have_issues, $previousIssue);
+//		logDebug('createMissingReport complete');
+	}
+
+	private function processPreviousSeriesForMissingReport($have_issues, $previousIssue){
+		//retrieve all issues in that series from comicvine
+		logDebug("get all issues for [{$previousIssue['series_name']}][{$previousIssue['series_id']}]");
+		$issues_in_series = $this->curl->getAllIssuesInSeries($previousIssue['comicvine_series_id']);
+		$need_issues = array_diff($issues_in_series, $have_issues);
+		logDebug('need_issues: '.var_export($need_issues, true));
+		//don't report it if none of the issues are needed
+		if($need_issues){
+			$volume = (intval($previousIssue['volume']) === 1 ? '' : ' vol.'.$previousIssue['volume']);
+			$this->report .= "<b>{$previousIssue['series_name']}</b>{$volume} ({$previousIssue['year']}): ";
+			$prevIsh = false;
+			foreach($need_issues as $issuenum){
+				if($prevIsh === false){
+					$this->report .= $issuenum;
+				}elseif($issuenum - 1 === $prevIsh){
+					//consecutive issues, add the dash if its not already in the report
+					if(substr($this->report, strlen($this->report)-1) !== '-'){
+						$this->report .= '-';
+					}
+				}else{
+					//non-consecutive issues
+					if(substr($this->report, strlen($this->report)-1) === '-'){
+						//fill in the last issue number
+						$this->report .= $prevIsh;
+					}
+					$this->report .= ','.$issuenum;
+				}
+				$prevIsh = $issuenum;
+			}
+			$this->report .= "<br />";
+		}
 	}
 	
 	public function getReport(){
@@ -97,8 +149,9 @@ class PrintClass{
 		return $this->type !== false;
 	}
 	
-	public function __construct(DB $db, $type=false){
+	public function __construct(DB $db, Curl $curl, $type=false){
 		$this->db = $db;
+		$this->curl = $curl;
 		if(in_array($type, array('summary', 'detailed', 'missing'))){
 			$this->type = $type;
 			$this->createReport();
@@ -106,6 +159,7 @@ class PrintClass{
 	}
 
 	protected $db = false;
+	protected $curl = false;
 	private $issues = array();
 	private $report = '';
 	private $type = false;

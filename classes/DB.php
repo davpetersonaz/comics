@@ -174,7 +174,7 @@ class DB extends DBcore{
 	public function getAllIssues(){
 		$query = "SELECT c.issue_id, c.series_id, c.collection_id, c.issue, c.chrono_index, c.grade, c.notes, c.cover_date, 
 						c.comicvine_issue_id, c.comicvine_url, c.issue_title, c.creators, c.characters, c.image_full, c.image_thumb, 
-						l.collection_name, s.series_name, s.volume, g.position, g.abbr, g.grade_name, g.short_desc, g.long_desc
+						l.collection_name, s.series_name, s.volume, s.year, s.comicvine_series_id, g.position, g.abbr, g.grade_name, g.short_desc, g.long_desc
 					FROM comics c
 					LEFT JOIN collections l ON c.collection_id=l.collection_id
 					LEFT JOIN series s ON c.series_id=s.series_id

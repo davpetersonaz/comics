@@ -4,7 +4,7 @@
 //  or just ...
 //https://webc0heatsheet.com/php/create_word_excel_csv_files_with_php.php
 
-$printclass = new PrintClass($db, $_GET['type']);
+$printclass = new PrintClass($db, $curl, $_GET['type']);
 $report = $printclass->getReport();
 ?>
 
