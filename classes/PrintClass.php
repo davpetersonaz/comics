@@ -29,7 +29,7 @@ class PrintClass{
 					$this->report .= "<br />";
 				}
 				$volume = (intval($issue['volume']) === 1 ? '' : ' vol.'.$issue['volume']);
-				$this->report .= "<b>{$issue['series_name']}</b>{$volume}: ";
+				$this->report .= "<b>{$issue['series_name']}</b>{$volume} ({$issue['year']}): ";
 				//and add the (first) issue
 				$this->report .= $issue_number;
 			}else//same series
