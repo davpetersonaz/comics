@@ -1,7 +1,7 @@
 		<footer class="footer bg-dark">
 			<div class="container">
 				<div class="left-justify">
-					<span>All content, &nbsp; <a href='mailto:me@davpeterson.com'>Dave Peterson</a></span>
+					<span>All content, &nbsp; <a href='mailto:dave@davpeterson.com'>Dave Peterson</a></span>
 				</div>
 <?php if(!$alreadyLoggedIn){ ?>
 				<div class='right-justify'>
