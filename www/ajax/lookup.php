@@ -102,7 +102,6 @@ elseif(isset($_POST['comicvine_issue_id'])){
 	echo $issue_link;
 }
 
-//TODO: i dont think REGEN is working
 elseif(isset($_POST['comicvine_regen'])){
 	if(isset($_POST['series_id']) && $_POST['series_id']){
 		$series = new Series($db, $curl, $_POST['series_id']);
@@ -113,14 +112,16 @@ elseif(isset($_POST['comicvine_regen'])){
 	logDebug('total series: '.count($allseries));
 	$rowsAffected = 0;
 	foreach($allseries as $series){
-		if(	!$series->getYear() ||
+		if(count($allseries) === 1 || 
+			(!$series->getYear() ||
 			!$series->getPublisher() ||
 			!$series->getFirstIssue() ||
 			!$series->getLastIssue() ||
+			!$series->getAllIssues() ||
 			!$series->getSeriesIssueCount() ||
 			!$series->getImageThumb() ||
-			!$series->getImageFull()
-		){ 
+			!$series->getImageFull())
+		){
 			logDebug('series->comicvinefull: '.$series->getComicvineIdFull());
 			$curl_series = $curl->getSeriesByComicvineId($series->getComicvineIdFull());
 //			logDebug('retrieved series: '.var_export($curl_series, true));
@@ -136,8 +137,13 @@ elseif(isset($_POST['comicvine_regen'])){
 				);
 				$rowsAffected += $series->updateSeriesValues($values);
 			}
+			//retrieve all issues in that series from comicvine
+			$series->retrieveAllIssuesInSeries();
+			//just do a few at a time
+			if($rowsAffected > 10){ break; }
+			//sleep to not overwhelm comicvine
+			if(count($allseries) > 1){ sleep(1); }
 		}
-		if($rowsAffected > 99){ break; }//dont wanna overload comicvine
 	}
 	logDebug('total series updated: '.$rowsAffected);
 	echo 'done';

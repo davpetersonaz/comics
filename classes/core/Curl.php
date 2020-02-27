@@ -6,12 +6,13 @@ class Curl{
 	public function getAllIssuesInSeries($comicvine_series_id){
 		//https://comicvine.gamespot.com/api/issues/?filter=volume:2128&sort=issue_number:asc&api_key=5881a5da17876142d003f9bcf843d4db4ce9fce2&format=json
 		$results = $this->getResults('issues', array(), 'filter=volume:'.intval($comicvine_series_id).'&sort=issue_number:asc');
-		logDebug('getAllIssuesInSeries: '.var_export($results, true));
+//		logDebug('getAllIssuesInSeries: '.var_export($results, true));
 		$final_results = array();
 		foreach($results as $result){
 			$final_results[] = $result['issue_number'];
 		}
-		logDebug('final getAllIssuesInSeries: '.var_export($final_results, true));
+		$final_results = array_unique($final_results);
+//		logDebug('final getAllIssuesInSeries: '.implode(', ', $final_results));
 		return $final_results;
 	}
 
@@ -90,7 +91,7 @@ class Curl{
 
 	public function post($resource, $param, $suffix=false){
 		logDebug('Curl post resource ['.$resource.'], suffix ['.$suffix.']');
-		logDebug('param: '.var_export($param, true));
+		if($param){ logDebug('param: '.var_export($param, true)); }
 		//prepare
 		$idparam = '';
 		if(is_array($param)){ 

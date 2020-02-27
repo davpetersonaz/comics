@@ -3,7 +3,7 @@ if(!$alreadyLoggedIn){ ?><script>window.location.href = '/';</script><?php }
 logDebug('series_details GET: '. var_export($_GET, true));
 $series_id = $_GET['id'];//my db series id, not comicvine's
 $series = new Series($db, $curl, $series_id);
-logDebug('series details: '.var_export($series, true));
+//logDebug('series details: '.var_export($series, true));
 $issues = ($series->getFirstIssue() === $series->getLastIssue() 
 			? 'Issue: '.$series->getFirstIssue() 
 			: 'Issues: '.$series->getFirstIssue().' - '.$series->getLastIssue().' ('.$series->getSeriesIssueCount().')'

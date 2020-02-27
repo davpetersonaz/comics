@@ -1,6 +1,6 @@
 <?php
 include_once('../../config.php');
-logDebug('ajax/series REQUEST: '.var_export($_REQUEST, true)); //NOTE: this is very verbose
+//logDebug('ajax/series REQUEST: '.var_export($_REQUEST, true)); //NOTE: this is very verbose
 
 //TODO: maybe make this work per-page, or just default each page however i want, and then add these as user-defined settings.
 //if(!isset($_SESSION['table_length']['home']) || $_SESSION['table_length']['home'] != $_REQUEST['length']){

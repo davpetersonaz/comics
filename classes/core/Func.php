@@ -9,6 +9,33 @@ class Func{
 		return strcmp($a->getSeriesName(), $b->getSeriesName());
 	}
 
+	public static function compareByIssueNumber($a, $b){
+		$a = ($a === "∞" ? '88888' : ($a === "½" ? '0.5' : $a) );
+		$b = ($b === "∞" ? '88888' : ($b === "½" ? '0.5' : $b) );
+		if(preg_match("/(\d+)([a-zA-Z]+)/", $a, $matches) === 1){
+			if(isset($matches[2])){
+//				logDebug("a matches: ".implode(',', $matches));
+				$key = array_search(strtoupper(substr($matches[2], 0, 1)), self::ALPHARRAY);
+				if($key !== false){ $key += 1; }
+				else{ $key = 99; }
+				$a = $matches[1].'.'.$key;
+//				logDebug('a: '.$a);
+			}
+		}
+		if(preg_match("/(\d+)([a-zA-Z]+)/", $b, $matches) === 1){
+			if(isset($matches[2])){
+//				logDebug("b matches: ".implode(',', $matches));
+				$key = array_search(strtoupper(substr($matches[2], 0, 1)), self::ALPHARRAY);
+				if($key !== false){ $key += 1; }
+				else{ $key = 99; }
+				$b = $matches[1].'.'.$key;
+//				logDebug('b: '.$b);
+			}
+		}
+		if ($a == $b) { return 0; }//TODO: not sure if i should use "==="
+		return (floatval($a) < floatval($b)) ? -1 : 1;
+	}
+	
 	public static function escapeForHtml($input){
 		$input = str_replace("'", "\'", $input);
 //		$input = str_replace("'", '&#39;', $input);
@@ -110,4 +137,5 @@ class Func{
 		return $return;
 	}
 
+	const ALPHARRAY = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
 }

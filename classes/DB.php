@@ -280,8 +280,8 @@ class DB extends DBcore{
 	}	
 
 	public function getSeries($series_id){
-		$query = "SELECT s.series_id, s.series_name, s.volume, s.year, s.publisher, s.first_issue, s.last_issue,
-						s.series_issue_count, s.comicvine_series_id, s.comicvine_series_full, 
+		$query = "SELECT s.series_id, s.series_name, s.volume, s.year, s.publisher, s.first_issue, s.last_issue, 
+						s.all_issues, s.series_issue_count, s.comicvine_series_id, s.comicvine_series_full, 
 						s.image_thumb, s.image_full, COUNT(i.issue_id) AS issue_count
 					FROM series s
 					LEFT JOIN comics i USING (series_id)

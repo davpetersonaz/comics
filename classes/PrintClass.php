@@ -13,47 +13,70 @@ class PrintClass{
 	}
 	
 	private function createSummaryReport(){
-		
-		//TODO: AFTER CREATING SERIES-TABLE ALL-ISSUE-NUMBERS COLUMN, THEN USE IT TO DETERMINE IF (ALL) SHOULD BE ADDED TO THE SERIES (IF I HAVE ALL ISSUES)
-		
 		$this->report = '';
-		$previousIssue = $previousSeries = false;
+		$previousIssue = $previousSeries = $notWritten = false;
+		$previousSeriesIssues = array();
 		foreach($this->issues as $issue){
 //			logDebug('processing issue: '.var_export($issue, true));
+//			logDebug("processing series [{$issue['series_name']}] issue [{$issue['issue']}]");
 			$issue_series_id = intval($issue['series_id']);
-			$issue_number = intval($issue['issue']);
+			$issue_number = Func::fancifyIssueNumber($issue['issue']);
+			$issue_number = (floatval($issue_number) === $issue_number ? number_format(floatval($issue_number)) : $issue_number);
 			if($issue_series_id !== $previousSeries){
-				//new series
-				if(substr($this->report, strlen($this->report)-1) === '-'){
-					//fill in the last issue number from the previous series
-					$this->report .= $previousIssue;
-				}
+				//new series -- finish the previous
 				if($previousSeries !== false){
+					if(substr($this->report, strlen($this->report)-1) === '-'){
+						//fill in the last issue number from the previous series
+						$this->report .= $previousIssue;
+						$previousSeriesIssues[] = $previousIssue;
+					}
+					$missingIssues = Series::getMissingIssuesStatic($this->db, $previousSeries, $previousSeriesIssues);
+					if(empty($missingIssues)){
+						$this->report .= " (all)";
+					}
 					$this->report .= "<br />";
+					$previousSeriesIssues = array();
 				}
+				//start the new series
 				$volume = (intval($issue['volume']) === 1 ? '' : ' vol.'.$issue['volume']);
 				$this->report .= "<b>{$issue['series_name']}</b>{$volume} ({$issue['year']}): ";
 				//and add the (first) issue
 				$this->report .= $issue_number;
+				$previousSeriesIssues[] = $issue_number;
+				$notWritten = false;
 			}else//same series
 			if($issue_number !== $previousIssue){
 				//new issue
-				if($issue_number - 1 === $previousIssue){
+//				logDebug("intval(issue_number): ".var_export(intval($issue_number), true));
+				if(is_numeric($issue_number) && intval($issue_number) == $issue_number && $issue_number - 1 == $previousIssue){
 					//consecutive issues, add the dash if its not already in the report
 					if(substr($this->report, strlen($this->report)-1) !== '-'){
 						$this->report .= '-';
+						$notWritten = true;
 					}
+					$previousSeriesIssues[] = $issue_number;
 				}else{
-					//non-consecutive issues
+					//non-consecutive issues, or issues like: 1/2, infinity, decimal issues, etc
 					if(substr($this->report, strlen($this->report)-1) === '-'){
 						//fill in the last issue number
 						$this->report .= $previousIssue;
+						$previousSeriesIssues[] = $previousIssue;
 					}
 					$this->report .= ','.$issue_number;
+					$previousSeriesIssues[] = $issue_number;
+					$notWritten = false;
 				}
 			}
 			$previousSeries = $issue_series_id;
 			$previousIssue = $issue_number;
+		}
+		//just in case we were using a dash as we hit the last issue in the array, gotta tack on the previous issue number
+		if($notWritten){
+			$this->report .= $previousIssue;
+			$missingIssues = Series::getMissingIssuesStatic($this->db, $previousSeries, $previousSeriesIssues);
+			if(empty($missingIssues)){
+				$this->report .= " (all)";
+			}
 		}
 		$this->report .= "<br />";
 	}
@@ -84,37 +107,34 @@ class PrintClass{
 	}
 	
 	private function createMissingReport(){
-		
-		//TODO: THIS AINT GONNA WORK, GOTTA ADD NEW COLUMN TO SERIES TABLE FOR COMMA-SEPARATED LIST OF ALL ISSUE NUMBERS IN THE SERIES
-		
-//		$this->report = '';
-//		$previousIssue = false;
-//		$have_issues = array();
-//		foreach($this->issues as $issue){
-//			$issue_series_id = intval($issue['series_id']);
-//			$issue_number = intval($issue['issue']);
+		$this->report = '';
+		$previousIssue = false;
+		$have_issues = array();
+		foreach($this->issues as $issue){
+			$issue_series_id = intval($issue['series_id']);
+			$issue_number = Func::fancifyIssueNumber($issue['issue']);
 //			logDebug("processing series [{$issue['series_name']}][{$issue_series_id}] issue [{$issue_number}]");
-//			//new series,  process the previous series
-//			if($previousIssue !== false && $issue_series_id !== intval($previousIssue['series_id'])){
-//				$this->processPreviousSeriesForMissingReport($have_issues, $previousIssue);
-//				//and now start the new series
-//				$have_issues = array();
-//			}
-//			$have_issues[] = $issue_number;
-//			$previousIssue = $issue;
-//		}
-//		//finish off the last series
-//		$this->processPreviousSeriesForMissingReport($have_issues, $previousIssue);
-//		logDebug('createMissingReport complete');
+			//new series,  process the previous series
+			if($previousIssue !== false && $issue_series_id !== intval($previousIssue['series_id'])){
+				$this->processPreviousSeriesForMissingReport($have_issues, $previousIssue);
+				//and now start the new series
+				$have_issues = array();
+			}
+			$have_issues[] = $issue_number;
+			$previousIssue = $issue;
+		}
+		//finish off the last series
+		$this->processPreviousSeriesForMissingReport($have_issues, $previousIssue);
+		logDebug('createMissingReport complete');
 	}
 
 	private function processPreviousSeriesForMissingReport($have_issues, $previousIssue){
 		//retrieve all issues in that series from comicvine
-		logDebug("get all issues for [{$previousIssue['series_name']}][{$previousIssue['series_id']}]");
-		$issues_in_series = $this->curl->getAllIssuesInSeries($previousIssue['comicvine_series_id']);
-		$need_issues = array_diff($issues_in_series, $have_issues);
-		logDebug('need_issues: '.var_export($need_issues, true));
+//		logDebug("get all issues for [{$previousIssue['series_name']}][{$previousIssue['series_id']}]");
+		$need_issues = Series::getMissingIssuesStatic($this->db, $previousIssue['series_id'], $have_issues);
+//		logDebug('need_issues: '.implode(',', $need_issues));
 		//don't report it if none of the issues are needed
+		$notWritten = false;
 		if($need_issues){
 			$volume = (intval($previousIssue['volume']) === 1 ? '' : ' vol.'.$previousIssue['volume']);
 			$this->report .= "<b>{$previousIssue['series_name']}</b>{$volume} ({$previousIssue['year']}): ";
@@ -122,20 +142,26 @@ class PrintClass{
 			foreach($need_issues as $issuenum){
 				if($prevIsh === false){
 					$this->report .= $issuenum;
-				}elseif($issuenum - 1 === $prevIsh){
+					$notWritten = false;
+				}elseif(is_numeric($issuenum) && intval($issuenum) == $issuenum && $issuenum - 1 == $prevIsh){
 					//consecutive issues, add the dash if its not already in the report
 					if(substr($this->report, strlen($this->report)-1) !== '-'){
 						$this->report .= '-';
+						$notWritten = true;
 					}
 				}else{
-					//non-consecutive issues
+					//non-consecutive issues, or issues like: 1/2, infinity, decimal issues, etc
 					if(substr($this->report, strlen($this->report)-1) === '-'){
 						//fill in the last issue number
 						$this->report .= $prevIsh;
 					}
 					$this->report .= ','.$issuenum;
+					$notWritten = false;
 				}
 				$prevIsh = $issuenum;
+			}
+			if($notWritten){
+				$this->report .= $prevIsh;
 			}
 			$this->report .= "<br />";
 		}
