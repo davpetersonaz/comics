@@ -22,7 +22,7 @@ $comicvine_url = $series->getComicvineUrl();
 		<h4>Year: <?=$series->getYear()?></h4>
 		<h5>Volume <?=$series->getVolume()?></h5>
 		<h4>Publisher: <?=$series->getPublisher()?></h4>
-		<h5>Issues: <?=$issues?></h5>
+		<h5><?=$issues?></h5>
 		Comicvine link: <a href='<?=$comicvine_url?>' target='_blank'><?=$comicvine_url?></a>
 		<br /><br />
 		<p><button class='btn btn-primary bg-dark comicvine-regen'><span style="font-size:smaller;">Regen Comicvine</span></button></p>
