@@ -4,9 +4,10 @@ logDebug('series_details GET: '. var_export($_GET, true));
 $series_id = $_GET['id'];//my db series id, not comicvine's
 $series = new Series($db, $curl, $series_id);
 //logDebug('series details: '.var_export($series, true));
+$issuesCount = $series->getSeriesIssueCount();
 $issues = ($series->getFirstIssue() === $series->getLastIssue() 
 			? 'Issue: '.$series->getFirstIssue() 
-			: 'Issues: '.$series->getFirstIssue().' - '.$series->getLastIssue().' ('.$series->getSeriesIssueCount().')'
+			: 'Issues: '.$series->getFirstIssue().' - '.$series->getLastIssue().($issuesCount > 0 ? " ({$issuesCount})" : '')
 );
 $comicvine_url = $series->getComicvineUrl();
 ?>	
