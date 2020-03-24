@@ -7,7 +7,7 @@ a{
 	color: black;
 }
 
-/* common functions */
+/*** common functions ***/
 .full-height{
 	height: 100%;
 }
@@ -55,7 +55,7 @@ a{
 	display: none;
 }
 
-/* Sticky footer styles */
+/*** Sticky footer styles ***/
 html{
 	min-height: 100%;
 	position: relative;
@@ -72,6 +72,7 @@ body > .container-fluid{
 	float: right;
 }
 
+/*** footer ***/
 .footer{
 	/*background-color: #f8f8f8;*/
 	bottom: 0;
@@ -103,7 +104,7 @@ nav.navbar .admin-buttons button.btn:hover{
 	background: white;
 }
 
-/* footer modal */
+/*** footer login modal ***/
 #loginModal{
 	background-color: rgb(0,0,0); /* Fallback color */
 	background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
@@ -154,7 +155,7 @@ nav.navbar .admin-buttons button.btn:hover{
 	text-decoration: none;
 } 
 
-/* navbar */
+/*** navbar ***/
 .navbar.navbar-expand-md{
 	height: 56px;
 	/*overflow: hidden;*/
@@ -194,7 +195,7 @@ nav.navbar .admin-buttons button.btn:hover{
 	padding-top: 4px;
 }
 
-/* print dropdown button/menu */
+/*** print dropdown button/menu ***/
 /* The container <div> - needed to position the dropdown content */
 .print-menu.dropdown{
 	position: relative;
@@ -228,18 +229,23 @@ nav.navbar .admin-buttons button.btn:hover{
 	display: block;
 }
 
+/***  ***/
 #comiclist i.fa{
 	-webkit-text-stroke: 2px white;
 }
 
+/***  ***/
 .dataTables_wrapper{
 	padding-bottom: 1em;
 }
-
 .dataTable tbody tr,
 .dataTable tbody tr .img-responsive{
 	cursor: pointer;
 	height: 60px;
+}
+table.dataTable tbody td .picture{
+	margin-top: -6px;
+	margin-bottom: -6px;
 }
 .dataTable .picture a.small, 
 .dataTable .picture a.small:visited{ 
@@ -300,7 +306,7 @@ tbody tr input.description{
 	width: 30em;
 }
 
-/* details */
+/*** details ***/
 .details{
 	padding-bottom: 1em;
 	padding-top: 1em;
@@ -364,6 +370,7 @@ tbody tr input.description{
 	padding-top: 12px;
 }
 
+/***  ***/
 .inline-input{
 	display: inline-block;
 }
@@ -376,7 +383,7 @@ select{
 	padding-top: 8px;
 }
 
-/* addIssues */
+/*** addIssues ***/
 #addIssuesTable td{
 	padding: 6px;
 }
@@ -384,6 +391,9 @@ select{
 #addIssuesTable tfoot td{
 	padding: 0;
 	text-align: center;
+}
+#addIssuesForm{
+	padding-bottom: 1em;
 }
 #addIssuesForm .btn{
 	/*float: right;*/
@@ -407,6 +417,15 @@ select{
 	width: auto; 
 }
 
+/*** addSeries ***/
+.addseries-explain{
+	color: red;
+	font-size: smaller;
+	margin-right: 35%;
+	padding: 1em;
+}
+
+/*** grading page ***/
 #grading-page{
 	margin-left: auto;
 	margin-right: auto;
@@ -426,8 +445,9 @@ select{
     display: inline-block;
 }
 
+/***  ***/
 .action-buttons{
-	margin-bottom: 4em;
+	margin-bottom: 1em;
 	margin-top: 1em;
 }
 .btn-above-table{
