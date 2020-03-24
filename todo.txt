@@ -2,14 +2,15 @@
 hi priority
 ////////////////////////////
 
-for the missing-printout, gotta add new column to series table for all-issue-numbers in series, comma-separated.
+series and series_details: i dont think REGEN is working
 
-create printout(s)
-1. detailed (issue by issue, with grade and notes)
-2. compact - like my wantlist - include (all) designation if i have all issues between min & max, and the individual issues count is the same as comicvine's total issues.
-3. remainder - issues i'm missing from a run (probably have to download all issues from the volume and compare to what i have)
+gotta speedup ajax/issues!! is the problem in the ajax query, or in processing the results, or getting the images, or something?
 
-start the configurations page
+START ADDING PRICES!! may just have to screen-scrape ComicPriceGuide.com, can't find any API's.  Comicster may have prices, but i'd have to import my collection to find out (i think), same with ComicBase.
+TODO: just add an editable column for price and another auto-filled by date-added (easy, obvious, simple).
+but what about if i change the condition? maybe store the price as NM(9.2) and then fractionalize by the actual condition? how often do i change the condition (after the initial pass)?
+
+fill in more ideas for a configurations page
 
 Grading: add VF/NM, and VG/F ???
 best guide i've found for defining the grades (both classic and modern) and also defining how to examine a book
@@ -20,9 +21,7 @@ include config toggle for which grade config to use (simple vs detailed)
 lo priority
 ////////////////////////////
 
-series and series_details: i dont think REGEN is working
-
-addSeriesSelect: on the javascript seriesvolume prompt, parse the series volume from comicvine and use that as the default (instead of default=1)
+i'm not sure why this is important? in addSeriesSelect, for last/first/issue columns: if(intval(ish)!=ish){errorlog(invalid ish num?)} and then sort by intval no matter what (what about "12.1"? doesnt make sense)
 
 addIssues and issues: INCLUDE A CHECKBOX FOR 'AUTOGRAPHED' (low priority)
 
