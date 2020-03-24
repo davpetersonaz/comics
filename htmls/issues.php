@@ -2,7 +2,7 @@
 if(!$alreadyLoggedIn){ ?><script>window.location.href = '/';</script><?php }
 
 logDebug('issues GET: '.var_export($_GET, true));
-$pageLength = 100;//(isset($_SESSION['table_length']['home']) && $_SESSION['table_length']['home'] > 0 ? $_SESSION['table_length']['home'] : 25);
+$pageLength = 50;//(isset($_SESSION['table_length']['home']) && $_SESSION['table_length']['home'] > 0 ? $_SESSION['table_length']['home'] : 25);
 
 $issueChoice = (isset($_GET['ish']) ? $_GET['ish'] : false);
 $collectionsChoice = (isset($_GET['coll']) ? $_GET['coll'] : false);
@@ -85,7 +85,7 @@ $(document).ready(function(){
 	$('#issuesTable').dataTable({
 		"ajax": "/ajax/issues.php<?=$getParams?>",
 		"dom": 'frtip',
-		"order": [[ 1, 'asc' ],[ 2, 'asc' ],[ 3, 'asc' ],[ 6, 'asc' ]],
+		"order": [[ 2, 'asc' ],[ 3, 'asc' ],[ 6, 'asc' ]],
 		"pageLength": <?=$pageLength?>,
 		"processing": true,
 		"searchDelay": 1000,

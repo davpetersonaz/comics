@@ -1,5 +1,6 @@
 <?php
 include_once('../../config.php');
+logDebug('ENTERED ajax/issues');
 //logDebug('ajax/issues REQUEST: '.var_export($_REQUEST, true)); //NOTE: this is very verbose
 
 //TODO: maybe make this work per-page, or just default each page however i want, and then add these as user-defined settings.
@@ -78,7 +79,7 @@ if (isset($_REQUEST['order'])){
 	}
 }
 //logDebug('sOrder: '.$order);
-if(empty($order)){ $order = 'ORDER BY s.name ASC, c.volume ASC, c.issue, g.position ASC'; }
+if(empty($order)){ $order = 'ORDER BY s.name ASC, c.volume ASC, c.issue ASC, g.position ASC'; }
 
 //paging
 $limit = "";
