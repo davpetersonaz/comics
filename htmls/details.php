@@ -37,9 +37,11 @@ $notes = $issue->getNotes();
 $chrono_index = ($issue->getChronoIndex() ? $issue->getChronoIndex() : '');
 ?>
 
+<?php if($alreadyLoggedIn){ ?>
 <div class='btn-above-table'>
 	<button class='btn btn-primary bg-dark edit-issue'>Edit Issue</button>
 </div>
+<?php } ?>
 
 <div class='details row'>
 	<div class='col-xs-12 col-sm-6'>
@@ -49,7 +51,7 @@ $chrono_index = ($issue->getChronoIndex() ? $issue->getChronoIndex() : '');
 	</div>
 	<div class='col-xs-12 col-sm-6'>
 
-		<h5 class='collection'><span class='smaller'>collection:</span> <?=$issue->getCollectionName()?> <?=$chrono_index?></h5>
+		<h5 class='collection'><span class='smaller'>collection:</span> <?=$issue->getCollectionName()?>, <span class='smaller'>chronological index:</span> <?=$chrono_index?></h5>
 		<h1><?=$issue->getSeriesName()?><span class='smaller'> (vol. <?=$issue->getVolume()?>)</span></h1>
 		<h4>Issue <?=$issue->getIssue()?></h4>
 		<h5><?=$cover_date?></h5>
