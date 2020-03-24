@@ -6,9 +6,12 @@ $series_data = array();
 $pageLength = 100;
 
 $results = $curl->getSeriesByName($seriesname);
-logDebug('getSeriesByName results: '.count($results));
-if(!$results){
-	?> <script>window.location.href=addSeries?notfound=<?= urlencode($seriesname)?></script> <?php
+logDebug('getSeriesByName results count: '.count($results));
+//logDebug('getSeriesByName results: '.var_export($results, true));
+if(count($results) === 0){
+	?> 
+		<script>window.location.href='/addSeries?notfound=<?=urlencode($seriesname)?>';</script> 
+	<?php
 }
 foreach($results as $result){
 	$newArray = array();
@@ -37,6 +40,10 @@ foreach($results as $result){
 	//return the list to selectseries 
 }		
 ?>
+
+<div class='btn-above-table'>
+	<button class='btn btn-primary bg-dark add-cancel'>Cancel</button>
+</div>
 
 <h3>What series is this from?</h3>
 <table id="whatSeriesDatatable" class="display" style="width:100%">
@@ -103,7 +110,7 @@ $(document).ready(function(){
 		console.warn('currentRowData', currentRowData);
 		var seriesname = prompt("what is the series name?", currentRowData[1]);
 		if(seriesname === null){ window.location.href = '/addSeries'; return false; }
-		var volume = prompt("what is the volume number?", 1);
+		var volume = prompt("what is the volume number?", currentRowData[2]);
 		if(volume === null){ window.location.href = '/addSeries'; return false; }
 //		alert('posting to lookup');
 		$.ajax({
@@ -129,6 +136,10 @@ $(document).ready(function(){
 	$('#whatSeriesDatatable').on('page.dt', function() {
 		$('html, body').animate({ scrollTop: $(".dataTables_wrapper").offset().top }, 'slow');
 		$('thead tr th:first-child').focus().blur();
+	});
+
+	$('.add-cancel').on('click', function(){
+		window.location.href = '/addSeries';
 	});
 
 });
