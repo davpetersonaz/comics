@@ -2,7 +2,8 @@
 
 <?php if(isset($_GET['notfound']) && $_GET['notfound']){ ?>
 <p class='red-text'>
-	Comicvine returned no results: <a href='https://comicvine.gamespot.com/search/?header=1&i=volume&q=<?=$_GET['notfound']?>' target='_blank'>Check Comicvine</a>
+	Comicvine returned no results for "<?=urldecode($_GET['notfound'])?>"<BR />
+	click here to <a href='https://comicvine.gamespot.com/search/?header=1&i=volume&q=<?=$_GET['notfound']?>' target='_blank'>Check Comicvine</a>
 </p>
 <?php } ?>
 
@@ -31,6 +32,14 @@
 		<button type='submit' name='submit' class="btn btn-primary bg-dark">Submit</button>
 	</div>
 </form>
+
+<?php //add warning about selecting series -- suggest being minimal (search "superman" instead of "superman/aliens", and then use the search bubble to filter for 'aliens') ?>
+
+<p class="addseries-explain">When searching, it is best to be minimalistic. For example, if you are searching for "Astro City: Local Heroes", just search for "Astro City".
+If you are searching for "Superman/Aliens", first search on "superman", and then filter on "aliens" using the search bubble.
+The reason is - we do not know how ComicVine stores the series name, 
+for example "Superman/Aliens" could be stored as "Superman/Aliens", "Superman / Aliens", "Superman Aliens", or "Superman: Aliens", etc.
+</p>
 
 <script>
 $(document).ready(function(){
