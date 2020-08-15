@@ -14,6 +14,7 @@
 		<link href="/css/tempusdominus-bootstrap-4.min.css?v<?=filemtime($_SERVER['DOCUMENT_ROOT'].'/css/tempusdominus-bootstrap-4.min.css')?>" rel="stylesheet" type="text/css"/>
 <?php } ?>
 		<link href="/images/fontawesome-5.2.0/css/all.css?v<?=filemtime($_SERVER['DOCUMENT_ROOT'].'/images/fontawesome-5.2.0/css/all.css')?>" rel="stylesheet" type="text/css"/> <!-- i know, should probably split js/css into their own folders, but why? -->
+		<link href="/css/core_style.css?v<?=filemtime($_SERVER['DOCUMENT_ROOT'].'/css/core_style.css')?>" rel="stylesheet" type="text/css"/>
 		<link href="/css/style.css?v<?=filemtime($_SERVER['DOCUMENT_ROOT'].'/css/style.css')?>" rel="stylesheet" type="text/css"/>
 <?php if($page === 'print'){ ?>
 		<link href="/css/print.css?v<?=filemtime($_SERVER['DOCUMENT_ROOT'].'/css/print.css')?>" media="print"  rel="stylesheet" type="text/css"/>
