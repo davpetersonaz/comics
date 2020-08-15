@@ -14,7 +14,7 @@ class User{
 		logDebug('user->login');
 		$user_id = $this->db->verifyUser($username, $password);
 		logDebug('user_id: '.var_export($user_id, true));
-		if($user_id && intval($user_id) !== intval($_SESSION['siteuser'])){
+		if($user_id && !empty($_SESSION['siteuser']) && intval($user_id) !== intval($_SESSION['siteuser'])){
 			logDebug('tried to login to incorrect domain');
 			return false;
 		}elseif($user_id){

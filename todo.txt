@@ -2,15 +2,21 @@
 hi priority
 ////////////////////////////
 
+DOES all the print functionalities actually work?? TEST
+
+fill in more ideas for a configurations page
+
 series and series_details: i dont think REGEN is working
 
 gotta speedup ajax/issues!! is the problem in the ajax query, or in processing the results, or getting the images, or something?
+NOT SURE -- query takes less than a second, datatable loading with 100/page takes 7+ seconds and 50/page take 4+ seconds.
+the datatable ordering is injected into the query, so removing it has no effect on datatable load time.
+removing the full cover-image from the ajax output has no effect on datatable load time either.
+whats causing the slow load time???
 
 START ADDING PRICES!! may just have to screen-scrape ComicPriceGuide.com, can't find any API's.  Comicster may have prices, but i'd have to import my collection to find out (i think), same with ComicBase.
 TODO: just add an editable column for price and another auto-filled by date-added (easy, obvious, simple).
 but what about if i change the condition? maybe store the price as NM(9.2) and then fractionalize by the actual condition? how often do i change the condition (after the initial pass)?
-
-fill in more ideas for a configurations page
 
 Grading: add VF/NM, and VG/F ???
 best guide i've found for defining the grades (both classic and modern) and also defining how to examine a book
