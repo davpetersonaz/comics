@@ -1,6 +1,7 @@
 .ftpquota
 logs/
 nbproject/
+webstats/
 www/ajax/php_errorlog
 www/php_errorlog
 www/temp/
