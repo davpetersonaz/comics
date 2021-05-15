@@ -28,7 +28,7 @@ if(!function_exists('logDebug')){
 //paths from www/
 doDefine('CSS_URL_PATH', '/css/');
 doDefine('JS_URL_PATH', '/js/');
-doDefine('WWW_DIR', REAL_PATH.'www/');
+doDefine('WWW_DIR', REAL_PATH.'public_html/');
 
 doDefine('CHARS_TO_REMOVE_FOR_SEARCH', ':~`!@#$%^&*()_+=|}{]\[:;?><,."');
 
