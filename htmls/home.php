@@ -81,7 +81,7 @@ $(document).ready(function(){
 						date.setHours(0);
 						date.setMinutes(0);
 						date.setSeconds(0);
-						console.warn('date', date);
+//						console.warn('date', date);
 //						console.warn('date.getDate()', date.getDate());
 //						console.warn('date.getMonth()', date.getMonth());
 //						console.warn('months[date.getMonth()]', months[date.getMonth()]);

@@ -24,21 +24,22 @@ if(!function_exists('logDebug')){
 		}
 	}
 }
+//logDebug('REAL_PATH: '.REAL_PATH);
 
+doDefine('WWW_DIR', REAL_PATH.'public_html/');
 //paths from www/
 doDefine('CSS_URL_PATH', '/css/');
 doDefine('JS_URL_PATH', '/js/');
-doDefine('WWW_DIR', REAL_PATH.'public_html/');
 
 doDefine('CHARS_TO_REMOVE_FOR_SEARCH', ':~`!@#$%^&*()_+=|}{]\[:;?><,."');
 
 if(!function_exists('ourautoload')){
 	function ourautoload($classname){
-		if(file_exists(REAL_PATH."classes/". $classname .".php")){
-			require_once("classes/". $classname .".php");
-		}
 		if(file_exists(REAL_PATH."classes/core/". $classname .".php")){
 			require_once("classes/core/". $classname .".php");
+		}
+		if(file_exists(REAL_PATH."classes/". $classname .".php")){
+			require_once("classes/". $classname .".php");
 		}
 	}
 }

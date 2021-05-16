@@ -1,7 +1,8 @@
 .ftpquota
+.gitignore
 logs/
 nbproject/
+public_html/ajax/php_errorlog
+public/php_errorlog
+public/temp/
 webstats/
-www/ajax/php_errorlog
-www/php_errorlog
-www/temp/

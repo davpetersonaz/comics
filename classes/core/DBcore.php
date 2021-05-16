@@ -96,10 +96,10 @@ class DBcore{
 		return $return;
 	}
 
-	protected function select($query, $values=array(), $fetchModes=PDO::FETCH_ASSOC){
+	protected function select($query, $values=array(), $fetchModes=PDO::FETCH_ASSOC, $log=false){
 		$return = array();
 		try{
-//			$this->logQueryAndValues($query, $values, 'DBcore->select');
+			if($log){ $this->logQueryAndValues($query, $values, 'DBcore->select'); }
 			$stmt = $this->connection->prepare($query);
 			foreach($values as $column=>$value){
 				$stmt->bindValue(':'.$column, $value);

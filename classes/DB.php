@@ -415,7 +415,7 @@ class DB extends DBcore{
 	}
 
 	const DB_TABLES = array('collections', 'comics', 'series', 'grades', 'users', 'changes');
-	const HOST = 'mysql:host=localhost;dbname=davpeter_comic';
-	const USER = 'davpeter_comic';
+	const HOST = 'mysql:host=localhost;dbname=dbz8ptk6sr3rw5';
+	const USER = 'ufvp4l5h7tggs';
 	const PASS = 'c0micsRahhSUM';
 }
