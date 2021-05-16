@@ -58,9 +58,9 @@ $grades = new Grading($db);
 $changes = new Changes($db);
 
 logDebug('server host: '.$_SERVER['HTTP_HOST']);
-if($_SERVER['HTTP_HOST'] === 'sale.davpeterson.com'){
-	$_SESSION['siteuser'] = 4;//sale.davpeterson.com
-}else{
-	$_SESSION['siteuser'] = 3;//comics.davpeterson.com
+if($_SERVER['HTTP_HOST'] === 'sale.comicsmgr.com'){
+	$_SESSION['siteuser'] = 4;//sale.comicsmgr.com
+}elseif($_SERVER['HTTP_HOST'] === 'dave.comicsmgr.com'){
+	$_SESSION['siteuser'] = 3;//dave.comicsmgr.com
 }
 //logDebug('config complete');
